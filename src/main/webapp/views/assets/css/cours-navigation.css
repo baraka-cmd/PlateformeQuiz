@@ -1,0 +1,321 @@
+/* ============================================================
+   FICHIER : src/main/webapp/views/assets/css/cours-navigation.css
+   RÔLE    : Styles de la barre latérale de navigation
+            Modules, chapitres, leçons
+            Design épuré, professionnel
+   ============================================================ */
+
+/* ===== SIDEBAR ===== */
+.cours-sidebar {
+    width: 280px;
+    min-width: 280px;
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+/* ===== NAVIGATION ===== */
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 6px 0;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ===== MODULE ===== */
+.sidebar-module {
+    border-bottom: 1px solid #f8f8f8;
+}
+
+.sidebar-module:last-child {
+    border-bottom: none;
+}
+
+.sidebar-module.verrouille {
+    opacity: 0.55;
+}
+
+/* ===== EN-TÊTE DU MODULE ===== */
+.sidebar-module-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: left;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.sidebar-module-header:hover {
+    background: #fafbfc;
+}
+
+.module-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.module-label {
+    flex: 1;
+    font-weight: 600;
+    color: #333;
+}
+
+.module-lecons-count {
+    font-size: 11px;
+    color: #aaa;
+    background: #f8fafc;
+    padding: 2px 8px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.module-arrow {
+    font-size: 10px;
+    color: #bbb;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+}
+
+/* ===== CONTENU DU MODULE ===== */
+.sidebar-module-content {
+    padding: 0 0 4px 0;
+    animation: fadeDown 0.2s ease;
+}
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== EXAMEN DANS SIDEBAR ===== */
+.sidebar-examen {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 8px 26px;
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.sidebar-examen.reussi {
+    color: #27ae60;
+}
+
+.sidebar-examen.accessible {
+    color: #667eea;
+    transition: background 0.15s;
+}
+
+.sidebar-examen.accessible:hover {
+    background: #f8fafc;
+}
+
+.sidebar-examen i {
+    font-size: 12px;
+}
+
+/* ===== CHAPITRE ===== */
+.sidebar-chapitre-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 14px 7px 26px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: left;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.sidebar-chapitre-header:hover {
+    background: #fafbfc;
+}
+
+.sidebar-chapitre-header.active {
+    background: #f8faff;
+}
+
+.chapitre-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.chapitre-label {
+    flex: 1;
+    font-weight: 500;
+    color: #555;
+}
+
+.chapitre-lecons-count {
+    font-size: 10px;
+    color: #bbb;
+    flex-shrink: 0;
+}
+
+.chapitre-arrow {
+    font-size: 9px;
+    color: #ccc;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+}
+
+/* ===== LEÇONS ===== */
+.sidebar-lecons {
+    list-style: none;
+    padding: 0 0 4px 0;
+    margin: 0;
+}
+
+.sidebar-lecon.active {
+    background: #f8faff;
+}
+
+.sidebar-lecon-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px 6px 36px;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.sidebar-lecon-link:hover {
+    background: #f5f7ff;
+}
+
+.sidebar-lecon-link.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.lecon-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #d1d5db;
+    flex-shrink: 0;
+}
+
+.lecon-dot.active {
+    background: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.lecon-dot.locked {
+    background: #e5e7eb;
+}
+
+.lecon-label {
+    flex: 1;
+    color: #666;
+    line-height: 1.3;
+}
+
+.sidebar-lecon-link:not(.disabled) .lecon-label {
+    color: #444;
+}
+
+.sidebar-lecon-link:hover .lecon-label {
+    color: #667eea;
+}
+
+.lecon-lock-icon {
+    font-size: 8px;
+    color: #ccc;
+    flex-shrink: 0;
+}
+
+/* ===== BOUTON MOBILE ===== */
+.sidebar-mobile-toggle {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    padding: 10px 20px;
+    background: #667eea;
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+    .cours-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 280px;
+        min-width: 280px;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        z-index: 200;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .cours-sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    .sidebar-mobile-toggle {
+        display: flex;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+}

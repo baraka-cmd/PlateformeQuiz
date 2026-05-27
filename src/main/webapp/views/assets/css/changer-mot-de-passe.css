@@ -1,0 +1,672 @@
+/* ============================================================
+   FICHIER : views/assets/css/changer-mot-de-passe.css
+   RÔLE    : Styles de la page "Changer mon mot de passe"
+             - Carte centrée avec formulaire
+             - Indicateur de force du mot de passe
+             - Exigences de sécurité
+             - Conseils de sécurité
+             - Messages d'alerte
+             - Responsive design complet
+   ============================================================ */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+    --mdp2-primary: #667eea;
+    --mdp2-primary-dark: #5a6fd6;
+    --mdp2-secondary: #764ba2;
+    --mdp2-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --mdp2-success: #27ae60;
+    --mdp2-success-light: #e8f5e9;
+    --mdp2-danger: #e74c3c;
+    --mdp2-danger-light: #ffe0e0;
+    --mdp2-warning: #f39c12;
+    --mdp2-warning-light: #fff8e1;
+    --mdp2-info: #2980b9;
+    --mdp2-info-light: #e8f4fd;
+    --mdp2-white: #ffffff;
+    --mdp2-bg: #f5f6fa;
+    --mdp2-text: #1a1a2e;
+    --mdp2-text-light: #555555;
+    --mdp2-text-muted: #8b8fa3;
+    --mdp2-border: #e0e3e8;
+    --mdp2-radius-sm: 8px;
+    --mdp2-radius: 12px;
+    --mdp2-radius-lg: 16px;
+    --mdp2-radius-xl: 20px;
+    --mdp2-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --mdp2-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --mdp2-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --mdp2-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12);
+    --mdp2-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================
+   CONTENEUR PRINCIPAL
+   ========================================================== */
+.mdp-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ==========================================================
+   BREADCRUMB
+   ========================================================== */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 25px;
+    font-size: 13px;
+    color: var(--mdp2-text-muted);
+    flex-wrap: wrap;
+    animation: breadcrumbSlide 0.5s ease;
+    padding: 10px 0;
+}
+
+@keyframes breadcrumbSlide {
+    from { opacity: 0; transform: translateX(-15px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.breadcrumb-link {
+    color: var(--mdp2-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--mdp2-transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: var(--mdp2-radius-sm);
+}
+
+.breadcrumb-link:hover {
+    color: var(--mdp2-primary-dark);
+    background: rgba(102, 126, 234, 0.06);
+    text-decoration: none;
+}
+
+.breadcrumb-link i {
+    font-size: 13px;
+}
+
+.breadcrumb-separator {
+    font-size: 8px;
+    color: #ccc;
+}
+
+.breadcrumb-current {
+    color: var(--mdp2-text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: var(--mdp2-radius-sm);
+}
+
+.breadcrumb-current i {
+    color: var(--mdp2-primary);
+    font-size: 14px;
+}
+
+/* ==========================================================
+   CARTE DU FORMULAIRE
+   ========================================================== */
+.mdp-card {
+    background: var(--mdp2-white);
+    border-radius: var(--mdp2-radius-xl);
+    box-shadow: var(--mdp2-shadow-xl);
+    padding: 40px 35px;
+    animation: cardFadeIn 0.6s ease;
+    border: 1px solid rgba(102, 126, 234, 0.06);
+}
+
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* En-tête */
+.mdp-card-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.mdp-icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--mdp2-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.3);
+    transition: var(--mdp2-transition);
+}
+
+.mdp-icon-circle:hover {
+    transform: scale(1.05);
+}
+
+.mdp-icon-circle i {
+    font-size: 34px;
+    color: white;
+    animation: lockPulse 2s ease-in-out infinite;
+}
+
+@keyframes lockPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.mdp-card-header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--mdp2-text);
+    margin: 0 0 8px 0;
+}
+
+.mdp-card-header p {
+    font-size: 14px;
+    color: var(--mdp2-text-muted);
+    margin: 0;
+}
+
+/* ==========================================================
+   GROUPES DE CHAMPS
+   ========================================================== */
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mdp2-text-light);
+    margin-bottom: 8px;
+}
+
+.form-group label i {
+    color: var(--mdp2-primary);
+    font-size: 15px;
+    width: 18px;
+    text-align: center;
+}
+
+/* Input wrapper */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper .input-icon {
+    position: absolute;
+    left: 16px;
+    color: #aaa;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 14px 44px 14px 48px;
+    border: 2px solid var(--mdp2-border);
+    border-radius: var(--mdp2-radius);
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: #fafbfc;
+    color: var(--mdp2-text);
+    outline: none;
+    line-height: 1.5;
+}
+
+.form-group input:focus {
+    border-color: var(--mdp2-primary);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.08);
+}
+
+.form-group input:focus ~ .input-icon,
+.form-group input:focus + .input-icon {
+    color: var(--mdp2-primary);
+}
+
+.form-group input::placeholder {
+    color: #bbb;
+    font-size: 13px;
+    font-weight: 300;
+}
+
+/* États de validation */
+.form-group input.input-valid {
+    border-color: var(--mdp2-success);
+    background: #fafffe;
+}
+
+.form-group input.input-valid ~ .input-icon,
+.form-group input.input-valid + .input-icon {
+    color: var(--mdp2-success);
+}
+
+.form-group input.input-error {
+    border-color: var(--mdp2-danger);
+    background: #fffafa;
+}
+
+.form-group input.input-error ~ .input-icon,
+.form-group input.input-error + .input-icon {
+    color: var(--mdp2-danger);
+}
+
+/* Bouton toggle mot de passe */
+.toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password-btn:hover {
+    color: var(--mdp2-primary);
+    background: rgba(102, 126, 234, 0.08);
+}
+
+.toggle-password-btn i {
+    font-size: 16px;
+}
+
+/* Message d'erreur */
+.form-error {
+    display: block;
+    font-size: 12px;
+    color: var(--mdp2-danger);
+    margin-top: 5px;
+    min-height: 0;
+}
+
+/* Message correspondance */
+.form-match {
+    display: block;
+    font-size: 12px;
+    margin-top: 6px;
+    min-height: 18px;
+    transition: all 0.3s ease;
+}
+
+.form-match.match-success {
+    color: var(--mdp2-success);
+}
+
+.form-match.match-error {
+    color: var(--mdp2-danger);
+}
+
+/* ==========================================================
+   INDICATEUR DE FORCE DU MOT DE PASSE
+   ========================================================== */
+.password-strength {
+    height: 6px;
+    background: #e8eaef;
+    border-radius: 3px;
+    margin-top: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    transition: all 0.4s ease;
+}
+
+.password-strength-text {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 5px;
+    min-height: 18px;
+    transition: all 0.3s ease;
+}
+
+/* Exigences */
+.password-requirements {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.requirement {
+    font-size: 12px;
+    color: var(--mdp2-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.3s ease;
+}
+
+.requirement i {
+    font-size: 6px;
+    transition: all 0.3s ease;
+}
+
+.requirement.valid {
+    color: var(--mdp2-success);
+}
+
+.requirement.valid i {
+    color: var(--mdp2-success);
+}
+
+.requirement.valid i::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 10px;
+}
+
+.requirement.invalid i {
+    color: #ccc;
+}
+
+/* ==========================================================
+   CONSEILS DE SÉCURITÉ
+   ========================================================== */
+.security-tips {
+    background: var(--mdp2-warning-light);
+    border: 2px solid #ffe082;
+    border-radius: var(--mdp2-radius-lg);
+    padding: 18px 22px;
+    margin-bottom: 25px;
+    transition: var(--mdp2-transition);
+}
+
+.security-tips:hover {
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.08);
+}
+
+.security-tips h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e67e22;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.security-tips h4 i {
+    font-size: 16px;
+}
+
+.security-tips ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.security-tips ul li {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.4;
+}
+
+.security-tips ul li i {
+    color: var(--mdp2-success);
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+/* ==========================================================
+   BOUTONS
+   ========================================================== */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-mdp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border-radius: var(--mdp2-radius);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--mdp2-transition);
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.3px;
+    border: none;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-mdp-primary {
+    background: var(--mdp2-gradient);
+    color: white;
+    flex: 1;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+}
+
+.btn-mdp-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.btn-mdp-primary:active {
+    transform: translateY(0);
+}
+
+.btn-mdp-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-mdp-secondary {
+    background: #f0f0f5;
+    color: var(--mdp2-text-light);
+}
+
+.btn-mdp-secondary:hover {
+    background: #e0e0e8;
+    color: var(--mdp2-text);
+}
+
+.btn-loader {
+    display: none;
+    font-size: 16px;
+}
+
+.btn-mdp.loading .btn-loader {
+    display: inline-flex;
+}
+
+.btn-mdp.loading span:not(.btn-loader) {
+    visibility: hidden;
+}
+
+.btn-mdp.loading .btn-loader {
+    position: absolute;
+}
+
+/* ==========================================================
+   MESSAGES D'ALERTE
+   ========================================================== */
+.message-alerte {
+    padding: 13px 18px;
+    border-radius: var(--mdp2-radius);
+    font-weight: 500;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-erreur {
+    background: var(--mdp2-danger-light);
+    color: #c0392b;
+    border: 1px solid #ffb8b8;
+}
+
+.message-erreur i {
+    color: var(--mdp2-danger);
+    font-size: 16px;
+}
+
+.message-succes {
+    background: var(--mdp2-success-light);
+    color: #1e7e34;
+    border: 1px solid #a3e4b8;
+}
+
+.message-succes i {
+    color: var(--mdp2-success);
+    font-size: 16px;
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+/* Tablette */
+@media (max-width: 768px) {
+    .mdp-card {
+        padding: 30px 25px;
+        border-radius: var(--mdp2-radius-lg);
+    }
+    
+    .mdp-icon-circle {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .mdp-icon-circle i {
+        font-size: 28px;
+    }
+    
+    .mdp-card-header h1 {
+        font-size: 22px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+    .mdp-container {
+        padding: 0;
+    }
+    
+    .mdp-card {
+        padding: 25px 18px;
+        border-radius: var(--mdp2-radius);
+    }
+    
+    .mdp-icon-circle {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .mdp-icon-circle i {
+        font-size: 24px;
+    }
+    
+    .mdp-card-header h1 {
+        font-size: 20px;
+    }
+    
+    .form-group input[type="password"] {
+        font-size: 13px;
+        padding: 12px 40px 12px 42px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-mdp {
+        width: 100%;
+    }
+    
+    .btn-mdp-primary {
+        order: 1;
+    }
+    
+    .btn-mdp-secondary {
+        order: 2;
+        justify-content: center;
+    }
+    
+    .security-tips {
+        padding: 14px 16px;
+    }
+    
+    .security-tips ul li {
+        font-size: 11px;
+    }
+    
+    .breadcrumb {
+        font-size: 11px;
+        gap: 5px;
+    }
+    
+    .breadcrumb-link,
+    .breadcrumb-current {
+        padding: 4px 8px;
+    }
+}
+
+/* Très petit mobile */
+@media (max-width: 380px) {
+    .mdp-card {
+        padding: 20px 14px;
+    }
+    
+    .mdp-card-header h1 {
+        font-size: 18px;
+    }
+    
+    .password-requirements {
+        gap: 4px;
+    }
+    
+    .requirement {
+        font-size: 11px;
+    }
+}

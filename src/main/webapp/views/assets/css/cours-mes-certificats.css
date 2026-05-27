@@ -1,0 +1,270 @@
+/* ============================================================
+   FICHIER : views/assets/css/cours-mes-certificats.css
+   RÔLE    : Styles de la page "Mes Certificats"
+             - Bannière statistiques
+             - Grille des certificats
+             - Cartes avec ruban mention
+             - État vide
+             - Animations et responsive
+   ============================================================ */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+    --mc-primary: #667eea;
+    --mc-primary-dark: #5a6fd6;
+    --mc-secondary: #764ba2;
+    --mc-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --mc-gold: #c9a84c;
+    --mc-success: #27ae60;
+    --mc-success-light: #e8f5e9;
+    --mc-warning: #f39c12;
+    --mc-white: #ffffff;
+    --mc-bg: #f5f6fa;
+    --mc-text: #1a1a2e;
+    --mc-text-light: #555555;
+    --mc-text-muted: #8b8fa3;
+    --mc-border: #e8eaef;
+    --mc-radius-sm: 8px;
+    --mc-radius: 12px;
+    --mc-radius-lg: 16px;
+    --mc-radius-xl: 20px;
+    --mc-shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+    --mc-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    --mc-shadow-lg: 0 10px 40px rgba(0,0,0,0.08);
+    --mc-shadow-xl: 0 20px 60px rgba(0,0,0,0.12);
+    --mc-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================
+   CONTENEUR
+   ========================================================== */
+.mes-certificats-container {
+    width: 100%; max-width: 1100px; margin: 0 auto;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ==========================================================
+   BREADCRUMB
+   ========================================================== */
+.breadcrumb {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 22px;
+    font-size: 13px; color: var(--mc-text-muted); flex-wrap: wrap;
+    animation: brSlide 0.5s ease; padding: 8px 0;
+}
+@keyframes brSlide {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.breadcrumb-link {
+    color: var(--mc-primary); text-decoration: none; font-weight: 500;
+    transition: var(--mc-transition); display: flex; align-items: center;
+    gap: 6px; padding: 5px 10px; border-radius: var(--mc-radius-sm);
+}
+.breadcrumb-link:hover { color: var(--mc-primary-dark); background: rgba(102,126,234,0.06); text-decoration: none; }
+.breadcrumb-link i { font-size: 13px; }
+.breadcrumb-separator { font-size: 8px; color: #ccc; }
+.breadcrumb-current {
+    color: var(--mc-text); font-weight: 600; display: flex; align-items: center;
+    gap: 7px; padding: 5px 10px; background: rgba(102,126,234,0.05); border-radius: var(--mc-radius-sm);
+}
+.breadcrumb-current i { color: var(--mc-primary); font-size: 14px; }
+
+/* ==========================================================
+   BANNIÈRE STATS
+   ========================================================== */
+.stats-banner {
+    background: var(--mc-gradient);
+    border-radius: var(--mc-radius-xl); padding: 28px 32px; margin-bottom: 28px;
+    display: flex; align-items: center; gap: 25px; flex-wrap: wrap; color: white;
+    box-shadow: 0 12px 35px rgba(102,126,234,0.3);
+    animation: bannerIn 0.6s ease; position: relative; overflow: hidden;
+}
+@keyframes bannerIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.stats-banner::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,0.06); pointer-events: none;
+}
+.stats-banner-icon {
+    width: 65px; height: 65px; border-radius: var(--mc-radius-lg);
+    background: rgba(255,255,255,0.18); display: flex; align-items: center;
+    justify-content: center; font-size: 30px; flex-shrink: 0;
+    backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.25); position: relative; z-index: 1;
+}
+.stats-banner-content { flex: 1; min-width: 180px; position: relative; z-index: 1; }
+.stats-banner-content h1 { font-size: 23px; font-weight: 700; margin: 0 0 4px; }
+.stats-banner-content p { font-size: 13px; opacity: 0.85; margin: 0; font-weight: 300; }
+.stats-banner-numbers { display: flex; gap: 22px; flex-wrap: wrap; position: relative; z-index: 1; }
+.stat-mini { text-align: center; min-width: 65px; }
+.stat-mini i { display: block; font-size: 18px; margin-bottom: 4px; opacity: 0.8; }
+.stat-mini strong { display: block; font-size: 20px; font-weight: 700; }
+.stat-mini span { display: block; font-size: 10px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* ==========================================================
+   SECTION HEADER
+   ========================================================== */
+.section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
+}
+.section-header h2 { font-size: 19px; font-weight: 600; color: var(--mc-text); margin: 0; display: flex; align-items: center; gap: 10px; }
+.section-header h2 i { color: var(--mc-primary); }
+.btn-voir-cours {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+    background: var(--mc-white); color: var(--mc-primary); border-radius: 25px;
+    text-decoration: none; font-size: 13px; font-weight: 600; transition: var(--mc-transition);
+    border: 2px solid var(--mc-primary); box-shadow: var(--mc-shadow-sm);
+}
+.btn-voir-cours:hover { background: var(--mc-primary); color: white; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(102,126,234,0.25); }
+
+/* ==========================================================
+   GRILLE CERTIFICATS
+   ========================================================== */
+.certificats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px; margin-bottom: 30px;
+}
+
+.certificat-card-link { text-decoration: none; color: inherit; display: block; outline: none; }
+.certificat-card-link:focus-visible .certificat-card {
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.3);
+}
+
+.certificat-card {
+    background: var(--mc-white); border-radius: var(--mc-radius-xl);
+    padding: 24px 20px 20px; box-shadow: var(--mc-shadow);
+    transition: var(--mc-transition); position: relative; text-align: center;
+    border: 2px solid transparent; overflow: hidden;
+    animation: cardReveal 0.5s ease both;
+}
+.certificat-card:nth-child(1) { animation-delay: 0.05s; }
+.certificat-card:nth-child(2) { animation-delay: 0.1s; }
+.certificat-card:nth-child(3) { animation-delay: 0.15s; }
+.certificat-card:nth-child(4) { animation-delay: 0.2s; }
+.certificat-card:nth-child(5) { animation-delay: 0.25s; }
+.certificat-card:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes cardReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.certificat-card:hover {
+    transform: translateY(-6px); box-shadow: var(--mc-shadow-xl);
+    border-color: rgba(201,168,76,0.3);
+}
+
+/* Ruban mention */
+.certificat-ribbon {
+    position: absolute; top: 14px; right: -30px;
+    padding: 5px 35px; font-size: 10px; font-weight: 700; color: white;
+    transform: rotate(45deg); letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.certificat-ribbon i { font-size: 9px; }
+
+/* Icône */
+.certificat-card-icon {
+    width: 56px; height: 56px; border-radius: var(--mc-radius-lg);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 24px; margin: 0 auto 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12); transition: var(--mc-transition);
+}
+.certificat-card:hover .certificat-card-icon { transform: scale(1.08) rotate(-5deg); }
+
+/* Titre */
+.certificat-card-titre {
+    font-size: 15px; font-weight: 600; color: var(--mc-text);
+    margin: 0 0 6px; line-height: 1.3;
+}
+.certificat-card-theme {
+    font-size: 11px; color: var(--mc-text-muted);
+    display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 14px;
+}
+.certificat-card-theme i { font-size: 10px; }
+
+/* Score */
+.certificat-card-score { margin-bottom: 14px; }
+.mini-score-circle {
+    width: 50px; height: 50px; border-radius: 50%; border: 3px solid #ddd;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto; font-size: 16px; font-weight: 700;
+}
+
+/* Date */
+.certificat-card-date {
+    font-size: 11px; color: var(--mc-text-muted);
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+
+/* Flèche */
+.certificat-card-arrow {
+    position: absolute; bottom: 16px; right: 16px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(102,126,234,0.08); display: flex; align-items: center;
+    justify-content: center; color: var(--mc-primary); font-size: 11px;
+    transition: var(--mc-transition); opacity: 0;
+}
+.certificat-card:hover .certificat-card-arrow { opacity: 1; }
+
+/* ==========================================================
+   ÉTAT VIDE
+   ========================================================== */
+.empty-state {
+    text-align: center; padding: 60px 25px; background: var(--mc-white);
+    border-radius: var(--mc-radius-xl); box-shadow: var(--mc-shadow); margin-bottom: 25px;
+}
+.empty-icon {
+    width: 80px; height: 80px; border-radius: 50%; background: #f5f5fa;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px; font-size: 34px; color: #ccc;
+}
+.empty-state h3 { font-size: 18px; color: var(--mc-text); margin: 0 0 8px; font-weight: 600; }
+.empty-state p { font-size: 14px; color: var(--mc-text-muted); margin: 0 0 22px; line-height: 1.5; }
+.btn-commencer {
+    display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px;
+    background: var(--mc-gradient); color: white; border-radius: var(--mc-radius);
+    text-decoration: none; font-size: 14px; font-weight: 600; transition: var(--mc-transition);
+    box-shadow: 0 4px 15px rgba(102,126,234,0.2);
+}
+.btn-commencer:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.35); color: white; }
+
+/* ==========================================================
+   SECTION MOTIVATION
+   ========================================================== */
+.motivation-section { margin-bottom: 30px; }
+.motivation-card {
+    background: var(--mc-white); border-radius: var(--mc-radius-xl);
+    padding: 20px 24px; box-shadow: var(--mc-shadow); display: flex;
+    gap: 16px; align-items: center; border: 1px solid rgba(102,126,234,0.06);
+    transition: var(--mc-transition);
+}
+.motivation-card:hover { transform: translateY(-2px); box-shadow: var(--mc-shadow-lg); }
+.motivation-icon {
+    width: 48px; height: 48px; border-radius: var(--mc-radius);
+    background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--mc-primary); font-size: 22px; flex-shrink: 0;
+}
+.motivation-content h4 { font-size: 14px; font-weight: 600; color: var(--mc-text); margin: 0 0 4px; }
+.motivation-content p { font-size: 13px; color: var(--mc-text-muted); line-height: 1.5; margin: 0; }
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+@media (max-width: 768px) {
+    .stats-banner { flex-direction: column; text-align: center; padding: 22px 18px; }
+    .stats-banner-numbers { justify-content: center; }
+    .certificats-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+}
+@media (max-width: 500px) {
+    .certificats-grid { grid-template-columns: 1fr; }
+    .section-header { flex-direction: column; align-items: flex-start; }
+    .btn-voir-cours { width: 100%; justify-content: center; }
+    .certificat-card { padding: 18px 14px 14px; }
+    .certificat-ribbon { right: -35px; padding: 4px 30px; font-size: 9px; }
+}

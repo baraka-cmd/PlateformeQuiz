@@ -1,0 +1,323 @@
+/* ============================================================
+   FICHIER : views/assets/css/cours-certificat.css
+   RÔLE    : Styles du certificat de réussite
+             - Format diplôme officiel
+             - Bordures décoratives
+             - Barre d'actions (imprimer, télécharger, partager)
+             - Badge vérifié
+             - Styles d'impression
+             - Animations et responsive
+   ============================================================ */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+    --cert-primary: #667eea;
+    --cert-secondary: #764ba2;
+    --cert-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --cert-gold: #c9a84c;
+    --cert-gold-light: #d4af37;
+    --cert-white: #ffffff;
+    --cert-bg: #f5f6fa;
+    --cert-text: #1a1a2e;
+    --cert-text-light: #555555;
+    --cert-text-muted: #8b8fa3;
+    --cert-border: #e8eaef;
+    --cert-radius-sm: 8px;
+    --cert-radius: 12px;
+    --cert-radius-lg: 16px;
+    --cert-radius-xl: 20px;
+    --cert-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --cert-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --cert-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --cert-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12);
+    --cert-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================
+   CONTENEUR PRINCIPAL
+   ========================================================== */
+.certificat-page-container {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ==========================================================
+   BREADCRUMB
+   ========================================================== */
+.breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 20px; font-size: 13px; color: var(--cert-text-muted);
+    flex-wrap: wrap; animation: breadcrumbSlide 0.5s ease; padding: 8px 0;
+}
+@keyframes breadcrumbSlide {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.breadcrumb-link {
+    color: var(--cert-primary); text-decoration: none; font-weight: 500;
+    transition: var(--cert-transition); display: flex; align-items: center;
+    gap: 6px; padding: 5px 10px; border-radius: var(--cert-radius-sm);
+}
+.breadcrumb-link:hover {
+    color: #5a6fd6; background: rgba(102,126,234,0.06); text-decoration: none;
+}
+.breadcrumb-link i { font-size: 13px; }
+.breadcrumb-separator { font-size: 8px; color: #ccc; }
+.breadcrumb-current {
+    color: var(--cert-text); font-weight: 600; display: flex; align-items: center;
+    gap: 7px; padding: 5px 10px; background: rgba(102,126,234,0.05); border-radius: var(--cert-radius-sm);
+}
+.breadcrumb-current i { color: var(--cert-primary); font-size: 14px; }
+
+/* ==========================================================
+   BARRE D'ACTIONS
+   ========================================================== */
+.certificat-actions-bar {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 25px; animation: fadeInUp 0.5s ease;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-action-cert {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: var(--cert-radius);
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    transition: var(--cert-transition); font-family: 'Poppins', sans-serif;
+    cursor: pointer; border: 2px solid var(--cert-border);
+    background: var(--cert-white); color: var(--cert-text-light);
+    box-shadow: var(--cert-shadow-sm);
+}
+.btn-action-cert:hover {
+    transform: translateY(-2px); box-shadow: var(--cert-shadow);
+    border-color: var(--cert-primary); color: var(--cert-primary);
+}
+.btn-action-cert i { font-size: 15px; color: var(--cert-primary); }
+.btn-retour { margin-left: auto; }
+
+/* ==========================================================
+   CERTIFICAT DIPLÔME
+   ========================================================== */
+.certificat-diplome {
+    background: #fdfaf5;
+    border-radius: 4px;
+    position: relative;
+    box-shadow: var(--cert-shadow-xl);
+    margin-bottom: 25px;
+    animation: diplomFadeIn 0.8s ease;
+}
+@keyframes diplomFadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Bordures décoratives */
+.diplome-border {
+    height: 12px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--cert-gold) 0px, var(--cert-gold) 20px,
+        var(--cert-gold-light) 20px, var(--cert-gold-light) 24px,
+        var(--cert-gold) 24px, var(--cert-gold) 44px
+    );
+    border-radius: 4px 4px 0 0;
+}
+
+.diplome-border-bottom {
+    height: 12px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--cert-gold) 0px, var(--cert-gold) 20px,
+        var(--cert-gold-light) 20px, var(--cert-gold-light) 24px,
+        var(--cert-gold) 24px, var(--cert-gold) 44px
+    );
+    border-radius: 0 0 4px 4px;
+}
+
+/* Contenu */
+.diplome-content {
+    padding: 40px 50px;
+    border-left: 3px solid var(--cert-gold);
+    border-right: 3px solid var(--cert-gold);
+    text-align: center;
+    position: relative;
+}
+
+/* Motif décoratif coins */
+.diplome-content::before {
+    content: '◆';
+    position: absolute; top: 15px; left: 20px;
+    font-size: 14px; color: var(--cert-gold);
+}
+.diplome-content::after {
+    content: '◆';
+    position: absolute; top: 15px; right: 20px;
+    font-size: 14px; color: var(--cert-gold);
+}
+
+/* En-tête */
+.diplome-header { margin-bottom: 30px; }
+
+.diplome-logo {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; font-size: 28px; font-weight: 700; color: var(--cert-primary);
+    margin-bottom: 20px;
+}
+.diplome-logo i { font-size: 36px; }
+
+.diplome-titre-certificat {
+    font-size: 22px; font-weight: 700; color: var(--cert-gold);
+    letter-spacing: 3px; text-transform: uppercase; margin: 0 0 8px;
+}
+.diplome-sous-titre {
+    font-size: 14px; color: var(--cert-text-muted); margin: 0;
+    font-style: italic;
+}
+
+/* Nom */
+.diplome-nom {
+    font-size: 36px; font-weight: 700; color: var(--cert-text);
+    margin: 0 0 10px; letter-spacing: 1px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    border-bottom: 2px solid var(--cert-gold);
+    display: inline-block; padding-bottom: 10px;
+}
+
+/* Description */
+.diplome-description { margin: 25px 0; }
+.diplome-description p { font-size: 14px; color: var(--cert-text-muted); margin: 0 0 8px; }
+.diplome-cours {
+    font-size: 20px; font-weight: 700; color: var(--cert-text); margin: 0;
+}
+.diplome-theme {
+    font-size: 13px; color: var(--cert-text-muted); margin-top: 6px !important;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.diplome-theme i { color: var(--cert-primary); }
+
+/* Score et mention */
+.diplome-score {
+    display: flex; align-items: center; justify-content: center;
+    gap: 30px; margin: 30px 0; padding: 20px;
+    background: rgba(201,168,76,0.06); border-radius: 12px;
+    border: 1px dashed var(--cert-gold);
+}
+.diplome-score-item {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.diplome-score-label {
+    font-size: 12px; color: var(--cert-text-muted); text-transform: uppercase; letter-spacing: 1px;
+}
+.diplome-score-valeur {
+    font-size: 24px; font-weight: 700; color: var(--cert-text);
+}
+.diplome-score-valeur.mention {
+    font-size: 20px; display: flex; align-items: center; gap: 8px;
+}
+.diplome-score-separator {
+    width: 1px; height: 50px; background: var(--cert-gold); opacity: 0.4;
+}
+
+/* Pied */
+.diplome-footer {
+    display: flex; justify-content: space-between;
+    align-items: flex-end; margin-top: 40px; padding-top: 25px;
+    border-top: 1px solid #e8e0d0;
+}
+.diplome-date p {
+    font-size: 13px; color: var(--cert-text-muted); margin: 0;
+}
+.diplome-signature { text-align: right; }
+.signature-ligne {
+    width: 160px; height: 1px; background: var(--cert-text-muted);
+    margin-bottom: 5px; margin-left: auto;
+}
+.diplome-signature p {
+    font-size: 12px; color: var(--cert-text-muted); margin: 0;
+    font-style: italic;
+}
+
+/* Vérification */
+.diplome-verification {
+    margin-top: 25px; padding-top: 20px;
+    border-top: 1px solid #e8e0d0;
+}
+.verification-code {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 8px;
+}
+.verification-label {
+    font-size: 11px; color: var(--cert-text-muted); text-transform: uppercase; letter-spacing: 1px;
+}
+.verification-valeur {
+    font-size: 14px; font-weight: 700; color: var(--cert-primary);
+    background: rgba(102,126,234,0.06); padding: 4px 12px;
+    border-radius: 6px; font-family: 'Courier New', monospace; letter-spacing: 1.5px;
+}
+.verification-url {
+    font-size: 11px; color: var(--cert-text-muted); margin: 0;
+    word-break: break-all;
+}
+
+/* ==========================================================
+   BADGE VÉRIFIÉ
+   ========================================================== */
+.certificat-verifie {
+    text-align: center; margin-bottom: 30px;
+}
+.verifie-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 25px;
+    background: var(--cert-white); border: 2px solid #c8f7c5;
+    color: #155724; font-size: 13px; font-weight: 500;
+    box-shadow: var(--cert-shadow-sm);
+}
+.verifie-badge i { color: var(--cert-primary); font-size: 16px; }
+
+/* ==========================================================
+   IMPRESSION
+   ========================================================== */
+@media print {
+    body { background: white; }
+    .navbar, .footer, .no-print, .breadcrumb,
+    .certificat-verifie, .certificat-actions-bar { display: none !important; }
+    
+    .certificat-diplome {
+        box-shadow: none; border: 2px solid #c9a84c;
+        page-break-inside: avoid;
+    }
+    .diplome-content { padding: 30px 40px; }
+    .diplome-nom { font-size: 30px; }
+    
+    @page { margin: 15mm; size: A4 landscape; }
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+@media (max-width: 768px) {
+    .diplome-content { padding: 25px 20px; }
+    .diplome-nom { font-size: 26px; }
+    .diplome-titre-certificat { font-size: 18px; letter-spacing: 2px; }
+    .diplome-cours { font-size: 17px; }
+    .diplome-score { flex-direction: column; gap: 15px; }
+    .diplome-score-separator { width: 80%; height: 1px; }
+    .diplome-footer { flex-direction: column; align-items: center; text-align: center; gap: 15px; }
+    .diplome-signature { text-align: center; }
+    .signature-ligne { margin: 0 auto 5px; }
+    .btn-retour { margin-left: 0; }
+    .certificat-actions-bar { justify-content: center; }
+}
+@media (max-width: 500px) {
+    .diplome-content { padding: 18px 14px; }
+    .diplome-nom { font-size: 22px; }
+    .diplome-logo { font-size: 22px; }
+    .diplome-logo i { font-size: 28px; }
+    .diplome-titre-certificat { font-size: 15px; }
+    .btn-action-cert { flex: 1; justify-content: center; min-width: 100px; }
+    .btn-action-cert span { display: none; }
+}

@@ -1,0 +1,1544 @@
+/* ============================================================
+   FICHIER : views/assets/css/dashboard.css
+   RÔLE    : Styles du tableau de bord joueur AmijayQuiz
+             - En-tête de bienvenue avec avatar
+             - Section "Reprendre mon parcours" (Quiz + Cours)
+             - 6 cartes statistiques (3 Quiz + 3 Cours)
+             - Grille des thèmes Quiz avec progression
+             - Grille des thèmes Cours avec progression
+             - Barre de progression globale Cours
+             - Historique des dernières activités
+             - Conseils et astuces
+             - Animations fluides
+             - Responsive design complet
+   ============================================================ */
+
+/* ===== CSS VARIABLES SPÉCIFIQUES AU DASHBOARD ===== */
+:root {
+    --db-primary: #667eea;
+    --db-primary-dark: #5a6fd6;
+    --db-secondary: #764ba2;
+    --db-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --db-success: #27ae60;
+    --db-success-light: #e8f5e9;
+    --db-danger: #e74c3c;
+    --db-danger-light: #ffe0e0;
+    --db-warning: #f39c12;
+    --db-warning-light: #fff8e1;
+    --db-info: #2980b9;
+    --db-info-light: #e8f4fd;
+    --db-white: #ffffff;
+    --db-bg: #f5f6fa;
+    --db-text: #1a1a2e;
+    --db-text-light: #555555;
+    --db-text-muted: #8b8fa3;
+    --db-border: #e8eaef;
+    --db-radius-sm: 8px;
+    --db-radius: 14px;
+    --db-radius-lg: 20px;
+    --db-radius-xl: 24px;
+    --db-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --db-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --db-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --db-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.1);
+    --db-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Couleurs Cours */
+    --cours-orange: #f39c12;
+    --cours-orange-light: #fff8e1;
+    --cours-green: #27ae60;
+    --cours-green-light: #e8f5e9;
+}
+
+/* ==========================================================
+   CONTENEUR PRINCIPAL
+   ========================================================== */
+.dashboard-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Poppins', sans-serif;
+    padding: 0 15px;
+}
+
+/* ==========================================================
+   MESSAGE ALERTE
+   ========================================================== */
+.message-alerte {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: var(--db-radius);
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    animation: dashboardFadeIn 0.4s ease;
+}
+
+.message-succes {
+    background: var(--db-success-light);
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message-succes i {
+    color: var(--db-success);
+    font-size: 20px;
+}
+
+.message-erreur {
+    background: var(--db-danger-light);
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.message-erreur i {
+    color: var(--db-danger);
+    font-size: 20px;
+}
+
+/* ==========================================================
+   EN-TÊTE DE BIENVENUE
+   ========================================================== */
+.welcome-header {
+    background: var(--db-white);
+    border-radius: var(--db-radius-lg);
+    padding: 30px 35px;
+    margin-bottom: 25px;
+    box-shadow: var(--db-shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    animation: dashboardFadeIn 0.5s ease;
+    border: 1px solid rgba(102, 126, 234, 0.06);
+}
+
+@keyframes dashboardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.welcome-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.welcome-greeting {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 8px;
+}
+
+.welcome-emoji {
+    font-size: 36px;
+    animation: waveEmoji 2s ease-in-out infinite;
+}
+
+@keyframes waveEmoji {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+}
+
+.welcome-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.welcome-salutation {
+    font-size: 15px;
+    color: var(--db-text-muted);
+    font-weight: 400;
+}
+
+.welcome-salutation strong {
+    color: var(--db-primary);
+    font-weight: 600;
+}
+
+.welcome-text h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--db-text);
+    margin: 2px 0 0 0;
+    line-height: 1.3;
+}
+
+.welcome-date {
+    color: var(--db-text-muted);
+    font-size: 13px;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.welcome-date i {
+    color: var(--db-primary);
+    font-size: 14px;
+}
+
+/* Citation */
+.welcome-quote {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.04), rgba(118, 75, 162, 0.04));
+    border-left: 3px solid var(--db-primary);
+    padding: 10px 15px;
+    border-radius: 0 var(--db-radius-sm) var(--db-radius-sm) 0;
+}
+
+.welcome-quote i {
+    color: var(--db-primary);
+    font-size: 18px;
+    opacity: 0.5;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.welcome-quote span {
+    font-size: 13px;
+    color: var(--db-text-light);
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Avatar */
+.welcome-avatar {
+    width: 65px;
+    height: 65px;
+    border-radius: var(--db-radius-lg);
+    background: var(--db-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    transition: var(--db-transition);
+}
+
+.welcome-avatar:hover {
+    transform: scale(1.05);
+}
+
+.avatar-text {
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ==========================================================
+   SECTION REPRENDRE MON PARCOURS (GRILLE 2 CARTES)
+   ========================================================== */
+.resume-section {
+    margin-bottom: 25px;
+    animation: dashboardFadeIn 0.5s ease 0.1s both;
+}
+
+.resume-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.resume-card {
+    background: var(--db-white);
+    border-radius: var(--db-radius-lg);
+    padding: 22px 24px;
+    box-shadow: var(--db-shadow);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 2px solid transparent;
+    transition: var(--db-transition);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.resume-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 0 4px 4px 0;
+}
+
+.resume-card-quiz::before {
+    background: var(--db-gradient);
+}
+
+.resume-card-cours::before {
+    background: linear-gradient(135deg, var(--cours-orange), #e67e22);
+}
+
+.resume-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--db-shadow-lg);
+}
+
+.resume-card-quiz:hover {
+    border-color: var(--db-primary);
+}
+
+.resume-card-cours:hover {
+    border-color: var(--cours-orange);
+}
+
+/* Badge type (Quiz/Cours) */
+.resume-card-badge {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 10px;
+    color: white;
+    z-index: 1;
+}
+
+.resume-card-quiz .resume-card-badge {
+    background: var(--db-gradient);
+}
+
+.resume-card-cours .resume-card-badge {
+    background: linear-gradient(135deg, var(--cours-orange), #e67e22);
+}
+
+.resume-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--db-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: var(--db-transition);
+}
+
+.resume-card-quiz .resume-icon {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    color: var(--db-primary);
+    animation: resumePulse 2.5s ease-in-out infinite;
+}
+
+.resume-card-cours .resume-icon {
+    background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(230, 126, 34, 0.1));
+    color: var(--cours-orange);
+    animation: resumePulseOrange 2.5s ease-in-out infinite;
+}
+
+@keyframes resumePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.2); }
+    50% { box-shadow: 0 0 0 12px rgba(102, 126, 234, 0); }
+}
+
+@keyframes resumePulseOrange {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.2); }
+    50% { box-shadow: 0 0 0 12px rgba(243, 156, 18, 0); }
+}
+
+.resume-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.resume-label {
+    font-size: 10px;
+    color: var(--db-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+}
+
+.resume-info h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--db-text);
+    margin: 4px 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.resume-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mini-progress-bar {
+    flex: 1;
+    max-width: 150px;
+    height: 5px;
+    background: var(--db-border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.mini-progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.8s ease;
+}
+
+.resume-progress span {
+    font-size: 11px;
+    color: var(--db-text-muted);
+    white-space: nowrap;
+}
+
+.resume-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    color: white;
+    border-radius: var(--db-radius-sm);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    transition: var(--db-transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.resume-btn-quiz {
+    background: var(--db-gradient);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.25);
+}
+
+.resume-btn-cours {
+    background: linear-gradient(135deg, var(--cours-orange), #e67e22);
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.25);
+}
+
+.resume-btn:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+.resume-btn-quiz:hover {
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.resume-btn-cours:hover {
+    box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
+}
+
+.resume-btn:active {
+    transform: translateY(0);
+}
+
+/* ==========================================================
+   SECTION STATISTIQUES (6 CARTES)
+   ========================================================== */
+.stats-section {
+    margin-bottom: 30px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.stats-grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.stat-card {
+    background: var(--db-white);
+    border-radius: var(--db-radius-lg);
+    padding: 18px 14px;
+    box-shadow: var(--db-shadow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: var(--db-transition);
+    animation: dashboardFadeIn 0.5s ease both;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.15s; }
+.stat-card:nth-child(3) { animation-delay: 0.2s; }
+.stat-card:nth-child(4) { animation-delay: 0.25s; }
+.stat-card:nth-child(5) { animation-delay: 0.3s; }
+.stat-card:nth-child(6) { animation-delay: 0.35s; }
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--db-shadow-lg);
+    border-color: rgba(102, 126, 234, 0.1);
+}
+
+.stat-card-quiz {
+    border-top: 3px solid var(--db-primary);
+}
+
+.stat-card-cours {
+    border-top: 3px solid var(--cours-orange);
+}
+
+.stat-icon-wrapper {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--db-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    flex-shrink: 0;
+    transition: var(--db-transition);
+}
+
+.stat-card:hover .stat-icon-wrapper {
+    transform: scale(1.08);
+}
+
+/* Icônes Quiz */
+.stat-icon-parties { background: linear-gradient(135deg, #667eea, #764ba2); }
+.stat-icon-best { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.stat-icon-levels { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+/* Icônes Cours */
+.stat-icon-cours-total { background: linear-gradient(135deg, #f39c12, #e67e22); }
+.stat-icon-cours-done { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+.stat-icon-certificats { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+.stat-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-number {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--db-text);
+    line-height: 1.2;
+}
+
+.stat-label {
+    display: block;
+    font-size: 10px;
+    color: var(--db-text-muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Badge thématique (Quiz/Cours) */
+.stat-badge-theme {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 7px;
+    border-radius: 8px;
+    background: #f0f0f5;
+    color: var(--db-text-muted);
+}
+
+.stat-card-quiz .stat-badge-theme {
+    background: rgba(102, 126, 234, 0.08);
+    color: var(--db-primary);
+}
+
+.stat-card-cours .stat-badge-theme {
+    background: rgba(243, 156, 18, 0.08);
+    color: var(--cours-orange);
+}
+
+/* Trend (gardé pour rétrocompatibilité) */
+.stat-trend {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+}
+
+.stat-trend-up {
+    background: var(--db-success-light);
+    color: var(--db-success);
+}
+
+.stat-trend-down {
+    background: var(--db-danger-light);
+    color: var(--db-danger);
+}
+
+.stat-trend-neutral {
+    background: #f0f0f5;
+    color: var(--db-text-muted);
+}
+
+/* ==========================================================
+   SECTION COMMUNE
+   ========================================================== */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.section-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.section-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-header h2 {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--db-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-header h2 i {
+    color: var(--db-primary);
+    font-size: 20px;
+}
+
+/* Badges de comptage */
+.badge-count {
+    color: white;
+    padding: 5px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-quiz {
+    background: var(--db-gradient);
+}
+
+.badge-cours {
+    background: linear-gradient(135deg, var(--cours-orange), #e67e22);
+}
+
+.badge-neutral {
+    background: #8b8fa3;
+}
+
+.section-hint {
+    font-size: 12px;
+    color: var(--db-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.section-hint i {
+    color: var(--db-primary);
+    font-size: 13px;
+}
+
+/* ==========================================================
+   SECTION MES PARCOURS THÉMATIQUES (QUIZ)
+   ========================================================== */
+.themes-section {
+    margin-bottom: 35px;
+}
+
+.themes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+}
+
+/* ==========================================================
+   SECTION COURS THÉMATIQUES
+   ========================================================== */
+/* Barre de progression globale Cours */
+.cours-global-progress {
+    background: var(--db-white);
+    border-radius: var(--db-radius);
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    box-shadow: var(--db-shadow-sm);
+    border: 1px solid rgba(243, 156, 18, 0.1);
+}
+
+.cours-global-progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--db-text);
+    font-weight: 500;
+}
+
+.cours-global-progress-header i {
+    color: var(--cours-orange);
+    margin-right: 6px;
+}
+
+.cours-global-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--db-border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.cours-global-progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--cours-orange), #e67e22);
+    transition: width 1s ease;
+}
+
+.cours-global-progress-detail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--db-text-muted);
+}
+
+.cours-global-progress-detail i {
+    margin-right: 4px;
+}
+
+/* Carte thème Cours */
+.theme-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    outline: none;
+}
+
+.theme-card-link:focus-visible {
+    border-radius: var(--db-radius-lg);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.theme-card-cours {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.theme-card {
+    background: var(--db-white);
+    border-radius: var(--db-radius-lg);
+    padding: 22px;
+    box-shadow: var(--db-shadow);
+    transition: var(--db-transition);
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.theme-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--db-shadow-lg);
+    border-color: rgba(102, 126, 234, 0.15);
+}
+
+/* Thème Cours spécifique */
+.theme-cours-card {
+    border-left: 4px solid var(--cours-orange);
+}
+
+.theme-cours-card:hover {
+    border-color: var(--cours-orange);
+    box-shadow: 0 10px 35px rgba(243, 156, 18, 0.1);
+}
+
+/* Badge terminé */
+.theme-badge-termine {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+    z-index: 2;
+    animation: badgePopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes badgePopIn {
+    from { 
+        opacity: 0; 
+        transform: scale(0.3) translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1) translateY(0); 
+    }
+}
+
+/* En-tête carte thème */
+.theme-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.theme-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--db-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    flex-shrink: 0;
+    transition: var(--db-transition);
+}
+
+.theme-card:hover .theme-card-icon {
+    transform: scale(1.08);
+}
+
+.theme-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.theme-card-nom {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--db-text);
+    margin: 0 0 4px 0;
+}
+
+.theme-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--db-text-muted);
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.meta-item i {
+    font-size: 10px;
+    color: #aaa;
+}
+
+.meta-separator {
+    color: #ddd;
+}
+
+/* Corps carte thème */
+.theme-card-body {
+    margin-bottom: 14px;
+}
+
+.theme-progress {
+    margin-bottom: 10px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--db-text-muted);
+    margin-bottom: 6px;
+}
+
+.progress-value {
+    font-weight: 600;
+    color: var(--db-text);
+}
+
+.progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--db-border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease;
+}
+
+/* Mini badges niveaux (Quiz) */
+.theme-niveaux-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mini-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.badge-termine {
+    background: var(--db-success-light);
+    color: var(--db-success);
+}
+
+.badge-encours {
+    background: rgba(102, 126, 234, 0.08);
+    color: var(--db-primary);
+}
+
+.badge-bloque {
+    background: #f5f5fa;
+    color: #aaa;
+}
+
+/* Pied carte thème */
+.theme-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--db-border);
+}
+
+.footer-niveau-actif {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--db-text-muted);
+}
+
+.footer-niveau-actif i {
+    font-size: 8px;
+}
+
+.btn-voir-parcours {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--db-primary);
+    transition: var(--db-transition);
+}
+
+.theme-card:hover .btn-voir-parcours {
+    gap: 8px;
+}
+
+.btn-voir-parcours i {
+    font-size: 11px;
+}
+
+/* ==========================================================
+   SECTION HISTORIQUE
+   ========================================================== */
+.historique-section {
+    margin-bottom: 35px;
+}
+
+.btn-voir-tout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--db-primary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: var(--db-radius-sm);
+    transition: var(--db-transition);
+    background: rgba(102, 126, 234, 0.06);
+}
+
+.btn-voir-tout:hover {
+    background: rgba(102, 126, 234, 0.12);
+    gap: 10px;
+}
+
+.btn-voir-tout i {
+    font-size: 11px;
+    transition: var(--db-transition);
+}
+
+.table-container {
+    background: var(--db-white);
+    border-radius: var(--db-radius-lg);
+    box-shadow: var(--db-shadow);
+    overflow: hidden;
+    animation: dashboardFadeIn 0.5s ease 0.2s both;
+}
+
+.table-historique {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-historique thead {
+    background: #fafbff;
+    border-bottom: 2px solid var(--db-border);
+}
+
+.table-historique th {
+    text-align: left;
+    padding: 14px 18px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--db-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    white-space: nowrap;
+}
+
+.table-historique th i {
+    margin-right: 5px;
+    color: var(--db-primary);
+    font-size: 12px;
+}
+
+.th-action {
+    text-align: center;
+    width: 60px;
+}
+
+.table-historique td {
+    padding: 15px 18px;
+    font-size: 13px;
+    color: var(--db-text-light);
+    border-bottom: 1px solid #f5f5fa;
+    vertical-align: middle;
+}
+
+.table-historique tbody tr {
+    transition: var(--db-transition);
+}
+
+.table-historique tbody tr:hover {
+    background: #fafbff;
+}
+
+.table-historique tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.quiz-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: var(--db-text);
+}
+
+.quiz-cell-icon {
+    color: var(--db-primary);
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* Badges de score */
+.badge-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-score small {
+    font-weight: 400;
+    opacity: 0.8;
+    font-size: 11px;
+}
+
+.badge-excellent {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-bon {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.badge-moyen {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-faible {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.cell-time,
+.cell-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--db-text-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.cell-time i,
+.cell-date i {
+    color: #aaa;
+    font-size: 12px;
+}
+
+.td-action {
+    text-align: center;
+}
+
+.btn-rejouer {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(102, 126, 234, 0.08);
+    color: var(--db-primary);
+    text-decoration: none;
+    transition: var(--db-transition);
+    font-size: 13px;
+}
+
+.btn-rejouer:hover {
+    background: var(--db-primary);
+    color: white;
+    transform: rotate(-30deg);
+}
+
+/* ===== ÉTAT VIDE ===== */
+.empty-state {
+    text-align: center;
+    padding: 50px 25px;
+    background: var(--db-white);
+    border-radius: var(--db-radius-lg);
+    box-shadow: var(--db-shadow);
+    animation: dashboardFadeIn 0.5s ease;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.empty-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #f5f5fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 30px;
+    color: #ccc;
+}
+
+.empty-state h3 {
+    font-size: 17px;
+    color: var(--db-text);
+    margin: 0 0 6px 0;
+    font-weight: 600;
+}
+
+.empty-state p {
+    font-size: 14px;
+    color: var(--db-text-muted);
+    margin: 0 0 20px 0;
+}
+
+.btn-commencer {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    background: var(--db-gradient);
+    color: white;
+    border-radius: var(--db-radius);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    transition: var(--db-transition);
+}
+
+.btn-commencer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    color: white;
+}
+
+/* ==========================================================
+   SECTION CONSEILS
+   ========================================================== */
+.tips-section {
+    margin-bottom: 30px;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.tip-card {
+    background: var(--db-white);
+    border-radius: var(--db-radius-lg);
+    padding: 25px 22px;
+    text-align: center;
+    box-shadow: var(--db-shadow);
+    transition: var(--db-transition);
+    animation: dashboardFadeIn 0.5s ease both;
+    border: 1px solid transparent;
+}
+
+.tip-card:nth-child(1) { animation-delay: 0.3s; }
+.tip-card:nth-child(2) { animation-delay: 0.4s; }
+.tip-card:nth-child(3) { animation-delay: 0.5s; }
+
+.tip-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--db-shadow-lg);
+    border-color: rgba(102, 126, 234, 0.1);
+}
+
+.tip-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--db-radius);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 22px;
+    color: var(--db-primary);
+    transition: var(--db-transition);
+}
+
+.tip-card:hover .tip-icon {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+}
+
+.tip-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--db-text);
+    margin: 0 0 6px 0;
+}
+
+.tip-card p {
+    font-size: 13px;
+    color: var(--db-text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+/* Tablette large (≤1100px) */
+@media (max-width: 1100px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stats-grid-6 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .resume-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .themes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .resume-card {
+        flex-wrap: wrap;
+    }
+    
+    .resume-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Tablette (≤900px) */
+@media (max-width: 900px) {
+    .welcome-header {
+        flex-direction: column-reverse;
+        text-align: center;
+        padding: 25px;
+    }
+    
+    .welcome-greeting {
+        flex-direction: column;
+    }
+    
+    .welcome-quote {
+        justify-content: center;
+    }
+    
+    .stats-grid-6 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .tips-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .table-historique th:nth-child(3),
+    .table-historique td:nth-child(3),
+    .table-historique th:nth-child(4),
+    .table-historique td:nth-child(4) {
+        display: none;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .section-header-right {
+        width: 100%;
+    }
+    
+    .btn-voir-tout {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Mobile (≤600px) */
+@media (max-width: 600px) {
+    .dashboard-container {
+        padding: 0 10px;
+    }
+    
+    .welcome-header {
+        padding: 20px 18px;
+        border-radius: var(--db-radius);
+    }
+    
+    .welcome-text h1 {
+        font-size: 20px;
+    }
+    
+    .stats-grid,
+    .stats-grid-6 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .stat-card {
+        padding: 15px 12px;
+        gap: 10px;
+    }
+    
+    .stat-number {
+        font-size: 20px;
+    }
+    
+    .stat-icon-wrapper {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .stat-trend {
+        display: none;
+    }
+    
+    .stat-badge-theme {
+        display: none;
+    }
+    
+    .resume-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .resume-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 18px;
+    }
+    
+    .resume-info h3 {
+        justify-content: center;
+    }
+    
+    .resume-progress {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .mini-progress-bar {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .themes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-historique th:nth-child(2),
+    .table-historique td:nth-child(2) {
+        display: none;
+    }
+    
+    .table-historique th,
+    .table-historique td {
+        padding: 10px 8px;
+        font-size: 11px;
+    }
+    
+    .cours-global-progress-detail {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
+/* Très petit mobile (≤380px) */
+@media (max-width: 380px) {
+    .stats-grid,
+    .stats-grid-6 {
+        grid-template-columns: 1fr;
+    }
+    
+    .welcome-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .avatar-text {
+        font-size: 22px;
+    }
+    
+    .welcome-text h1 {
+        font-size: 18px;
+    }
+    
+    .theme-card {
+        padding: 16px;
+    }
+    
+    .theme-card-header {
+        gap: 10px;
+    }
+    
+    .theme-card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    .theme-card-nom {
+        font-size: 14px;
+    }
+}
+
+/* ===== IMPRESSION ===== */
+@media print {
+    .dashboard-container {
+        max-width: 100%;
+    }
+    
+    .welcome-avatar,
+    .resume-btn,
+    .btn-rejouer,
+    .btn-voir-tout,
+    .btn-commencer,
+    .stat-trend,
+    .stat-badge-theme {
+        display: none;
+    }
+    
+    .stat-card,
+    .theme-card,
+    .resume-card,
+    .tip-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        break-inside: avoid;
+    }
+}

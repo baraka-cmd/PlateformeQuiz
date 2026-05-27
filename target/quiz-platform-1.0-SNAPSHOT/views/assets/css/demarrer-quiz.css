@@ -1,0 +1,724 @@
+/* ============================================================
+   FICHIER : views/assets/css/demarrer-quiz.css
+   RÔLE    : Styles de la page de présentation du quiz
+             - Bannière avec animation de fond rotative
+             - Badges de niveau, partie et durée
+             - Description du quiz
+             - Alerte seuil de réussite (8/10)
+             - Grille d'informations (4 cartes)
+             - Règles du quiz avec icônes
+             - Bouton "Démarrer la partie"
+             - Breadcrumb de navigation
+             - Animations fluides
+             - Responsive design complet
+   ============================================================ */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+    --dq-primary: #667eea;
+    --dq-primary-dark: #5a6fd6;
+    --dq-secondary: #764ba2;
+    --dq-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --dq-success: #27ae60;
+    --dq-success-light: #e8f5e9;
+    --dq-warning: #f39c12;
+    --dq-warning-light: #fff8e1;
+    --dq-info: #2980b9;
+    --dq-info-light: #e8f4fd;
+    --dq-white: #ffffff;
+    --dq-bg: #f5f6fa;
+    --dq-text: #1a1a2e;
+    --dq-text-light: #555555;
+    --dq-text-muted: #8b8fa3;
+    --dq-border: #e8eaef;
+    --dq-radius-sm: 6px;
+    --dq-radius: 12px;
+    --dq-radius-lg: 16px;
+    --dq-radius-xl: 24px;
+    --dq-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --dq-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --dq-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --dq-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12);
+    --dq-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================
+   CONTENEUR PRINCIPAL
+   ========================================================== */
+.demarrer-container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    font-family: 'Poppins', sans-serif;
+    animation: containerFadeIn 0.6s ease;
+}
+
+@keyframes containerFadeIn {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================
+   BREADCRUMB
+   ========================================================== */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    font-size: 13px;
+    color: var(--dq-text-muted);
+    flex-wrap: wrap;
+    animation: breadcrumbSlide 0.5s ease;
+    padding: 8px 0;
+}
+
+@keyframes breadcrumbSlide {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.breadcrumb-link {
+    color: var(--dq-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--dq-transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: var(--dq-radius-sm);
+}
+
+.breadcrumb-link:hover {
+    color: var(--dq-primary-dark);
+    background: rgba(102, 126, 234, 0.06);
+    text-decoration: none;
+}
+
+.breadcrumb-separator {
+    font-size: 8px;
+    color: #ccc;
+}
+
+.breadcrumb-current {
+    color: var(--dq-text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 10px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: var(--dq-radius-sm);
+}
+
+.breadcrumb-current i {
+    color: var(--dq-primary);
+}
+
+/* ==========================================================
+   CARTE DE PRÉSENTATION
+   ========================================================== */
+.quiz-presentation-card {
+    background: var(--dq-white);
+    border-radius: var(--dq-radius-xl);
+    box-shadow: var(--dq-shadow-xl);
+    overflow: hidden;
+    animation: cardReveal 0.7s ease 0.2s both;
+    border: 1px solid rgba(102, 126, 234, 0.06);
+}
+
+@keyframes cardReveal {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================
+   BANNIÈRE
+   ========================================================== */
+.quiz-banner {
+    background: var(--dq-gradient);
+    padding: 45px 35px 35px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animation de fond */
+.banner-bg-animation {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    animation: bannerRotate 25s linear infinite;
+}
+
+@keyframes bannerRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Icône */
+.banner-icon {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 44px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    z-index: 1;
+    animation: iconFloat 3.5s ease-in-out infinite;
+    transition: var(--dq-transition);
+}
+
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.banner-icon:hover {
+    transform: scale(1.08);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Titre */
+.banner-titre {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Catégorie */
+.banner-categorie {
+    font-size: 14px;
+    opacity: 0.85;
+    margin: 0 0 18px 0;
+    position: relative;
+    z-index: 1;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+/* Badges */
+.banner-badges {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.badge-niveau {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 7px 18px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: var(--dq-transition);
+}
+
+.badge-niveau:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.badge-niveau i {
+    font-size: 13px;
+}
+
+/* ==========================================================
+   DÉTAILS DU QUIZ
+   ========================================================== */
+.quiz-details {
+    padding: 35px 30px;
+}
+
+/* ==========================================================
+   DESCRIPTION
+   ========================================================== */
+.description-box {
+    background: #f8f9ff;
+    border-radius: var(--dq-radius-lg);
+    padding: 18px 22px;
+    margin-bottom: 22px;
+    border-left: 4px solid var(--dq-primary);
+    display: flex;
+    gap: 14px;
+    transition: var(--dq-transition);
+}
+
+.description-box:hover {
+    background: #f0f2ff;
+    border-left-color: var(--dq-primary-dark);
+}
+
+.description-icon {
+    color: var(--dq-primary);
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.description-text {
+    color: var(--dq-text-light);
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ==========================================================
+   ALERTE SEUIL DE RÉUSSITE
+   ========================================================== */
+.seuil-alerte {
+    background: var(--dq-success-light);
+    border: 2px solid #c8f7c5;
+    border-radius: var(--dq-radius-lg);
+    padding: 18px 22px;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 14px;
+    transition: var(--dq-transition);
+}
+
+.seuil-alerte:hover {
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.1);
+}
+
+.seuil-icon {
+    color: var(--dq-success);
+    font-size: 26px;
+    flex-shrink: 0;
+    animation: flagWave 2s ease-in-out infinite;
+}
+
+@keyframes flagWave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    75% { transform: rotate(-5deg); }
+}
+
+.seuil-content strong {
+    display: block;
+    font-size: 15px;
+    color: #155724;
+    margin-bottom: 4px;
+}
+
+.seuil-content p {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.seuil-score {
+    display: inline-block;
+    background: #27ae60;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+/* ==========================================================
+   GRILLE D'INFORMATIONS
+   ========================================================== */
+.infos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 25px;
+}
+
+.info-card {
+    background: #f8f9ff;
+    border-radius: var(--dq-radius-lg);
+    padding: 20px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: var(--dq-transition);
+    border: 1px solid transparent;
+}
+
+.info-card:hover {
+    background: #eef0ff;
+    transform: translateY(-3px);
+    border-color: rgba(102, 126, 234, 0.2);
+    box-shadow: var(--dq-shadow);
+}
+
+.info-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--dq-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    flex-shrink: 0;
+    transition: var(--dq-transition);
+}
+
+.info-card:hover .info-icon {
+    transform: scale(1.1);
+}
+
+.info-icon-questions { background: linear-gradient(135deg, #667eea, #764ba2); }
+.info-icon-duree { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.info-icon-niveau { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.info-icon-partie { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+.info-text h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dq-text);
+    margin: 0 0 2px 0;
+}
+
+.info-text span {
+    font-size: 12px;
+    color: var(--dq-text-muted);
+    font-weight: 500;
+}
+
+/* ==========================================================
+   RÈGLES DU QUIZ
+   ========================================================== */
+.regles-box {
+    background: var(--dq-warning-light);
+    border: 2px solid #ffe082;
+    border-radius: var(--dq-radius-lg);
+    padding: 22px 25px;
+    margin-bottom: 28px;
+    transition: var(--dq-transition);
+}
+
+.regles-box:hover {
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.08);
+}
+
+.regles-titre {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e67e22;
+    margin: 0 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.regles-titre i {
+    font-size: 18px;
+}
+
+.regles-liste {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.regles-liste li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    padding: 8px 12px;
+    border-radius: var(--dq-radius-sm);
+    transition: var(--dq-transition);
+}
+
+.regles-liste li:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.regles-liste li i {
+    color: #f39c12;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    width: 16px;
+    text-align: center;
+}
+
+.regles-liste li strong {
+    color: #555;
+    font-weight: 600;
+}
+
+/* ==========================================================
+   BOUTON DÉMARRER
+   ========================================================== */
+.demarrer-form {
+    margin-bottom: 18px;
+}
+
+.btn-demarrer {
+    width: 100%;
+    padding: 18px 24px;
+    background: var(--dq-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--dq-radius);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--dq-transition);
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-demarrer::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translate(-50%, -50%);
+    transition: all 0.5s ease;
+}
+
+.btn-demarrer:hover::before {
+    width: 500px;
+    height: 500px;
+}
+
+.btn-demarrer:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.45);
+}
+
+.btn-demarrer:active {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+}
+
+.btn-demarrer i {
+    font-size: 24px;
+    animation: playPulse 2s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes playPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+.btn-demarrer span {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-demarrer-hint {
+    font-size: 11px !important;
+    opacity: 0.6;
+    font-weight: 400 !important;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 3px 10px;
+    border-radius: 10px;
+    letter-spacing: 0;
+}
+
+/* ==========================================================
+   BOUTON RETOUR
+   ========================================================== */
+.btn-retour {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    color: var(--dq-text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: var(--dq-transition);
+    border-radius: var(--dq-radius);
+    background: transparent;
+}
+
+.btn-retour:hover {
+    color: var(--dq-primary);
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateX(-3px);
+}
+
+.btn-retour i {
+    transition: var(--dq-transition);
+}
+
+.btn-retour:hover i {
+    transform: translateX(-3px);
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+/* Tablette */
+@media (max-width: 768px) {
+    .quiz-banner {
+        padding: 35px 25px 28px;
+    }
+    
+    .banner-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 36px;
+    }
+    
+    .banner-titre {
+        font-size: 22px;
+    }
+    
+    .quiz-details {
+        padding: 28px 22px;
+    }
+    
+    .infos-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+    .demarrer-container {
+        padding: 0;
+    }
+    
+    .quiz-banner {
+        padding: 28px 18px 24px;
+    }
+    
+    .banner-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 30px;
+    }
+    
+    .banner-titre {
+        font-size: 19px;
+    }
+    
+    .banner-categorie {
+        font-size: 12px;
+    }
+    
+    .banner-badges {
+        gap: 6px;
+    }
+    
+    .badge-niveau {
+        padding: 5px 12px;
+        font-size: 10px;
+    }
+    
+    .quiz-details {
+        padding: 20px 15px;
+    }
+    
+    .infos-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .info-card {
+        padding: 14px;
+    }
+    
+    .info-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 17px;
+    }
+    
+    .info-text h4 {
+        font-size: 15px;
+    }
+    
+    .description-box {
+        padding: 14px 16px;
+    }
+    
+    .seuil-alerte {
+        padding: 14px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .regles-box {
+        padding: 16px 18px;
+    }
+    
+    .regles-liste li {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .btn-demarrer {
+        padding: 15px 20px;
+        font-size: 15px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .btn-demarrer-hint {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .btn-retour {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .breadcrumb {
+        font-size: 11px;
+        gap: 5px;
+    }
+    
+    .breadcrumb-link,
+    .breadcrumb-current {
+        padding: 4px 8px;
+    }
+}

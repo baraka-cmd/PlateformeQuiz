@@ -1,0 +1,488 @@
+/* ============================================================
+   FICHIER : views/assets/css/components/partie-card.css
+   RÔLE    : Styles du composant partie-card
+             - Carte partie dans la grille du niveau
+             - 3 états : réussie (vert), à jouer (bleu), verrouillée (gris)
+             - Badge "À jouer" et "Réussi"
+             - Icône de statut animée
+             - Bouton "Jouer" avec effets
+             - Animations fluides
+             - Responsive design
+   ============================================================ */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+    --pc-success: #27ae60;
+    --pc-success-light: #e8f5e9;
+    --pc-success-dark: #155724;
+    --pc-primary: #667eea;
+    --pc-primary-dark: #4a00e0;
+    --pc-primary-light: #eef0ff;
+    --pc-secondary: #764ba2;
+    --pc-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --pc-white: #ffffff;
+    --pc-bg: #fafbfc;
+    --pc-text: #1a1a2e;
+    --pc-text-light: #555555;
+    --pc-text-muted: #8b8fa3;
+    --pc-border: #e0e3e8;
+    --pc-radius-sm: 8px;
+    --pc-radius: 12px;
+    --pc-radius-lg: 14px;
+    --pc-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --pc-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    --pc-shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.1);
+    --pc-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================
+   LIEN ENGLOBANT
+   ========================================================== */
+.partie-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    outline: none;
+}
+
+.partie-card-link:focus-visible {
+    border-radius: var(--pc-radius-lg);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+/* ==========================================================
+   CARTE PARTIE (BASE)
+   ========================================================== */
+.partie-card {
+    background: var(--pc-bg);
+    border-radius: var(--pc-radius-lg);
+    padding: 22px 14px 18px;
+    text-align: center;
+    transition: var(--pc-transition);
+    border: 2px solid transparent;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 155px;
+    overflow: hidden;
+}
+
+/* ==========================================================
+   ÉTAT : RÉUSSIE
+   ========================================================== */
+.partie-card.partie-reussie {
+    background: #fafff9;
+    border-color: #c8f7c5;
+}
+
+.partie-card.partie-reussie:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.1);
+    border-color: #a3e4b8;
+}
+
+.partie-card.partie-reussie::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(39, 174, 96, 0.04);
+    pointer-events: none;
+}
+
+/* ==========================================================
+   ÉTAT : PROCHAINE (À JOUER)
+   ========================================================== */
+.partie-card.partie-prochaine {
+    background: #f5f7ff;
+    border-color: var(--pc-primary);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.12);
+    animation: prochainePulse 2.8s ease-in-out infinite;
+}
+
+@keyframes prochainePulse {
+    0%, 100% { 
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.12);
+        border-color: #667eea;
+    }
+    50% { 
+        box-shadow: 0 4px 35px rgba(102, 126, 234, 0.28);
+        border-color: #4a00e0;
+    }
+}
+
+.partie-card.partie-prochaine:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.25);
+    animation: none;
+}
+
+/* ==========================================================
+   ÉTAT : VERROUILLÉE
+   ========================================================== */
+.partie-card.partie-verrouillee {
+    opacity: 0.5;
+    border-color: #e8e8e8;
+    cursor: not-allowed;
+    background: #fafafa;
+    filter: grayscale(20%);
+}
+
+.partie-card.partie-verrouillee:hover {
+    transform: none;
+}
+
+/* ==========================================================
+   BADGE "À JOUER" (EN HAUT À DROITE)
+   ========================================================== */
+.badge-a-jouer {
+    position: absolute;
+    top: -10px;
+    right: -8px;
+    background: var(--pc-gradient);
+    color: white;
+    padding: 5px 11px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.35);
+    z-index: 2;
+    animation: badgePopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s both;
+    letter-spacing: 0.3px;
+}
+
+@keyframes badgePopIn {
+    from { 
+        opacity: 0; 
+        transform: scale(0.5) translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1) translateY(0); 
+    }
+}
+
+.badge-a-jouer i {
+    font-size: 8px;
+    animation: boltShake 1.5s ease-in-out infinite;
+}
+
+@keyframes boltShake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    75% { transform: rotate(-5deg); }
+}
+
+/* ==========================================================
+   BADGE "RÉUSSI" (EN HAUT À DROITE)
+   ========================================================== */
+.badge-reussi-partie {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--pc-success-light);
+    color: var(--pc-success-dark);
+    z-index: 2;
+    border: 1px solid #c8f7c5;
+}
+
+.badge-reussi-partie i {
+    font-size: 9px;
+}
+
+/* ==========================================================
+   ICÔNE DE STATUT
+   ========================================================== */
+.partie-statut {
+    font-size: 34px;
+    margin-bottom: 8px;
+    transition: var(--pc-transition);
+    position: relative;
+    z-index: 1;
+}
+
+.partie-card.partie-prochaine .partie-statut {
+    animation: iconBounce 2.2s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.18); }
+}
+
+.partie-card.partie-reussie .partie-statut {
+    animation: iconCheckPulse 3s ease-in-out infinite;
+}
+
+@keyframes iconCheckPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+/* ==========================================================
+   NUMÉRO DE LA PARTIE
+   ========================================================== */
+.partie-numero {
+    margin-bottom: 3px;
+    position: relative;
+    z-index: 1;
+}
+
+.partie-numero-texte {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--pc-text);
+}
+
+.partie-card.partie-reussie .partie-numero-texte {
+    color: var(--pc-success);
+}
+
+.partie-card.partie-prochaine .partie-numero-texte {
+    color: var(--pc-primary-dark);
+}
+
+.partie-card.partie-verrouillee .partie-numero-texte {
+    color: #aaa;
+}
+
+/* ==========================================================
+   NOMBRE DE QUESTIONS
+   ========================================================== */
+.partie-questions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--pc-text-muted);
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.partie-questions i {
+    font-size: 10px;
+    color: #bbb;
+}
+
+/* ==========================================================
+   ACTION (BOUTON / BADGE)
+   ========================================================== */
+.partie-action {
+    position: relative;
+    z-index: 1;
+}
+
+/* Bouton Jouer */
+.btn-jouer-partie {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    border-radius: var(--pc-radius);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--pc-transition);
+    font-family: 'Poppins', sans-serif;
+    background: var(--pc-gradient);
+    color: white;
+    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.25);
+    cursor: pointer;
+    border: none;
+}
+
+.btn-jouer-partie:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-jouer-partie:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+}
+
+.btn-jouer-partie i {
+    font-size: 14px;
+    animation: playPulse 2s ease-in-out infinite;
+}
+
+@keyframes playPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Badge Réussi */
+.badge-reussi {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: var(--pc-radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-reussi i {
+    font-size: 10px;
+}
+
+/* Hint Rejouer (apparaît au survol) */
+.badge-rejouer-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--pc-primary);
+    font-weight: 500;
+    margin-top: 6px;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: var(--pc-transition);
+}
+
+.partie-card.partie-reussie:hover .badge-rejouer-hint {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.badge-rejouer-hint i {
+    font-size: 9px;
+}
+
+/* Badge Verrouillé */
+.badge-verrouille {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #ccc;
+    font-weight: 500;
+}
+
+.badge-verrouille i {
+    font-size: 10px;
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+/* Tablette */
+@media (max-width: 768px) {
+    .partie-card {
+        min-height: 130px;
+        padding: 18px 10px 14px;
+    }
+    
+    .partie-statut {
+        font-size: 28px;
+    }
+    
+    .partie-numero-texte {
+        font-size: 13px;
+    }
+    
+    .badge-a-jouer {
+        font-size: 9px;
+        padding: 4px 8px;
+        top: -8px;
+        right: -6px;
+    }
+    
+    .btn-jouer-partie {
+        padding: 7px 16px;
+        font-size: 11px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+    .partie-card {
+        min-height: 110px;
+        padding: 15px 8px 12px;
+        border-radius: var(--pc-radius);
+    }
+    
+    .partie-statut {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    
+    .partie-numero-texte {
+        font-size: 12px;
+    }
+    
+    .partie-questions {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .badge-a-jouer {
+        font-size: 8px;
+        padding: 3px 7px;
+        top: -7px;
+        right: -4px;
+        border-radius: 10px;
+    }
+    
+    .badge-reussi-partie {
+        font-size: 9px;
+        padding: 2px 7px;
+        top: 6px;
+        right: 6px;
+    }
+    
+    .btn-jouer-partie {
+        padding: 6px 14px;
+        font-size: 10px;
+        gap: 5px;
+    }
+    
+    .badge-reussi {
+        font-size: 10px;
+        padding: 4px 10px;
+    }
+    
+    .badge-rejouer-hint {
+        font-size: 9px;
+    }
+}
+
+/* ===== IMPRESSION ===== */
+@media print {
+    .partie-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        break-inside: avoid;
+    }
+    
+    .partie-card.partie-verrouillee {
+        opacity: 1;
+        filter: none;
+    }
+    
+    .badge-a-jouer,
+    .badge-rejouer-hint {
+        display: none;
+    }
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    
+    <display-name>AmijayQuiz</display-name>
+    
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    
+    <!-- ============================================================
+         FILTRE DE SÉCURITÉ POUR L'ACCÈS AUX COURS PAYANTS
+         Vérifie si l'utilisateur a payé avant d'accéder aux leçons
+         ============================================================ -->
+    <filter>
+        <filter-name>CourseAccessFilter</filter-name>
+        <filter-class>com.amijayquiz.filters.CourseAccessFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>CourseAccessFilter</filter-name>
+        <url-pattern>/joueur/cours/lecon</url-pattern>
+        <url-pattern>/joueur/cours/plan</url-pattern>
+    </filter-mapping>
+    
+    <!-- ============================================================
+         FILTRE DE SÉCURITÉ POUR LES PAIEMENTS
+         Vérification IP et rate limiting pour webhook
+         ============================================================ -->
+    <filter>
+        <filter-name>PaymentSecurityFilter</filter-name>
+        <filter-class>com.amijayquiz.filters.PaymentSecurityFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>PaymentSecurityFilter</filter-name>
+        <url-pattern>/api/paiements/*</url-pattern>
+        <url-pattern>/joueur/paiement/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- ============================================================
+         SESSIONS CONFIGURATION
+         ============================================================ -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    
+    <!-- ============================================================
+         ENCODAGE GLOBAL
+         ============================================================ -->
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+        </jsp-property-group>
+    </jsp-config>
+    
+</web-app>
