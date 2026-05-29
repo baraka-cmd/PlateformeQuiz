@@ -15,16 +15,7 @@
          FILTRE DE SÉCURITÉ POUR L'ACCÈS AUX COURS PAYANTS
          Vérifie si l'utilisateur a payé avant d'accéder aux leçons
          ============================================================ -->
-    <filter>
-        <filter-name>CourseAccessFilter</filter-name>
-        <filter-class>com.amijayquiz.filters.CourseAccessFilter</filter-class>
-    </filter>
     
-    <filter-mapping>
-        <filter-name>CourseAccessFilter</filter-name>
-        <url-pattern>/joueur/cours/lecon</url-pattern>
-        <url-pattern>/joueur/cours/plan</url-pattern>
-    </filter-mapping>
     
     <!-- ============================================================
          FILTRE DE SÉCURITÉ POUR LES PAIEMENTS

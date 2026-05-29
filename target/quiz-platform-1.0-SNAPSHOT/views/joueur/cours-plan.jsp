@@ -10,17 +10,6 @@
 <%@ page import="com.amijayquiz.services.PaymentService" %>
 <%@ page import="com.amijayquiz.services.CourseService" %>
 
-<%-- ============================================================
-     Fichier : cours-plan.jsp
-     Rôle    : Plan détaillé d'un cours organisé par MODULES
-              - Modules verrouillés : liste tous les chapitres
-              - Modules ouverts : chapitres avec nombre de leçons (ex: 5 leçons)
-              - Aucune logique de "leçons terminées"
-              - Bouton d'examen à la fin de CHAQUE module
-              - Examen final tout en bas
-              - Section paiement pour les cours payants
-     ============================================================ --%>
-
 <%
     // Récupération des attributs
     Cours cours = (Cours) request.getAttribute("cours");
@@ -67,7 +56,6 @@
     String niveauEncode = java.net.URLEncoder.encode(cours.getNiveau(), "UTF-8");
 %>
 
-<%-- ===== CHARGEMENT DES STYLES ===== --%>
 <%
     String coursPlanCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/cours-plan.css\">";
     request.setAttribute("extraHead", coursPlanCSS);
@@ -77,7 +65,7 @@
 
 <div class="cours-plan-container">
 
-    <%-- ===== BREADCRUMB ===== --%>
+    <!-- Breadcrumb -->
     <nav class="breadcrumb" aria-label="Fil d'Ariane">
         <a href="${pageContext.request.contextPath}/joueur/dashboard" class="breadcrumb-link">
             <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
@@ -100,7 +88,7 @@
         </span>
     </nav>
 
-    <%-- ===== EN-TÊTE DU COURS ===== --%>
+    <!-- En-tête du cours -->
     <div class="plan-header">
         <div class="plan-header-top">
             <div class="plan-header-icon" style="background: linear-gradient(135deg, <%= cours.getCouleurTheme() %>, <%= cours.getCouleurTheme() %>dd);">
@@ -134,14 +122,13 @@
             </div>
         </div>
 
-        <%-- Message de motivation --%>
         <div class="plan-motivation">
             <i class="<%= iconeMotivation %>"></i>
             <span><%= messageMotivation %></span>
         </div>
     </div>
 
-    <%-- ===== SECTION PAIEMENT (cours payants uniquement) ===== --%>
+    <!-- Section Paiement (cours payants uniquement) -->
     <% if (coursPayant && !accesDejaAchete) { %>
     <div class="course-payment-section">
         <div class="payment-card">
@@ -180,8 +167,7 @@
     </div>
     <% } %>
 
-    <%-- ===== LISTE DES MODULES (uniquement si cours gratuit ou accès acheté) ===== --%>
-    <% if (!coursPayant || accesDejaAchete) { %>
+    <!-- Liste des modules (TOUJOURS affichée pour les cours gratuits OU payants déjà achetés) -->
     <div class="modules-list">
         <% if (modules != null && !modules.isEmpty()) {
             for (Map<String, Object> moduleData : modules) {
@@ -198,10 +184,8 @@
                 String statusColor = reussi ? "#27ae60" : (debloque ? "#667eea" : "#aaa");
                 String statusText = reussi ? "Réussi" : (debloque ? "Débloqué" : "Verrouillé");
         %>
-            <%-- ===== CARTE MODULE ===== --%>
             <div class="module-card <%= statusClass %>">
                 
-                <%-- En-tête du module --%>
                 <div class="module-card-header" onclick="toggleModuleChapitres(<%= numero %>)">
                     <div class="module-card-number" style="background: <%= statusColor %>;">
                         <span><%= numero %></span>
@@ -219,10 +203,8 @@
                     </div>
                 </div>
 
-                <%-- Contenu du module : TOUJOURS afficher les chapitres --%>
                 <div class="module-card-content" id="moduleContent<%= numero %>" style="display: <%= (debloque || reussi) ? "block" : "none" %>;">
                     
-                    <%-- Chapitres du module --%>
                     <% if (chapitresData != null && !chapitresData.isEmpty()) { %>
                         <div class="module-chapitres">
                             <% for (Map<String, Object> chapData : chapitresData) {
@@ -235,7 +217,6 @@
                                         <span class="chapitre-titre"><%= chapitre.getTitre() %></span>
                                         <span class="chapitre-lecons-count"><%= nbLeconsChap %> leçon<%= nbLeconsChap > 1 ? "s" : "" %></span>
                                         
-                                        <%-- Bouton d'accès uniquement si module débloqué --%>
                                         <% if (debloque || reussi) { %>
                                             <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= chapitre.getId() %>" 
                                                class="chapitre-acces-btn">
@@ -253,7 +234,6 @@
                         </div>
                     <% } %>
 
-                    <%-- Bouton Examen du module --%>
                     <div class="module-examen-action">
                         <% if (reussi && progression != null) { %>
                             <div class="module-examen-reussi">
@@ -286,10 +266,15 @@
                 </div>
             </div>
         <%  }
-        } %>
+        } else { %>
+            <div class="empty-modules">
+                <i class="fas fa-inbox"></i>
+                <p>Aucun module disponible pour ce cours.</p>
+            </div>
+        <% } %>
     </div>
 
-    <%-- ===== SECTION EXAMEN FINAL ===== --%>
+    <!-- Examen Final -->
     <div class="examen-final-section">
         <div class="examen-final-card <%= dejaCertifie ? "certifie" : (examenAccessible ? "accessible" : "verrouille") %>">
             <div class="examen-final-icon">
@@ -336,9 +321,8 @@
             </div>
         </div>
     </div>
-    <% } %>
 
-    <%-- ===== BOUTON RETOUR ===== --%>
+    <!-- Bouton retour -->
     <div class="plan-footer">
         <a href="${pageContext.request.contextPath}/joueur/cours/niveau?theme=<%= themeEncode %>&niveau=<%= niveauEncode %>" 
            class="btn-retour">
@@ -348,11 +332,10 @@
 
 </div>
 
-<%-- ===== SCRIPT POUR TOGGLE MODULES ===== --%>
 <script>
     function toggleModuleChapitres(numero) {
-        const content = document.getElementById('moduleContent' + numero);
-        const icon = document.getElementById('moduleToggleIcon' + numero);
+        var content = document.getElementById('moduleContent' + numero);
+        var icon = document.getElementById('moduleToggleIcon' + numero);
         
         if (!content || !icon) return;
         
@@ -367,11 +350,5 @@
         }
     }
 </script>
-
-<%-- ===== CHARGEMENT DES SCRIPTS ===== --%>
-<%
-    String coursPlanJS = "<script src=\"" + request.getContextPath() + "/views/assets/js/cours-plan.js\"></script>";
-    request.setAttribute("extraScripts", coursPlanJS);
-%>
 
 <%@ include file="../footer.jsp" %>

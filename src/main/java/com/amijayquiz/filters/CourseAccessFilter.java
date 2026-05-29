@@ -2,6 +2,7 @@ package com.amijayquiz.filters;
 
 import com.amijayquiz.models.Utilisateur;
 import com.amijayquiz.services.PaymentService;
+import com.amijayquiz.services.CourseService;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -58,42 +59,26 @@ public class CourseAccessFilter implements Filter {
             return;
         }
 
-        // Vérifier si le cours est payant (prix > 0)
-        double coursePrice = getCoursePrice(courseId);
+        // ✅ CORRECTION : Utiliser CourseService pour le prix
+        double coursePrice = CourseService.getCoursePrice(courseId);
         boolean isPaidCourse = coursePrice > 0;
 
-        // Si cours gratuit ou premium -> accès direct
+        // Si cours gratuit -> accès direct sans vérification
         if (!isPaidCourse) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Vérifier si l'utilisateur a déjà payé
+        // ✅ CORRECTION : Vérifier si l'utilisateur a déjà payé
         boolean hasAccess = PaymentService.canAccessCourse(utilisateur.getId(), courseId);
 
         if (hasAccess) {
-            // Accès autorisé
             chain.doFilter(request, response);
         } else {
-            // Accès refusé -> rediriger vers page d'achat
             session.setAttribute("messageErreur", 
-                "Ce cours est payant. Veuillez acheter l'accès pour continuer.");
+                "Ce cours est payant ( " + String.format("%.2f", coursePrice) + " USD). Veuillez acheter l'accès pour continuer.");
             httpResponse.sendRedirect(httpRequest.getContextPath() + 
                 "/joueur/paiement/checkout?courseId=" + courseId);
-        }
-    }
-
-    /**
-     * Récupère le prix d'un cours
-     * TODO: Adapter selon ta logique métier
-     */
-    private double getCoursePrice(int courseId) {
-        // À remplacer par un appel à CourseService
-        switch (courseId) {
-            case 1: return 29.99;
-            case 2: return 49.99;
-            case 3: return 39.99;
-            default: return 0.0;
         }
     }
 

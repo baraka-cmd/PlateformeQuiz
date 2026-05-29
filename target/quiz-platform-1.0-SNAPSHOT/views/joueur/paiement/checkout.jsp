@@ -73,6 +73,9 @@
                     <div class="feature"><i class="fas fa-check-circle"></i> Tous les chapitres</div>
                     <div class="feature"><i class="fas fa-check-circle"></i> Certificat inclus</div>
                 </div>
+                <div class="sandbox-badge">
+                    <i class="fas fa-flask"></i> MODE TEST - Aucun débit réel
+                </div>
             </div>
         </div>
         
@@ -80,7 +83,7 @@
         <div class="checkout-form">
             <div class="form-card">
                 <h3>Informations de paiement</h3>
-                <p class="form-subtitle">Paiement sécurisé via PawaPay (Mobile Money)</p>
+                <p class="form-subtitle">Paiement sécurisé via PawaPay (Mobile Money) - MODE SIMULATION</p>
                 
                 <form id="paymentForm" action="${pageContext.request.contextPath}/joueur/paiement/creer" method="POST">
                     <input type="hidden" name="courseId" value="<%= courseId %>">
@@ -94,8 +97,9 @@
                                id="phoneNumber" 
                                name="phoneNumber" 
                                placeholder="ex: 243XXXXXXXXX ou +243XXXXXXXXX"
+                               value="+243812345678"
                                required>
-                        <small class="form-hint">Format : 243XXXXXXXXX ou +243XXXXXXXXX (Orange Money, M-Pesa, Airtel Money)</small>
+                        <small class="form-hint">Format : 243XXXXXXXXX ou +243XXXXXXXXX (Test: n'importe quel numéro)</small>
                     </div>
                     
                     <div class="form-group payment-methods">
@@ -119,7 +123,7 @@
                     <div class="form-actions">
                         <button type="submit" class="btn-payer" id="submitBtn">
                             <i class="fas fa-lock"></i>
-                            Payer <%= String.format("%.2f", coursePrice) %> USD
+                            Payer <%= String.format("%.2f", coursePrice) %> USD (SIMULATION)
                         </button>
                         <a href="${pageContext.request.contextPath}/joueur/cours/plan?coursId=<%= courseId %>" class="btn-annuler">
                             <i class="fas fa-times"></i>
@@ -130,7 +134,7 @@
                 
                 <div class="security-badge">
                     <i class="fas fa-shield-alt"></i>
-                    <span>Paiement 100% sécurisé</span>
+                    <span>Paiement 100% sécurisé (SIMULATION)</span>
                 </div>
             </div>
         </div>
@@ -138,6 +142,16 @@
     </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/views/assets/js/checkout.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('paymentForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    form.addEventListener('submit', function(e) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement en cours...';
+    });
+});
+</script>
 
 <%@ include file="../../footer.jsp" %>

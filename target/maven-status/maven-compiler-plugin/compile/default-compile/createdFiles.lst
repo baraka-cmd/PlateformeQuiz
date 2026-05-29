@@ -29,6 +29,7 @@ com\amijayquiz\dao\QuizQuestionDAO.class
 com\amijayquiz\dao\ExamenModuleDAO.class
 com\amijayquiz\controllers\ChangerMotDePasseServlet.class
 com\amijayquiz\services\PawaPayService.class
+com\amijayquiz\controllers\CheckoutServlet.class
 com\amijayquiz\controllers\NiveauCoursServlet.class
 com\amijayquiz\models\WebhookPayload.class
 com\amijayquiz\dao\QuestionDAO.class
