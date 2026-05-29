@@ -2,9 +2,8 @@
 // FICHIER : src/main/java/com/amijayquiz/controllers/PlanCoursServlet.java
 // RÔLE    : Contrôleur du plan détaillé d'un cours
 //           Affiche l'arborescence complète du cours :
-//           tous les modules (1 à 15) avec chapitres, leçons,
-//           examens et progression par module
-//           Navigation vers les leçons via la page chapitre
+//           tous les chapitres avec leurs leçons visibles,
+//           regroupés par MODULES avec examens et progression
 // ============================================================
 
 package com.amijayquiz.controllers;
@@ -13,7 +12,6 @@ import com.amijayquiz.dao.CertificatDAO;
 import com.amijayquiz.dao.ChapitreDAO;
 import com.amijayquiz.dao.CoursDAO;
 import com.amijayquiz.dao.ExamenModuleDAO;
-import com.amijayquiz.dao.LeconDAO;
 import com.amijayquiz.dao.ProgressionCoursDAO;
 import com.amijayquiz.dao.ProgressionModuleDAO;
 import com.amijayquiz.models.Certificat;
@@ -44,12 +42,11 @@ import java.util.Map;
  * - Ses chapitres avec leurs leçons
  * - Le statut de progression (verrouillé, débloqué, réussi)
  * - Un bouton pour passer l'examen du module
- * - Des liens pour accéder aux chapitres et leçons
  * 
  * URL : /joueur/cours/plan?coursId=1
  * 
  * @author AmijayQuiz
- * @version 2.1
+ * @version 2.0
  */
 @WebServlet(name = "PlanCoursServlet", urlPatterns = {"/joueur/cours/plan"})
 public class PlanCoursServlet extends HttpServlet {
@@ -61,9 +58,7 @@ public class PlanCoursServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // ============================================================
-        // 1. VÉRIFICATION DE LA SESSION ET DU RÔLE
-        // ============================================================
+        // 1. Vérification de la session et du rôle
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utilisateur") == null) {
             response.sendRedirect(request.getContextPath() + "/connexion");
@@ -78,9 +73,7 @@ public class PlanCoursServlet extends HttpServlet {
 
         int utilisateurId = utilisateur.getId();
 
-        // ============================================================
-        // 2. RÉCUPÉRATION ET VALIDATION DU PARAMÈTRE COURSID
-        // ============================================================
+        // 2. Récupération et validation du paramètre coursId
         String coursIdParam = request.getParameter("coursId");
         if (coursIdParam == null || coursIdParam.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/joueur/cours");
@@ -95,20 +88,15 @@ public class PlanCoursServlet extends HttpServlet {
             return;
         }
 
-        // ============================================================
-        // 3. INITIALISATION DES DAO
-        // ============================================================
+        // 3. Initialisation des DAO
         CoursDAO coursDAO = new CoursDAO();
         ChapitreDAO chapitreDAO = new ChapitreDAO();
-        LeconDAO leconDAO = new LeconDAO();
         ProgressionCoursDAO progressionCoursDAO = new ProgressionCoursDAO();
         ProgressionModuleDAO progressionModuleDAO = new ProgressionModuleDAO();
         ExamenModuleDAO examenModuleDAO = new ExamenModuleDAO();
         CertificatDAO certificatDAO = new CertificatDAO();
 
-        // ============================================================
-        // 4. RÉCUPÉRER LE COURS COMPLET AVEC SES CHAPITRES ET LEÇONS
-        // ============================================================
+        // 4. Récupérer le cours complet avec ses chapitres et leçons
         Cours cours = coursDAO.trouverParId(coursId);
         if (cours == null) {
             session.setAttribute("messageErreur", "Ce cours n'existe pas.");
@@ -116,20 +104,16 @@ public class PlanCoursServlet extends HttpServlet {
             return;
         }
 
-        // Récupérer tous les chapitres avec leurs leçons
+        // 5. Récupérer tous les chapitres avec leurs leçons
         List<Chapitre> chapitres = chapitreDAO.listerParCours(coursId);
         cours.setChapitres(chapitres);
         cours.setNombreChapitres(chapitres.size());
         cours.setNombreLecons(cours.getNombreTotalLecons());
 
-        // ============================================================
-        // 5. VÉRIFIER SI L'UTILISATEUR A DÉJÀ UN CERTIFICAT
-        // ============================================================
+        // 6. Vérifier si l'utilisateur a déjà un certificat pour ce cours
         Certificat certificatExistant = certificatDAO.trouverParUtilisateurEtCours(utilisateurId, coursId);
 
-        // ============================================================
-        // 6. ORGANISER LES CHAPITRES PAR MODULE
-        // ============================================================
+        // 7. Organiser les chapitres par module
         Map<Integer, List<Chapitre>> chapitresParModule = new LinkedHashMap<>();
         for (Chapitre chapitre : chapitres) {
             int moduleNumero = chapitre.getModuleNumero() > 0 ? chapitre.getModuleNumero() : 1;
@@ -139,14 +123,10 @@ public class PlanCoursServlet extends HttpServlet {
             chapitresParModule.get(moduleNumero).add(chapitre);
         }
 
-        // ============================================================
-        // 7. RÉCUPÉRER TOUS LES EXAMENS DU COURS
-        // ============================================================
+        // 8. Récupérer tous les examens du cours
         List<ExamenModule> examens = examenModuleDAO.listerParCours(coursId);
 
-        // ============================================================
-        // 8. CONSTRUIRE LES DONNÉES DES MODULES AVEC PROGRESSION
-        // ============================================================
+        // 9. Construire les données des modules avec progression
         List<Map<String, Object>> modulesData = new ArrayList<>();
         int totalLeconsCours = 0;
         int totalLeconsTermineesCours = 0;
@@ -193,10 +173,6 @@ public class PlanCoursServlet extends HttpServlet {
             int leconsTermineesModule = 0;
             int chapitresTerminesModule = 0;
 
-            // Trouver la première leçon du module (pour le bouton "Commencer")
-            int premiereLeconId = 0;
-            int premierChapitreId = 0;
-
             for (Chapitre chapitre : chapitresModule) {
                 Map<String, Object> chapitreData = new LinkedHashMap<>();
                 chapitreData.put("chapitre", chapitre);
@@ -206,9 +182,8 @@ public class PlanCoursServlet extends HttpServlet {
                 if (chapitreTermine) chapitresTerminesModule++;
 
                 // Leçons du chapitre avec progression
-                List<Lecon> lecons = leconDAO.listerParChapitre(chapitre.getId());
+                List<Lecon> lecons = chapitre.getLecons();
                 if (lecons == null) lecons = new ArrayList<>();
-                chapitre.setLecons(lecons);
 
                 List<Map<String, Object>> leconsData = new ArrayList<>();
                 int leconsTermineesChapitre = 0;
@@ -223,19 +198,19 @@ public class PlanCoursServlet extends HttpServlet {
                     leconData.put("terminee", leconTerminee);
                     if (leconTerminee) leconsTermineesChapitre++;
 
-                    // Si le module est débloqué ou réussi, toutes les leçons sont accessibles
-                    boolean leconAccessible = debloque || moduleReussi;
+                    // Accessibilité de la leçon
+                    boolean leconAccessible;
+                    if (i == 0) {
+                        leconAccessible = debloque || moduleReussi;
+                    } else {
+                        leconAccessible = (debloque || moduleReussi) && 
+                            progressionCoursDAO.estLeconTerminee(utilisateurId, lecons.get(i - 1).getId());
+                    }
                     leconData.put("accessible", leconAccessible);
 
                     // Compter les exemples de code
                     if (lecon.hasCodeSource()) {
                         totalExemplesCode++;
-                    }
-
-                    // Mémoriser la première leçon accessible du module
-                    if (leconAccessible && premiereLeconId == 0) {
-                        premiereLeconId = lecon.getId();
-                        premierChapitreId = chapitre.getId();
                     }
 
                     leconsData.add(leconData);
@@ -260,8 +235,6 @@ public class PlanCoursServlet extends HttpServlet {
             moduleData.put("leconsTerminees", leconsTermineesModule);
             moduleData.put("pourcentage", leconsModule > 0 ? 
                 (leconsTermineesModule * 100 / leconsModule) : 0);
-            moduleData.put("premiereLeconId", premiereLeconId);
-            moduleData.put("premierChapitreId", premierChapitreId);
 
             modulesData.add(moduleData);
 
@@ -269,34 +242,27 @@ public class PlanCoursServlet extends HttpServlet {
             totalLeconsTermineesCours += leconsTermineesModule;
         }
 
-        // ============================================================
-        // 9. CALCULER LES STATISTIQUES GLOBALES DU COURS
-        // ============================================================
+        // 10. Calculer les statistiques globales du cours
         boolean coursTermine = progressionCoursDAO.estCoursTermine(utilisateurId, coursId);
         int pourcentageGlobal = (totalLeconsCours > 0) ? 
             (totalLeconsTermineesCours * 100 / totalLeconsCours) : 0;
 
-        // Calculer le temps de lecture total estimé
+        // 11. Calculer le temps de lecture total estimé
         int tempsLectureTotalMinutes = 0;
         for (Chapitre chapitre : chapitres) {
-            List<Lecon> leconsChap = leconDAO.listerParChapitre(chapitre.getId());
-            if (leconsChap != null) {
-                for (Lecon lecon : leconsChap) {
+            if (chapitre.getLecons() != null) {
+                for (Lecon lecon : chapitre.getLecons()) {
                     tempsLectureTotalMinutes += lecon.getTempsLectureEstime();
                 }
             }
         }
         String tempsLectureTotalFormate = formaterTempsLecture(tempsLectureTotalMinutes);
 
-        // ============================================================
-        // 10. DÉTERMINER SI L'EXAMEN FINAL EST ACCESSIBLE
-        // ============================================================
-        boolean examenAccessible = modulesReussis >= NOMBRE_MODULES && certificatExistant == null;
+        // 12. Déterminer si l'examen final est accessible
+        boolean examenAccessible = coursTermine && certificatExistant == null;
         boolean dejaCertifie = certificatExistant != null;
 
-        // ============================================================
-        // 11. DÉTERMINER LE PROCHAIN MODULE À FAIRE
-        // ============================================================
+        // 13. Déterminer le prochain module à faire
         Integer prochainModule = null;
         for (int m = 1; m <= NOMBRE_MODULES; m++) {
             if (progressionModuleDAO.estModuleDebloque(utilisateurId, coursId, m) && 
@@ -306,9 +272,7 @@ public class PlanCoursServlet extends HttpServlet {
             }
         }
 
-        // ============================================================
-        // 12. MESSAGE DE MOTIVATION
-        // ============================================================
+        // 14. Message de motivation
         String messageMotivation;
         String iconeMotivation;
         if (dejaCertifie) {
@@ -328,9 +292,7 @@ public class PlanCoursServlet extends HttpServlet {
             iconeMotivation = "fas fa-rocket";
         }
 
-        // ============================================================
-        // 13. PASSAGE DES ATTRIBUTS À LA JSP
-        // ============================================================
+        // 15. Passage des attributs à la JSP
         request.setAttribute("pageTitle", "Plan - " + cours.getTitre() + " - AmijayQuiz");
         request.setAttribute("cours", cours);
         request.setAttribute("modules", modulesData);
@@ -350,9 +312,7 @@ public class PlanCoursServlet extends HttpServlet {
         request.setAttribute("messageMotivation", messageMotivation);
         request.setAttribute("iconeMotivation", iconeMotivation);
 
-        // ============================================================
-        // 14. AFFICHAGE DE LA PAGE
-        // ============================================================
+        // 16. Affichage de la page
         request.getRequestDispatcher("/views/joueur/cours-plan.jsp").forward(request, response);
     }
 
@@ -384,5 +344,3 @@ public class PlanCoursServlet extends HttpServlet {
         doGet(request, response);
     }
 }
-
-

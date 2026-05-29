@@ -1,5 +1,6 @@
 com\amijayquiz\models\Utilisateur.class
 com\amijayquiz\controllers\GoogleCallbackServlet.class
+com\amijayquiz\filters\AutoLoginFilter.class
 com\amijayquiz\controllers\CertificatServlet.class
 com\amijayquiz\utils\TestConnexion.class
 com\amijayquiz\models\Partie.class
