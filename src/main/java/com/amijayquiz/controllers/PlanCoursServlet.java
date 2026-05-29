@@ -5,7 +5,6 @@
 //           tous les modules (1 à 15) avec chapitres, leçons,
 //           examens et progression par module
 //           Navigation vers les leçons via la page chapitre
-//           + Gestion des cours payants et vérification d'accès
 // ============================================================
 
 package com.amijayquiz.controllers;
@@ -24,8 +23,6 @@ import com.amijayquiz.models.ExamenModule;
 import com.amijayquiz.models.Lecon;
 import com.amijayquiz.models.ProgressionModule;
 import com.amijayquiz.models.Utilisateur;
-import com.amijayquiz.services.PaymentService;
-import com.amijayquiz.services.CourseService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -39,9 +36,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * PlanCoursServlet - Plan détaillé d'un cours organisé par modules
+ * 
+ * Affiche l'arborescence complète du cours regroupée par modules (1 à 15).
+ * Chaque module contient :
+ * - Ses chapitres avec leurs leçons
+ * - Le statut de progression (verrouillé, débloqué, réussi)
+ * - Un bouton pour passer l'examen du module
+ * - Des liens pour accéder aux chapitres et leçons
+ * 
+ * URL : /joueur/cours/plan?coursId=1
+ * 
+ * @author AmijayQuiz
+ * @version 2.1
+ */
 @WebServlet(name = "PlanCoursServlet", urlPatterns = {"/joueur/cours/plan"})
 public class PlanCoursServlet extends HttpServlet {
 
+    // Constantes des modules
     private static final int NOMBRE_MODULES = 15;
 
     @Override
@@ -94,7 +107,7 @@ public class PlanCoursServlet extends HttpServlet {
         CertificatDAO certificatDAO = new CertificatDAO();
 
         // ============================================================
-        // 4. RÉCUPÉRER LE COURS
+        // 4. RÉCUPÉRER LE COURS COMPLET AVEC SES CHAPITRES ET LEÇONS
         // ============================================================
         Cours cours = coursDAO.trouverParId(coursId);
         if (cours == null) {
@@ -103,36 +116,19 @@ public class PlanCoursServlet extends HttpServlet {
             return;
         }
 
+        // Récupérer tous les chapitres avec leurs leçons
         List<Chapitre> chapitres = chapitreDAO.listerParCours(coursId);
         cours.setChapitres(chapitres);
         cours.setNombreChapitres(chapitres.size());
         cours.setNombreLecons(cours.getNombreTotalLecons());
 
         // ============================================================
-        // 5. VÉRIFIER LE CERTIFICAT
+        // 5. VÉRIFIER SI L'UTILISATEUR A DÉJÀ UN CERTIFICAT
         // ============================================================
         Certificat certificatExistant = certificatDAO.trouverParUtilisateurEtCours(utilisateurId, coursId);
 
         // ============================================================
-        // 6. GESTION DES COURS PAYANTS (CORRIGÉE)
-        // ============================================================
-        double coursPrix = CourseService.getCoursePrice(coursId);
-        boolean coursPayant = coursPrix > 0;
-        boolean accesPayant = false;
-        
-        if (coursPayant) {
-            accesPayant = PaymentService.canAccessCourse(utilisateurId, coursId);
-            // ✅ CORRECTION : Seulement si cours PAYANT ET pas d'accès → rediriger
-            if (!accesPayant) {
-                session.setAttribute("messageErreur", "Ce cours est payant. Veuillez acheter l'accès pour continuer.");
-                response.sendRedirect(request.getContextPath() + "/joueur/paiement/checkout?courseId=" + coursId);
-                return;
-            }
-        }
-        // ✅ Les cours GRATUITS continuent normalement (pas de redirection)
-
-        // ============================================================
-        // 7. ORGANISER LES CHAPITRES PAR MODULE
+        // 6. ORGANISER LES CHAPITRES PAR MODULE
         // ============================================================
         Map<Integer, List<Chapitre>> chapitresParModule = new LinkedHashMap<>();
         for (Chapitre chapitre : chapitres) {
@@ -144,12 +140,12 @@ public class PlanCoursServlet extends HttpServlet {
         }
 
         // ============================================================
-        // 8. RÉCUPÉRER LES EXAMENS
+        // 7. RÉCUPÉRER TOUS LES EXAMENS DU COURS
         // ============================================================
         List<ExamenModule> examens = examenModuleDAO.listerParCours(coursId);
 
         // ============================================================
-        // 9. CONSTRUIRE LES DONNÉES DES MODULES
+        // 8. CONSTRUIRE LES DONNÉES DES MODULES AVEC PROGRESSION
         // ============================================================
         List<Map<String, Object>> modulesData = new ArrayList<>();
         int totalLeconsCours = 0;
@@ -161,9 +157,11 @@ public class PlanCoursServlet extends HttpServlet {
             Map<String, Object> moduleData = new LinkedHashMap<>();
             moduleData.put("numero", moduleNumero);
 
+            // Vérifier si le module est débloqué
             boolean debloque = progressionModuleDAO.estModuleDebloque(utilisateurId, coursId, moduleNumero);
             moduleData.put("debloque", debloque);
 
+            // Récupérer la progression du module
             ProgressionModule progression = progressionModuleDAO.getProgression(utilisateurId, coursId, moduleNumero);
             boolean moduleReussi = progression != null && progression.isReussi();
             moduleData.put("reussi", moduleReussi);
@@ -173,6 +171,7 @@ public class PlanCoursServlet extends HttpServlet {
                 modulesReussis++;
             }
 
+            // Récupérer l'examen du module
             ExamenModule examen = null;
             if (examens != null) {
                 for (ExamenModule e : examens) {
@@ -184,12 +183,19 @@ public class PlanCoursServlet extends HttpServlet {
             }
             moduleData.put("examen", examen);
 
+            // Récupérer les chapitres de ce module
             List<Chapitre> chapitresModule = chapitresParModule.getOrDefault(moduleNumero, new ArrayList<>());
             moduleData.put("nbChapitres", chapitresModule.size());
 
+            // Construire les données des chapitres avec progression
             List<Map<String, Object>> chapitresData = new ArrayList<>();
             int leconsModule = 0;
             int leconsTermineesModule = 0;
+            int chapitresTerminesModule = 0;
+
+            // Trouver la première leçon du module (pour le bouton "Commencer")
+            int premiereLeconId = 0;
+            int premierChapitreId = 0;
 
             for (Chapitre chapitre : chapitresModule) {
                 Map<String, Object> chapitreData = new LinkedHashMap<>();
@@ -197,12 +203,15 @@ public class PlanCoursServlet extends HttpServlet {
 
                 boolean chapitreTermine = progressionCoursDAO.estChapitreTermine(utilisateurId, chapitre.getId());
                 chapitreData.put("termine", chapitreTermine);
+                if (chapitreTermine) chapitresTerminesModule++;
 
+                // Leçons du chapitre avec progression
                 List<Lecon> lecons = leconDAO.listerParChapitre(chapitre.getId());
                 if (lecons == null) lecons = new ArrayList<>();
                 chapitre.setLecons(lecons);
 
                 List<Map<String, Object>> leconsData = new ArrayList<>();
+                int leconsTermineesChapitre = 0;
 
                 for (int i = 0; i < lecons.size(); i++) {
                     Lecon lecon = lecons.get(i);
@@ -212,13 +221,21 @@ public class PlanCoursServlet extends HttpServlet {
 
                     boolean leconTerminee = progressionCoursDAO.estLeconTerminee(utilisateurId, lecon.getId());
                     leconData.put("terminee", leconTerminee);
-                    if (leconTerminee) leconsTermineesModule++;
+                    if (leconTerminee) leconsTermineesChapitre++;
 
+                    // Si le module est débloqué ou réussi, toutes les leçons sont accessibles
                     boolean leconAccessible = debloque || moduleReussi;
                     leconData.put("accessible", leconAccessible);
 
+                    // Compter les exemples de code
                     if (lecon.hasCodeSource()) {
                         totalExemplesCode++;
+                    }
+
+                    // Mémoriser la première leçon accessible du module
+                    if (leconAccessible && premiereLeconId == 0) {
+                        premiereLeconId = lecon.getId();
+                        premierChapitreId = chapitre.getId();
                     }
 
                     leconsData.add(leconData);
@@ -226,16 +243,25 @@ public class PlanCoursServlet extends HttpServlet {
 
                 chapitreData.put("lecons", leconsData);
                 chapitreData.put("nbLecons", lecons.size());
+                chapitreData.put("leconsTerminees", leconsTermineesChapitre);
+                chapitreData.put("pourcentage", lecons.size() > 0 ? 
+                    (leconsTermineesChapitre * 100 / lecons.size()) : 0);
 
                 chapitresData.add(chapitreData);
 
                 leconsModule += lecons.size();
-                leconsTermineesModule += leconsTermineesModule;
+                leconsTermineesModule += leconsTermineesChapitre;
             }
 
             moduleData.put("chapitres", chapitresData);
+            moduleData.put("nbChapitres", chapitresModule.size());
+            moduleData.put("chapitresTermines", chapitresTerminesModule);
             moduleData.put("nbLecons", leconsModule);
             moduleData.put("leconsTerminees", leconsTermineesModule);
+            moduleData.put("pourcentage", leconsModule > 0 ? 
+                (leconsTermineesModule * 100 / leconsModule) : 0);
+            moduleData.put("premiereLeconId", premiereLeconId);
+            moduleData.put("premierChapitreId", premierChapitreId);
 
             modulesData.add(moduleData);
 
@@ -244,12 +270,13 @@ public class PlanCoursServlet extends HttpServlet {
         }
 
         // ============================================================
-        // 10. STATISTIQUES GLOBALES
+        // 9. CALCULER LES STATISTIQUES GLOBALES DU COURS
         // ============================================================
         boolean coursTermine = progressionCoursDAO.estCoursTermine(utilisateurId, coursId);
         int pourcentageGlobal = (totalLeconsCours > 0) ? 
             (totalLeconsTermineesCours * 100 / totalLeconsCours) : 0;
 
+        // Calculer le temps de lecture total estimé
         int tempsLectureTotalMinutes = 0;
         for (Chapitre chapitre : chapitres) {
             List<Lecon> leconsChap = leconDAO.listerParChapitre(chapitre.getId());
@@ -261,11 +288,26 @@ public class PlanCoursServlet extends HttpServlet {
         }
         String tempsLectureTotalFormate = formaterTempsLecture(tempsLectureTotalMinutes);
 
+        // ============================================================
+        // 10. DÉTERMINER SI L'EXAMEN FINAL EST ACCESSIBLE
+        // ============================================================
         boolean examenAccessible = modulesReussis >= NOMBRE_MODULES && certificatExistant == null;
         boolean dejaCertifie = certificatExistant != null;
 
         // ============================================================
-        // 11. MESSAGE DE MOTIVATION
+        // 11. DÉTERMINER LE PROCHAIN MODULE À FAIRE
+        // ============================================================
+        Integer prochainModule = null;
+        for (int m = 1; m <= NOMBRE_MODULES; m++) {
+            if (progressionModuleDAO.estModuleDebloque(utilisateurId, coursId, m) && 
+                !progressionModuleDAO.estModuleReussi(utilisateurId, coursId, m)) {
+                prochainModule = m;
+                break;
+            }
+        }
+
+        // ============================================================
+        // 12. MESSAGE DE MOTIVATION
         // ============================================================
         String messageMotivation;
         String iconeMotivation;
@@ -287,7 +329,7 @@ public class PlanCoursServlet extends HttpServlet {
         }
 
         // ============================================================
-        // 12. ATTRIBUTS JSP
+        // 13. PASSAGE DES ATTRIBUTS À LA JSP
         // ============================================================
         request.setAttribute("pageTitle", "Plan - " + cours.getTitre() + " - AmijayQuiz");
         request.setAttribute("cours", cours);
@@ -304,24 +346,35 @@ public class PlanCoursServlet extends HttpServlet {
         request.setAttribute("examenAccessible", examenAccessible);
         request.setAttribute("dejaCertifie", dejaCertifie);
         request.setAttribute("certificatExistant", certificatExistant);
+        request.setAttribute("prochainModule", prochainModule);
         request.setAttribute("messageMotivation", messageMotivation);
         request.setAttribute("iconeMotivation", iconeMotivation);
-        request.setAttribute("coursPrix", coursPrix);
-        request.setAttribute("coursPayant", coursPayant);
-        request.setAttribute("accesPayant", accesPayant);
 
         // ============================================================
-        // 13. AFFICHAGE
+        // 14. AFFICHAGE DE LA PAGE
         // ============================================================
         request.getRequestDispatcher("/views/joueur/cours-plan.jsp").forward(request, response);
     }
 
+    /**
+     * Formate un temps en minutes en chaîne lisible
+     * Exemples : 45 → "45 min", 120 → "2h", 150 → "2h30"
+     * 
+     * @param minutes Temps en minutes
+     * @return Chaîne formatée
+     */
     private String formaterTempsLecture(int minutes) {
-        if (minutes == 0) return "Moins d'1 min";
-        if (minutes < 60) return minutes + " min";
+        if (minutes == 0) {
+            return "Moins d'1 min";
+        }
+        if (minutes < 60) {
+            return minutes + " min";
+        }
         int heures = minutes / 60;
         int minsRestantes = minutes % 60;
-        if (minsRestantes == 0) return heures + "h";
+        if (minsRestantes == 0) {
+            return heures + "h";
+        }
         return heures + "h" + String.format("%02d", minsRestantes);
     }
 
@@ -331,3 +384,5 @@ public class PlanCoursServlet extends HttpServlet {
         doGet(request, response);
     }
 }
+
+

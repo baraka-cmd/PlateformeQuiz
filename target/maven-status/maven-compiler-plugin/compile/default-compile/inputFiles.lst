@@ -18,7 +18,10 @@ C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayq
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\LeconCoursServlet.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\Certificat.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\CheckoutServlet.java
+C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\PremiumAccessDAO.java
+C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PremiumSuccessServlet.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\HistoriqueServlet.java
+C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\services\PremiumService.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\ThemeCoursServlet.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\ExamenCoursServlet.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\services\PaymentService.java
@@ -54,6 +57,7 @@ C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayq
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\CertificatDAO.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\filters\AutoLoginFilter.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\Quiz.java
+C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PremiumStatusServlet.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\utils\TestConnexion.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\CertificatServlet.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PlanCoursServlet.java
@@ -64,9 +68,11 @@ C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayq
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\ChapitreDAO.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\services\CourseService.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\CorrectionServlet.java
+C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PremiumWebhookServlet.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\CoursServlet.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\WebhookPayload.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\ExamenModule.java
+C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PremiumPaymentServlet.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\Partie.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\utils\HashUtil.java
 C:\Users\BARAKA\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\ProgressionJoueur.java

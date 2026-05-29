@@ -24,7 +24,7 @@ import java.util.List;
  * des utilisateurs dans les leçons des cours.
  * 
  * @author AmijayQuiz
- * @version 1.0
+ * @version 1.1
  */
 public class ProgressionCoursDAO {
 
@@ -68,6 +68,13 @@ public class ProgressionCoursDAO {
     
     private static final String DELETE_PAR_UTILISATEUR_COURS = 
         "DELETE FROM progression_cours WHERE utilisateur_id = ? AND cours_id = ?";
+    
+    // ===== NOUVELLE REQUÊTE POUR compterLeconsTerminees =====
+    private static final String COUNT_LE_CONS_TERMINEES_PAR_COURS = 
+        "SELECT COUNT(*) FROM progression_cours pc " +
+        "JOIN lecons l ON pc.lecon_id = l.id " +
+        "JOIN chapitres c ON l.chapitre_id = c.id " +
+        "WHERE pc.utilisateur_id = ? AND c.cours_id = ? AND pc.termine = 1";
 
     // ===== MÉTHODES DE LECTURE =====
 
@@ -397,6 +404,41 @@ public class ProgressionCoursDAO {
         if (total == 0) return 0.0;
         int terminees = getNombreLeconsTerminees(utilisateurId, coursId);
         return (terminees * 100.0) / total;
+    }
+
+    /**
+     * Compte le nombre de leçons terminées par un utilisateur pour un cours
+     * (Méthode alias pour compatibilité avec NiveauCoursServlet)
+     * 
+     * @param userId   ID de l'utilisateur
+     * @param courseId ID du cours
+     * @return Nombre de leçons terminées
+     */
+    public int compterLeconsTerminees(int userId, int courseId) {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connexion = ConnexionDB.getConnexion();
+            preparedStatement = connexion.prepareStatement(COUNT_LE_CONS_TERMINEES_PAR_COURS);
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, courseId);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur : comptage leçons terminées utilisateur " + userId + " cours " + courseId);
+            System.err.println("   Message : " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            fermerRessources(null, preparedStatement, resultSet);
+        }
+
+        return 0;
     }
 
     // ===== MÉTHODES DE VÉRIFICATION =====

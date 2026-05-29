@@ -11,42 +11,5 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
     
-    <!-- ============================================================
-         FILTRE DE SÉCURITÉ POUR L'ACCÈS AUX COURS PAYANTS
-         Vérifie si l'utilisateur a payé avant d'accéder aux leçons
-         ============================================================ -->
-    
-    
-    <!-- ============================================================
-         FILTRE DE SÉCURITÉ POUR LES PAIEMENTS
-         Vérification IP et rate limiting pour webhook
-         ============================================================ -->
-    <filter>
-        <filter-name>PaymentSecurityFilter</filter-name>
-        <filter-class>com.amijayquiz.filters.PaymentSecurityFilter</filter-class>
-    </filter>
-    
-    <filter-mapping>
-        <filter-name>PaymentSecurityFilter</filter-name>
-        <url-pattern>/api/paiements/*</url-pattern>
-        <url-pattern>/joueur/paiement/*</url-pattern>
-    </filter-mapping>
-    
-    <!-- ============================================================
-         SESSIONS CONFIGURATION
-         ============================================================ -->
-    <session-config>
-        <session-timeout>30</session-timeout>
-    </session-config>
-    
-    <!-- ============================================================
-         ENCODAGE GLOBAL
-         ============================================================ -->
-    <jsp-config>
-        <jsp-property-group>
-            <url-pattern>*.jsp</url-pattern>
-            <page-encoding>UTF-8</page-encoding>
-        </jsp-property-group>
-    </jsp-config>
-    
 </web-app>
+
