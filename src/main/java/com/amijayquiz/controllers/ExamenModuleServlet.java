@@ -1,12 +1,12 @@
 // ============================================================
 // FICHIER : src/main/java/com/amijayquiz/controllers/ExamenModuleServlet.java
 // RÔLE    : Contrôleur de l'examen d'un module
-//           Affiche l'examen, corrige les réponses,
-//           enregistre la progression et débloque le module suivant
+//           MODIFIÉ : Bloque examens des modules 2+ si non premium
 // ============================================================
 
 package com.amijayquiz.controllers;
 
+import com.amijayquiz.dao.AccessPremiumDAO;
 import com.amijayquiz.dao.ExamenModuleDAO;
 import com.amijayquiz.dao.QuestionExamenDAO;
 import com.amijayquiz.dao.ProgressionModuleDAO;
@@ -34,10 +34,13 @@ import java.util.List;
  * POST : Corrige les réponses, calcule le score,
  *        enregistre la progression et débloque le module suivant si réussi
  * 
+ * 🔒 MODIFIÉ : Module 1 accessible gratuitement.
+ *              Modules 2+ nécessitent un compte premium.
+ * 
  * URL : /joueur/cours/examen-module?coursId=1&module=1
  * 
  * @author AmijayQuiz
- * @version 1.0
+ * @version 1.1
  */
 @WebServlet(name = "ExamenModuleServlet", urlPatterns = {"/joueur/cours/examen-module"})
 public class ExamenModuleServlet extends HttpServlet {
@@ -45,6 +48,7 @@ public class ExamenModuleServlet extends HttpServlet {
     // Constantes
     private static final int NOMBRE_QUESTIONS = 20;
     private static final double SEUIL_REUSSITE = 75.0;
+    private static final int MODULE_GRATUIT_MAX = 1;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -85,19 +89,32 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // Validation des valeurs
         if (coursId <= 0 || moduleNumero <= 0) {
             response.sendRedirect(request.getContextPath() + "/joueur/cours");
             return;
         }
 
-        // 3. Initialisation des DAO
+        // ===== 🆕 3. VÉRIFICATION PREMIUM POUR MODULES 2+ =====
+        AccessPremiumDAO premiumDAO = new AccessPremiumDAO();
+        boolean estPremium = premiumDAO.estPremium(utilisateurId);
+
+        if (moduleNumero > MODULE_GRATUIT_MAX && !estPremium) {
+            session.setAttribute("messageErreur",
+                "🔒 Les examens des modules " + (MODULE_GRATUIT_MAX + 1) + " et plus nécessitent un compte Premium. " +
+                "Débloquez tous les niveaux pour seulement 4$ !");
+            session.setAttribute("urlRedirectionApresPaiement",
+                request.getContextPath() + "/joueur/cours/examen-module?coursId=" + coursId + "&module=" + moduleNumero);
+            response.sendRedirect(request.getContextPath() + "/paiement");
+            return;
+        }
+
+        // 4. Initialisation des DAO
         CoursDAO coursDAO = new CoursDAO();
         ExamenModuleDAO examenDAO = new ExamenModuleDAO();
         QuestionExamenDAO questionDAO = new QuestionExamenDAO();
         ProgressionModuleDAO progressionDAO = new ProgressionModuleDAO();
 
-        // 4. Vérifier que le cours existe
+        // 5. Vérifier que le cours existe
         Cours cours = coursDAO.trouverParId(coursId);
         if (cours == null) {
             session.setAttribute("messageErreur", "Ce cours n'existe pas.");
@@ -105,7 +122,7 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // 5. Vérifier que le module est débloqué
+        // 6. Vérifier que le module est débloqué
         if (!progressionDAO.estModuleDebloque(utilisateurId, coursId, moduleNumero)) {
             session.setAttribute("messageErreur", 
                 "Ce module n'est pas encore débloqué. Réussissez d'abord le module " + (moduleNumero - 1) + ".");
@@ -113,7 +130,7 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // 6. Récupérer l'examen du module
+        // 7. Récupérer l'examen du module
         ExamenModule examen = examenDAO.trouverParCoursEtModule(coursId, moduleNumero);
         if (examen == null) {
             session.setAttribute("messageErreur", "Aucun examen trouvé pour ce module.");
@@ -121,7 +138,7 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // 7. Récupérer les questions de l'examen
+        // 8. Récupérer les questions de l'examen
         List<QuestionExamen> questions = questionDAO.listerParExamen(examen.getId());
         if (questions == null || questions.isEmpty()) {
             session.setAttribute("messageErreur", "Cet examen ne contient pas encore de questions.");
@@ -129,10 +146,9 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // 8. Vérifier si l'utilisateur a déjà réussi ce module
+        // 9. Vérifier si l'utilisateur a déjà réussi ce module
         ProgressionModule progressionExistante = progressionDAO.getProgression(utilisateurId, coursId, moduleNumero);
         if (progressionExistante != null && progressionExistante.isReussi()) {
-            // Déjà réussi, rediriger vers le plan avec un message
             session.setAttribute("messageSucces", 
                 "Vous avez déjà réussi le Module " + moduleNumero + " avec un score de " + 
                 progressionExistante.getPourcentageFormate() + " !");
@@ -140,7 +156,7 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // 9. Passage des attributs à la JSP
+        // 10. Passage des attributs à la JSP
         request.setAttribute("pageTitle", "Examen " + examen.getModuleFormate() + " - " + cours.getTitre());
         request.setAttribute("cours", cours);
         request.setAttribute("examen", examen);
@@ -149,8 +165,9 @@ public class ExamenModuleServlet extends HttpServlet {
         request.setAttribute("seuilReussite", examen.getSeuilReussite());
         request.setAttribute("scoreMinimum", examen.getScoreMinimum());
         request.setAttribute("progressionExistante", progressionExistante);
+        request.setAttribute("estPremium", estPremium);
 
-        // 10. Affichage de la page d'examen
+        // 11. Affichage de la page d'examen
         request.getRequestDispatcher("/views/joueur/cours-examen-module.jsp").forward(request, response);
     }
 
@@ -189,26 +206,37 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // 3. Initialisation des DAO
+        // ===== 🆕 3. VÉRIFICATION PREMIUM POUR MODULES 2+ (POST aussi) =====
+        AccessPremiumDAO premiumDAO = new AccessPremiumDAO();
+        boolean estPremium = premiumDAO.estPremium(utilisateurId);
+
+        if (moduleNumero > MODULE_GRATUIT_MAX && !estPremium) {
+            session.setAttribute("messageErreur",
+                "🔒 Les examens des modules " + (MODULE_GRATUIT_MAX + 1) + " et plus nécessitent un compte Premium.");
+            response.sendRedirect(request.getContextPath() + "/paiement");
+            return;
+        }
+
+        // 4. Initialisation des DAO
         CoursDAO coursDAO = new CoursDAO();
         ExamenModuleDAO examenDAO = new ExamenModuleDAO();
         QuestionExamenDAO questionDAO = new QuestionExamenDAO();
         ProgressionModuleDAO progressionDAO = new ProgressionModuleDAO();
 
-        // 4. Vérifier que le cours existe
+        // 5. Vérifier que le cours existe
         Cours cours = coursDAO.trouverParId(coursId);
         if (cours == null) {
             response.sendRedirect(request.getContextPath() + "/joueur/cours");
             return;
         }
 
-        // 5. Vérifier que le module est débloqué
+        // 6. Vérifier que le module est débloqué
         if (!progressionDAO.estModuleDebloque(utilisateurId, coursId, moduleNumero)) {
             response.sendRedirect(request.getContextPath() + "/joueur/cours/plan?coursId=" + coursId);
             return;
         }
 
-        // 6. Récupérer l'examen et les questions
+        // 7. Récupérer l'examen et les questions
         ExamenModule examen = examenDAO.trouverParCoursEtModule(coursId, moduleNumero);
         if (examen == null) {
             response.sendRedirect(request.getContextPath() + "/joueur/cours/plan?coursId=" + coursId);
@@ -221,7 +249,7 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // 7. Correction des réponses
+        // 8. Correction des réponses
         int score = 0;
         List<Boolean> corrections = new ArrayList<>();
         int[] reponsesJoueur = new int[questions.size()];
@@ -248,13 +276,13 @@ public class ExamenModuleServlet extends HttpServlet {
             }
         }
 
-        // 8. Calcul du pourcentage
+        // 9. Calcul du pourcentage
         int totalQuestions = questions.size();
         double pourcentage = (double) score / totalQuestions * 100;
         pourcentage = Math.round(pourcentage * 100.0) / 100.0;
         boolean estReussi = pourcentage >= SEUIL_REUSSITE;
 
-        // 9. Enregistrer la progression
+        // 10. Enregistrer la progression
         ProgressionModule progression = new ProgressionModule(
             utilisateurId, coursId, moduleNumero, score, totalQuestions
         );
@@ -267,11 +295,11 @@ public class ExamenModuleServlet extends HttpServlet {
             System.err.println("⚠️ Erreur : La progression du module " + moduleNumero + " n'a pas pu être enregistrée.");
         }
 
-        // 10. Déterminer le module suivant
+        // 11. Déterminer le module suivant
         int moduleSuivant = moduleNumero + 1;
         boolean moduleSuivantDebloque = estReussi && progressionDAO.estModuleDebloque(utilisateurId, coursId, moduleSuivant);
 
-        // 11. Passage des attributs à la JSP
+        // 12. Passage des attributs à la JSP
         request.setAttribute("pageTitle", "Résultat " + examen.getModuleFormate() + " - " + cours.getTitre());
         request.setAttribute("cours", cours);
         request.setAttribute("examen", examen);
@@ -286,15 +314,16 @@ public class ExamenModuleServlet extends HttpServlet {
         request.setAttribute("scoreMinimum", examen.getScoreMinimum());
         request.setAttribute("moduleSuivant", moduleSuivant);
         request.setAttribute("moduleSuivantDebloque", moduleSuivantDebloque);
+        request.setAttribute("estPremium", estPremium);
 
-        // 12. Message de succès si réussi
+        // 13. Message de succès si réussi
         if (estReussi) {
             session.setAttribute("messageSucces", 
                 "🎉 Félicitations ! Vous avez réussi le Module " + moduleNumero + 
                 " avec " + String.format("%.0f%%", pourcentage) + " !");
         }
 
-        // 13. Affichage de la page de résultat
+        // 14. Affichage de la page de résultat
         request.getRequestDispatcher("/views/joueur/cours-resultat-module.jsp").forward(request, response);
     }
 }

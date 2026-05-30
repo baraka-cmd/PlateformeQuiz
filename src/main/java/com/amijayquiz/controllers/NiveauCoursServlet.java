@@ -3,10 +3,12 @@
 // RÔLE    : Contrôleur de la page niveau d'un thème de cours
 //           Affiche la liste des cours disponibles pour un
 //           thème et un niveau donnés (élémentaire, moyen, avancé)
+//           MODIFIÉ : Vérification premium pour niveaux moyen/avancé
 // ============================================================
 
 package com.amijayquiz.controllers;
 
+import com.amijayquiz.dao.AccessPremiumDAO;
 import com.amijayquiz.dao.ChapitreDAO;
 import com.amijayquiz.dao.CoursDAO;
 import com.amijayquiz.dao.ProgressionCoursDAO;
@@ -33,10 +35,12 @@ import java.util.Map;
  * et un niveau donnés. Chaque cours est présenté sous forme de carte
  * avec sa progression et un bouton pour voir son plan détaillé.
  * 
+ * 🔒 MODIFIÉ : Bloque l'accès aux niveaux moyen/avancé si non premium.
+ * 
  * URL : /joueur/cours/niveau?theme=Développement+Web&niveau=elementaire
  * 
  * @author AmijayQuiz
- * @version 1.0
+ * @version 1.1
  */
 @WebServlet(name = "NiveauCoursServlet", urlPatterns = {"/joueur/cours/niveau"})
 public class NiveauCoursServlet extends HttpServlet {
@@ -86,7 +90,23 @@ public class NiveauCoursServlet extends HttpServlet {
             return;
         }
 
-        // 4. Vérifier que le niveau est débloqué
+        // ===== 🆕 4. VÉRIFICATION PREMIUM POUR NIVEAUX MOYEN/AVANCÉ =====
+        AccessPremiumDAO premiumDAO = new AccessPremiumDAO();
+        boolean estPremium = premiumDAO.estPremium(utilisateurId);
+
+        // Si niveau non élémentaire et utilisateur non premium → rediriger vers paiement
+        if (!NIVEAU_ELEMENTAIRE.equals(niveau) && !estPremium) {
+            session.setAttribute("messageErreur",
+                "🔒 Le niveau <strong>" + getNomFormateNiveau(niveau) + "</strong> nécessite un compte Premium. " +
+                "Débloquez tous les niveaux pour seulement 4$ !");
+            session.setAttribute("urlRedirectionApresPaiement", 
+                request.getContextPath() + "/joueur/cours/niveau?theme=" + 
+                java.net.URLEncoder.encode(theme, "UTF-8") + "&niveau=" + niveau);
+            response.sendRedirect(request.getContextPath() + "/paiement");
+            return;
+        }
+
+        // 5. Vérifier que le niveau est débloqué (progression quiz)
         // Le niveau élémentaire est toujours débloqué
         // Pour les autres, vérifier via ProgressionJoueurDAO
         if (!NIVEAU_ELEMENTAIRE.equals(niveau)) {
@@ -104,12 +124,12 @@ public class NiveauCoursServlet extends HttpServlet {
             }
         }
 
-        // 5. Initialisation des DAO
+        // 6. Initialisation des DAO
         CoursDAO coursDAO = new CoursDAO();
         ChapitreDAO chapitreDAO = new ChapitreDAO();
         ProgressionCoursDAO progressionDAO = new ProgressionCoursDAO();
 
-        // 6. Récupérer les cours du thème et niveau
+        // 7. Récupérer les cours du thème et niveau
         List<Cours> coursDuNiveau = coursDAO.listerParThemeEtNiveau(theme, niveau);
 
         if (coursDuNiveau.isEmpty()) {
@@ -119,10 +139,10 @@ public class NiveauCoursServlet extends HttpServlet {
             return;
         }
 
-        // 7. Informations formatées du niveau
+        // 8. Informations formatées du niveau
         String[] infosNiveau = getInfosNiveau(niveau);
 
-        // 8. Construire les données de chaque cours avec progression
+        // 9. Construire les données de chaque cours avec progression
         List<Map<String, Object>> coursAvecProgression = new ArrayList<>();
         int totalChapitresNiveau = 0;
         int totalLeconsNiveau = 0;
@@ -202,15 +222,15 @@ public class NiveauCoursServlet extends HttpServlet {
             if (estTermine) totalCoursTerminesNiveau++;
         }
 
-        // 9. Calcul du pourcentage global du niveau
+        // 10. Calcul du pourcentage global du niveau
         int pourcentageNiveau = (totalLeconsNiveau > 0) ? 
             (totalChapitresTerminesNiveau * 100 / Math.max(totalChapitresNiveau, 1)) : 0;
 
-        // 10. Déterminer le statut global du niveau
+        // 11. Déterminer le statut global du niveau
         boolean niveauTermine = (coursDuNiveau.size() > 0 && 
             totalCoursTerminesNiveau >= coursDuNiveau.size());
 
-        // 11. Passage des attributs à la JSP
+        // 12. Passage des attributs à la JSP
         request.setAttribute("pageTitle", infosNiveau[0] + " - " + theme + " - AmijayQuiz");
         request.setAttribute("nomTheme", theme);
         request.setAttribute("nomNiveau", niveau);
@@ -225,7 +245,10 @@ public class NiveauCoursServlet extends HttpServlet {
         request.setAttribute("pourcentageNiveau", pourcentageNiveau);
         request.setAttribute("niveauTermine", niveauTermine);
 
-        // 12. Affichage de la page
+        // ===== 🆕 ATTRIBUTS PREMIUM =====
+        request.setAttribute("estPremium", estPremium);
+
+        // 13. Affichage de la page
         request.getRequestDispatcher("/views/joueur/cours-niveau.jsp").forward(request, response);
     }
 
@@ -242,6 +265,18 @@ public class NiveauCoursServlet extends HttpServlet {
                 return new String[]{"Avancé", "fas fa-star", "#e74c3c"};
             default:
                 return new String[]{"Niveau", "fas fa-circle", "#888888"};
+        }
+    }
+
+    /**
+     * Retourne le nom formaté d'un niveau
+     */
+    private String getNomFormateNiveau(String niveau) {
+        switch (niveau) {
+            case NIVEAU_ELEMENTAIRE: return "Élémentaire";
+            case NIVEAU_MOYEN:       return "Moyen";
+            case NIVEAU_AVANCE:      return "Avancé";
+            default:                 return niveau;
         }
     }
 

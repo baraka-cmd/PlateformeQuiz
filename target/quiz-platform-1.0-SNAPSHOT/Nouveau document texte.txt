@@ -424,2472 +424,323 @@ Session Vérifier que l'utilisateur connecté = acheteur
 
 
 
--- Table des paiements
-CREATE TABLE IF NOT EXISTS payments (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    course_id INT NOT NULL,
-    reference VARCHAR(100) UNIQUE NOT NULL,
-    transaction_id VARCHAR(100),
-    amount DECIMAL(10,2) NOT NULL,
-    currency VARCHAR(3) DEFAULT 'USD',
-    phone_number VARCHAR(20),
-    status VARCHAR(20) DEFAULT 'PENDING',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
-    INDEX idx_course_id (course_id),
-    INDEX idx_reference (reference),
-    INDEX idx_status (status),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (course_id) REFERENCES cours(id) ON DELETE CASCADE
-);
 
--- Table des accès aux cours
-CREATE TABLE IF NOT EXISTS user_course_access (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    course_id INT NOT NULL,
-    granted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NULL,
-    INDEX idx_user_course (user_id, course_id),
-    UNIQUE KEY uk_user_course (user_id, course_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (course_id) REFERENCES cours(id) ON DELETE CASCADE
-);
 
 
 
 
-<!-- Gson pour JSON -->
-<dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.10.1</version>
-</dependency>
 
-<!-- MySQL Connector -->
-<dependency>
-    <groupId>com.mysql</groupId>
-    <artifactId>mysql-connector-j</artifactId>
-    <version>8.1.0</version>
-</dependency>
+📋 ORDRE EXACT DE CRÉATION - UN PAR UN
 
+Voici l'ordre dans lequel on va créer chaque fichier, du premier au dernier :
 
+---
 
+🔧 PHASE 1 : CONFIGURATION & UTILITAIRES
 
-<!-- Gson pour JSON -->
-<dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.10.1</version>
-</dependency>
+(Fondations - rien ne fonctionne sans ça)
 
+N° Fichier Rôle
+1 src/main/java/com/amijayquiz/config/PawaPayConfig.java Token, URLs, clés PawaPay
+2 src/main/java/com/amijayquiz/utils/PawaPayUtil.java Méthodes HTTP (POST vers PawaPay, vérification signature webhook)
+3 src/main/java/com/amijayquiz/utils/SecuriteUtil.java Génération référence unique, validation phone, logs
 
-Prochaines étapes
+---
 
-Maintenant que tout le système de paiement est complet (backend + frontend JSP), veux-tu que je donne :
+📦 PHASE 2 : MODÈLE
 
-1. Le filtre de sécurité pour protéger les pages de paiement ?
-2. Le cours-plan.jsp modifié pour ajouter le bouton "Acheter" ?
-3. Le filtre d'accès aux cours pour vérifier paiement avant d'afficher une leçon ?
+(Représentation des données)
 
+N° Fichier Rôle
+4 src/main/java/com/amijayquiz/models/Paiement.java Modèle Paiement (id, userId, reference, transactionId, montant, statut...)
 
+---
 
-Veux-tu que je détaille un fichier spécifique ou que je passe directement au code de l'un de ces composants ?
+🗄️ PHASE 3 : DAO (Accès Base de Données)
 
+(Lecture/Écriture dans MySQL)
 
+N° Fichier Rôle
+5 src/main/java/com/amijayquiz/dao/PaiementDAO.java CRUD table paiements + recherche par référence
+6 src/main/java/com/amijayquiz/dao/AccessPremiumDAO.java Gestion table acces_premium + activation/désactivation premium
 
+---
 
+🛡️ PHASE 4 : FILTRE DE SÉCURITÉ
 
+(Blocage des accès non payés)
 
+N° Fichier Rôle
+7 src/main/java/com/amijayquiz/filters/AccesPayantFilter.java Vérifie si l'utilisateur a le droit d'accéder à la ressource demandée
 
+---
 
+🎮 PHASE 5 : SERVLETS (Contrôleurs)
 
+(Logique métier - endpoints)
 
+N° Fichier Rôle
+8 src/main/java/com/amijayquiz/controllers/PaiementServlet.java GET : page paiement / POST : créer transaction PawaPay
+9 src/main/java/com/amijayquiz/controllers/WebhookPaiementServlet.java Réception callback PawaPay, validation, activation premium
 
+---
 
+🎨 PHASE 6 : VUES JSP (Interface utilisateur)
 
+(Pages visibles par le joueur)
 
+N° Fichier Rôle
+10 src/main/webapp/views/joueur/paiement.jsp Page "Débloquer tous les niveaux - 4$" avec formulaire
+11 src/main/webapp/views/joueur/paiement-attente.jsp Page "Paiement en cours - en attente de confirmation"
+12 src/main/webapp/views/joueur/paiement-succes.jsp Page "Paiement réussi - tous les niveaux débloqués"
+13 src/main/webapp/views/joueur/paiement-echoue.jsp Page "Paiement échoué - réessayer"
 
+---
 
+🔗 PHASE 7 : INTÉGRATION DANS L'EXISTANT
 
+(Modifications des fichiers existants pour activer le système)
 
+N° Fichier Modification
+14 ThemeCoursServlet.java Bloquer niveaux moyen/avancé si non premium
+15 NiveauCoursServlet.java Bloquer accès si non premium
+16 NiveauServlet.java Bloquer parties 6+ et niveaux moyen/avancé
+17 ExamenModuleServlet.java Bloquer examens modules 2+ si non premium
+18 cours-plan.jsp Ajouter badge "Premium requis" sur modules verrouillés
+19 niveau.jsp (Quiz) Masquer parties 6+ si non premium
+20 dashboard.jsp Ajouter statut premium + bouton d'achat
+21 header.jsp Ajouter badge "Premium" dans le menu
 
+---
 
+📊 RÉCAPITULATIF
 
+Phase Fichiers Total
+Configuration 1-3 3
+Modèle 4 1
+DAO 5-6 2
+Filtre 7 1
+Servlets 8-9 2
+Vues JSP 10-13 4
+Intégration 14-21 8
+TOTAL  21 fichiers
 
+---
 
+⚡ ON COMMENCE ?
 
+Je suis prêt à coder le fichier n°1 : PawaPayConfig.java.
 
+Dis-moi "Go" et je te l'envoie.
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-cours-plan, PlanCoursServlet, LeconCoursServlet,
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Chapitre" %>
-<%@ page import="com.amijayquiz.models.Lecon" %>
-<%@ page import="com.amijayquiz.models.Certificat" %>
-<%@ page import="com.amijayquiz.models.ExamenModule" %>
-<%@ page import="com.amijayquiz.models.ProgressionModule" %>
 
 <%-- ============================================================
-     Fichier : cours-plan.jsp
-     Rôle    : Plan détaillé d'un cours organisé par MODULES
-              - Modules verrouillés : liste tous les chapitres
-              - Modules ouverts : chapitres avec nombre de leçons (ex: 5 leçons)
-              - Aucune logique de "leçons terminées"
-              - Bouton d'examen à la fin de CHAQUE module
-              - Examen final tout en bas
+     MODIFICATIONS À APPORTER AU FICHIER EXISTANT :
+     src/main/webapp/views/joueur/dashboard.jsp
+     
+     AJOUTS :
+     1. Vérification premium au début du fichier
+     2. Bannière premium si non premium
+     3. Badge "Premium" dans le header
+     4. Bouton "Devenir Premium" dans la section reprise
      ============================================================ --%>
 
+<%-- ===== AJOUTER APRÈS LA LIGNE : ===== --%>
+<%-- int joueurId = (joueur != null) ? joueur.getId() : 0; --%>
+
+<%-- ===== 🆕 AJOUTER : ===== --%>
 <%
-    Cours cours = (Cours) request.getAttribute("cours");
-    List<Map<String, Object>> modules = (List<Map<String, Object>>) request.getAttribute("modules");
-    Integer nombreModules = (Integer) request.getAttribute("nombreModules");
-    Integer modulesReussis = (Integer) request.getAttribute("modulesReussis");
-    Integer totalLecons = (Integer) request.getAttribute("totalLecons");
-    Integer totalLeconsTerminees = (Integer) request.getAttribute("totalLeconsTerminees");
-    Integer pourcentageGlobal = (Integer) request.getAttribute("pourcentageGlobal");
-    Boolean examenAccessible = (Boolean) request.getAttribute("examenAccessible");
-    Boolean dejaCertifie = (Boolean) request.getAttribute("dejaCertifie");
-    Certificat certificatExistant = (Certificat) request.getAttribute("certificatExistant");
-    String messageMotivation = (String) request.getAttribute("messageMotivation");
-    String iconeMotivation = (String) request.getAttribute("iconeMotivation");
-
-    if (cours == null) {
-        response.sendRedirect(request.getContextPath() + "/joueur/cours");
-        return;
-    }
-
-    if (nombreModules == null) nombreModules = 15;
-    if (modulesReussis == null) modulesReussis = 0;
-    if (totalLecons == null) totalLecons = 0;
-    if (totalLeconsTerminees == null) totalLeconsTerminees = 0;
-    if (pourcentageGlobal == null) pourcentageGlobal = 0;
-    if (examenAccessible == null) examenAccessible = false;
-    if (dejaCertifie == null) dejaCertifie = false;
-    if (messageMotivation == null) messageMotivation = "Commencez dès maintenant votre apprentissage !";
-    if (iconeMotivation == null) iconeMotivation = "fas fa-rocket";
-
-    String themeEncode = java.net.URLEncoder.encode(cours.getTheme(), "UTF-8");
-    String niveauEncode = java.net.URLEncoder.encode(cours.getNiveau(), "UTF-8");
+    // Vérification premium
+    com.amijayquiz.dao.AccessPremiumDAO premiumDAO = new com.amijayquiz.dao.AccessPremiumDAO();
+    boolean estPremium = premiumDAO.estPremium(joueurId);
+    request.setAttribute("estPremium", estPremium);
 %>
 
-<%-- ===== CHARGEMENT DES STYLES ===== --%>
-<%
-    String coursPlanCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/cours-plan.css\">";
-    request.setAttribute("extraHead", coursPlanCSS);
-%>
-
-<%@ include file="../header.jsp" %>
-
-<div class="cours-plan-container">
-
-    <%-- ===== BREADCRUMB ===== --%>
-    <nav class="breadcrumb" aria-label="Fil d'Ariane">
-        <a href="${pageContext.request.contextPath}/joueur/dashboard" class="breadcrumb-link">
-            <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours" class="breadcrumb-link">
-            <i class="fas fa-graduation-cap"></i><span>Cours</span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours/theme?theme=<%= themeEncode %>" class="breadcrumb-link">
-            <span><%= cours.getTheme() %></span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours/niveau?theme=<%= themeEncode %>&niveau=<%= niveauEncode %>" class="breadcrumb-link">
-            <span><%= cours.getNiveauFormate() %></span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <span class="breadcrumb-current">
-            <i class="fas fa-sitemap"></i><span>Plan</span>
-        </span>
-    </nav>
-
-    <%-- ===== EN-TÊTE DU COURS ===== --%>
-    <div class="plan-header">
-        <div class="plan-header-top">
-            <div class="plan-header-icon" style="background: linear-gradient(135deg, <%= cours.getCouleurTheme() %>, <%= cours.getCouleurTheme() %>dd);">
-                <i class="<%= cours.getIconeTheme() %>"></i>
-            </div>
-            <div class="plan-header-info">
-                <h1><%= cours.getTitre() %></h1>
-                <div class="plan-header-meta">
-                    <span class="plan-badge" style="background: <%= cours.getCouleurTheme() %>20; color: <%= cours.getCouleurTheme() %>;">
-                        <i class="<%= cours.getIconeTheme() %>"></i> <%= cours.getTheme() %>
+<%-- ===== DANS LE HEADER DE BIENVENUE, APRÈS LE PARAGRAPHE DE DATE, AJOUTER : ===== --%>
+            <%-- 🆕 STATUT PREMIUM --%>
+            <div class="welcome-premium-status">
+                <% if (estPremium) { %>
+                    <span class="premium-badge-actif">
+                        <i class="fas fa-crown"></i> Premium actif
                     </span>
-                    <span class="plan-badge" style="background: <%= cours.getCouleurNiveau() %>20; color: <%= cours.getCouleurNiveau() %>;">
-                        <i class="<%= cours.getIconeNiveau() %>"></i> <%= cours.getNiveauFormate() %>
-                    </span>
-                </div>
-            </div>
-            <div class="plan-header-statut">
-                <% if (dejaCertifie) { %>
-                    <span class="statut-badge certifie">
-                        <i class="fas fa-crown"></i> Certifié
-                    </span>
-                <% } else if (pourcentageGlobal >= 100) { %>
-                    <span class="statut-badge termine">
-                        <i class="fas fa-check-circle"></i> Terminé
-                    </span>
-                <% } else if (pourcentageGlobal > 0) { %>
-                    <span class="statut-badge en-cours">
-                        <i class="fas fa-spinner"></i> <%= pourcentageGlobal %>%
-                    </span>
+                <% } else { %>
+                    <a href="${pageContext.request.contextPath}/paiement" class="premium-badge-inactif">
+                        <i class="fas fa-crown"></i> Devenir Premium (4$)
+                    </a>
                 <% } %>
             </div>
-        </div>
 
-        <%-- Message de motivation --%>
-        <div class="plan-motivation">
-            <i class="<%= iconeMotivation %>"></i>
-            <span><%= messageMotivation %></span>
-        </div>
-    </div>
-
-    <%-- ===== LISTE DES MODULES ===== --%>
-    <div class="modules-list">
-        <% if (modules != null && !modules.isEmpty()) {
-            for (Map<String, Object> moduleData : modules) {
-                int numero = (Integer) moduleData.get("numero");
-                boolean debloque = (Boolean) moduleData.get("debloque");
-                boolean reussi = (Boolean) moduleData.get("reussi");
-                ProgressionModule progression = (ProgressionModule) moduleData.get("progression");
-                ExamenModule examen = (ExamenModule) moduleData.get("examen");
-                List<Map<String, Object>> chapitresData = (List<Map<String, Object>>) moduleData.get("chapitres");
-                int nbLecons = (Integer) moduleData.get("nbLecons");
-
-                String statusClass = reussi ? "reussi" : (debloque ? "debloque" : "verrouille");
-                String statusIcon = reussi ? "fa-check-circle" : (debloque ? "fa-unlock-alt" : "fa-lock");
-                String statusColor = reussi ? "#27ae60" : (debloque ? "#667eea" : "#aaa");
-                String statusText = reussi ? "Réussi" : (debloque ? "Débloqué" : "Verrouillé");
-        %>
-            <%-- ===== CARTE MODULE ===== --%>
-            <div class="module-card <%= statusClass %>">
-                
-                <%-- En-tête du module --%>
-                <div class="module-card-header" onclick="toggleModuleChapitres(<%= numero %>)">
-                    <div class="module-card-number" style="background: <%= statusColor %>;">
-                        <span><%= numero %></span>
-                    </div>
-                    <div class="module-card-info">
-                        <h3>Module <%= numero %></h3>
-                        <div class="module-card-meta">
-                            <span><i class="fas fa-file-alt"></i> <%= nbLecons %> leçons</span>
-                        </div>
-                    </div>
-                    <div class="module-card-status" style="color: <%= statusColor %>;">
-                        <i class="fas <%= statusIcon %>"></i>
-                        <span><%= statusText %></span>
-                        <i class="fas fa-chevron-down module-toggle-icon" id="moduleToggleIcon<%= numero %>"></i>
-                    </div>
-                </div>
-
-                <%-- Contenu du module : TOUJOURS afficher les chapitres --%>
-                <div class="module-card-content" id="moduleContent<%= numero %>" style="display: <%= (debloque || reussi) ? "block" : "none" %>;">
-                    
-                    <%-- Chapitres du module --%>
-                    <% if (chapitresData != null && !chapitresData.isEmpty()) { %>
-                        <div class="module-chapitres">
-                            <% for (Map<String, Object> chapData : chapitresData) {
-                                Chapitre chapitre = (Chapitre) chapData.get("chapitre");
-                                int nbLeconsChap = (Integer) chapData.get("nbLecons");
-                            %>
-                                <div class="module-chapitre-item">
-                                    <div class="module-chapitre-header-row">
-                                        <span class="chapitre-status-dot" style="background: <%= (debloque || reussi) ? "#667eea" : "#ccc" %>;"></span>
-                                        <span class="chapitre-titre"><%= chapitre.getTitre() %></span>
-                                        <span class="chapitre-lecons-count"><%= nbLeconsChap %> leçon<%= nbLeconsChap > 1 ? "s" : "" %></span>
-                                        
-                                        <%-- Bouton d'accès uniquement si module débloqué --%>
-                                        <% if (debloque || reussi) { %>
-                                            <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= chapitre.getId() %>" 
-                                               class="chapitre-acces-btn">
-                                                <i class="fas fa-arrow-right"></i>
-                                            </a>
-                                        <% } %>
-                                    </div>
-                                </div>
-                            <% } %>
-                        </div>
-                    <% } else { %>
-                        <div class="module-chapitres-vide">
-                            <i class="fas fa-inbox"></i>
-                            <span>Aucun chapitre dans ce module</span>
-                        </div>
-                    <% } %>
-
-                    <%-- Bouton Examen du module --%>
-                    <div class="module-examen-action">
-                        <% if (reussi && progression != null) { %>
-                            <div class="module-examen-reussi">
-                                <i class="fas fa-trophy"></i>
-                                <span>Module réussi - <%= progression.getPourcentageFormate() %></span>
-                                <a href="${pageContext.request.contextPath}/joueur/cours/examen-module?coursId=<%= cours.getId() %>&module=<%= numero %>" 
-                                   class="btn-examen-module btn-repasser">
-                                    <i class="fas fa-redo"></i> Repasser
-                                </a>
-                            </div>
-                        <% } else if (debloque && examen != null) { %>
-                            <a href="${pageContext.request.contextPath}/joueur/cours/examen-module?coursId=<%= cours.getId() %>&module=<%= numero %>" 
-                               class="btn-examen-module">
-                                <i class="fas fa-clipboard-check"></i>
-                                Passer l'examen du Module <%= numero %>
-                                <span class="btn-examen-info">75% requis</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                        <% } else if (debloque && examen == null) { %>
-                            <span class="module-examen-indisponible">
-                                <i class="fas fa-clock"></i> Examen bientôt disponible
-                            </span>
-                        <% } else { %>
-                            <span class="module-examen-verrouille">
-                                <i class="fas fa-lock"></i> Réussissez le Module <%= numero - 1 %> pour débloquer
-                            </span>
-                        <% } %>
-                    </div>
-
-                </div>
-            </div>
-        <%  }
-        } %>
-    </div>
-
-    <%-- ===== SECTION EXAMEN FINAL ===== --%>
-    <div class="examen-final-section">
-        <div class="examen-final-card <%= dejaCertifie ? "certifie" : (examenAccessible ? "accessible" : "verrouille") %>">
-            <div class="examen-final-icon">
-                <% if (dejaCertifie) { %>
+<%-- ===== APRÈS LA SECTION "REPRENDRE MON PARCOURS", AJOUTER : ===== --%>
+    <%-- ===== 🆕 BANNIÈRE PREMIUM (SI NON PREMIUM) ===== --%>
+    <% if (!estPremium) { %>
+        <div class="dashboard-premium-banner">
+            <div class="premium-banner-glow"></div>
+            <div class="premium-banner-content">
+                <div class="premium-banner-icon">
                     <i class="fas fa-crown"></i>
-                <% } else if (examenAccessible) { %>
-                    <i class="fas fa-trophy"></i>
-                <% } else { %>
-                    <i class="fas fa-lock"></i>
-                <% } %>
-            </div>
-            <div class="examen-final-content">
-                <h3>
-                    <% if (dejaCertifie) { %>
-                        Certificat déjà obtenu
-                    <% } else if (examenAccessible) { %>
-                        Examen Final
-                    <% } else { %>
-                        Examen Final Verrouillé
-                    <% } %>
-                </h3>
-                <p>
-                    <% if (dejaCertifie) { %>
-                        Mention : <strong style="color: <%= certificatExistant.getCouleurMention() %>;"><%= certificatExistant.getMention() %></strong>
-                    <% } else if (examenAccessible) { %>
-                        Tous les modules sont réussis. Score minimum : <strong>80%</strong>.
-                    <% } else { %>
-                        Réussissez tous les modules pour débloquer (<%= modulesReussis %>/<%= nombreModules %>).
-                    <% } %>
-                </p>
-            </div>
-            <div class="examen-final-action">
-                <% if (dejaCertifie) { %>
-                    <a href="${pageContext.request.contextPath}/joueur/cours/certificat?coursId=<%= cours.getId() %>" 
-                       class="btn-examen-final btn-voir-certificat">
-                        <i class="fas fa-certificate"></i> Voir mon certificat
-                    </a>
-                <% } else if (examenAccessible) { %>
-                    <a href="${pageContext.request.contextPath}/joueur/cours/examen?coursId=<%= cours.getId() %>" 
-                       class="btn-examen-final btn-passer-examen">
-                        <i class="fas fa-play-circle"></i> Passer l'examen final
-                    </a>
-                <% } %>
-            </div>
-        </div>
-    </div>
-
-    <%-- ===== BOUTON RETOUR ===== --%>
-    <div class="plan-footer">
-        <a href="${pageContext.request.contextPath}/joueur/cours/niveau?theme=<%= themeEncode %>&niveau=<%= niveauEncode %>" 
-           class="btn-retour">
-            <i class="fas fa-arrow-left"></i> Retour au niveau <%= cours.getNiveauFormate() %>
-        </a>
-    </div>
-
-</div>
-
-<%-- ===== SCRIPT POUR TOGGLE MODULES ===== --%>
-<script>
-    function toggleModuleChapitres(numero) {
-        const content = document.getElementById('moduleContent' + numero);
-        const icon = document.getElementById('moduleToggleIcon' + numero);
-        
-        if (!content || !icon) return;
-        
-        if (content.style.display === 'none') {
-            content.style.display = 'block';
-            icon.classList.remove('fa-chevron-down');
-            icon.classList.add('fa-chevron-up');
-        } else {
-            content.style.display = 'none';
-            icon.classList.remove('fa-chevron-up');
-            icon.classList.add('fa-chevron-down');
-        }
-    }
-</script>
-
-<%-- ===== CHARGEMENT DES SCRIPTS ===== --%>
-<%
-    String coursPlanJS = "<script src=\"" + request.getContextPath() + "/views/assets/js/cours-plan.js\"></script>";
-    request.setAttribute("extraScripts", coursPlanJS);
-%>
-
-<%@ include file="../footer.jsp" %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ============================================================
-// FICHIER : src/main/java/com/amijayquiz/controllers/PlanCoursServlet.java
-// RÔLE    : Contrôleur du plan détaillé d'un cours
-//           Affiche l'arborescence complète du cours :
-//           tous les modules (1 à 15) avec chapitres, leçons,
-//           examens et progression par module
-//           Navigation vers les leçons via la page chapitre
-// ============================================================
-
-package com.amijayquiz.controllers;
-
-import com.amijayquiz.dao.CertificatDAO;
-import com.amijayquiz.dao.ChapitreDAO;
-import com.amijayquiz.dao.CoursDAO;
-import com.amijayquiz.dao.ExamenModuleDAO;
-import com.amijayquiz.dao.LeconDAO;
-import com.amijayquiz.dao.ProgressionCoursDAO;
-import com.amijayquiz.dao.ProgressionModuleDAO;
-import com.amijayquiz.models.Certificat;
-import com.amijayquiz.models.Chapitre;
-import com.amijayquiz.models.Cours;
-import com.amijayquiz.models.ExamenModule;
-import com.amijayquiz.models.Lecon;
-import com.amijayquiz.models.ProgressionModule;
-import com.amijayquiz.models.Utilisateur;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-/**
- * PlanCoursServlet - Plan détaillé d'un cours organisé par modules
- * 
- * Affiche l'arborescence complète du cours regroupée par modules (1 à 15).
- * Chaque module contient :
- * - Ses chapitres avec leurs leçons
- * - Le statut de progression (verrouillé, débloqué, réussi)
- * - Un bouton pour passer l'examen du module
- * - Des liens pour accéder aux chapitres et leçons
- * 
- * URL : /joueur/cours/plan?coursId=1
- * 
- * @author AmijayQuiz
- * @version 2.1
- */
-@WebServlet(name = "PlanCoursServlet", urlPatterns = {"/joueur/cours/plan"})
-public class PlanCoursServlet extends HttpServlet {
-
-    // Constantes des modules
-    private static final int NOMBRE_MODULES = 15;
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        // ============================================================
-        // 1. VÉRIFICATION DE LA SESSION ET DU RÔLE
-        // ============================================================
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("utilisateur") == null) {
-            response.sendRedirect(request.getContextPath() + "/connexion");
-            return;
-        }
-
-        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (!"joueur".equals(utilisateur.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/connexion");
-            return;
-        }
-
-        int utilisateurId = utilisateur.getId();
-
-        // ============================================================
-        // 2. RÉCUPÉRATION ET VALIDATION DU PARAMÈTRE COURSID
-        // ============================================================
-        String coursIdParam = request.getParameter("coursId");
-        if (coursIdParam == null || coursIdParam.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        int coursId;
-        try {
-            coursId = Integer.parseInt(coursIdParam);
-        } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        // ============================================================
-        // 3. INITIALISATION DES DAO
-        // ============================================================
-        CoursDAO coursDAO = new CoursDAO();
-        ChapitreDAO chapitreDAO = new ChapitreDAO();
-        LeconDAO leconDAO = new LeconDAO();
-        ProgressionCoursDAO progressionCoursDAO = new ProgressionCoursDAO();
-        ProgressionModuleDAO progressionModuleDAO = new ProgressionModuleDAO();
-        ExamenModuleDAO examenModuleDAO = new ExamenModuleDAO();
-        CertificatDAO certificatDAO = new CertificatDAO();
-
-        // ============================================================
-        // 4. RÉCUPÉRER LE COURS COMPLET AVEC SES CHAPITRES ET LEÇONS
-        // ============================================================
-        Cours cours = coursDAO.trouverParId(coursId);
-        if (cours == null) {
-            session.setAttribute("messageErreur", "Ce cours n'existe pas.");
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        // Récupérer tous les chapitres avec leurs leçons
-        List<Chapitre> chapitres = chapitreDAO.listerParCours(coursId);
-        cours.setChapitres(chapitres);
-        cours.setNombreChapitres(chapitres.size());
-        cours.setNombreLecons(cours.getNombreTotalLecons());
-
-        // ============================================================
-        // 5. VÉRIFIER SI L'UTILISATEUR A DÉJÀ UN CERTIFICAT
-        // ============================================================
-        Certificat certificatExistant = certificatDAO.trouverParUtilisateurEtCours(utilisateurId, coursId);
-
-        // ============================================================
-        // 6. ORGANISER LES CHAPITRES PAR MODULE
-        // ============================================================
-        Map<Integer, List<Chapitre>> chapitresParModule = new LinkedHashMap<>();
-        for (Chapitre chapitre : chapitres) {
-            int moduleNumero = chapitre.getModuleNumero() > 0 ? chapitre.getModuleNumero() : 1;
-            if (!chapitresParModule.containsKey(moduleNumero)) {
-                chapitresParModule.put(moduleNumero, new ArrayList<>());
-            }
-            chapitresParModule.get(moduleNumero).add(chapitre);
-        }
-
-        // ============================================================
-        // 7. RÉCUPÉRER TOUS LES EXAMENS DU COURS
-        // ============================================================
-        List<ExamenModule> examens = examenModuleDAO.listerParCours(coursId);
-
-        // ============================================================
-        // 8. CONSTRUIRE LES DONNÉES DES MODULES AVEC PROGRESSION
-        // ============================================================
-        List<Map<String, Object>> modulesData = new ArrayList<>();
-        int totalLeconsCours = 0;
-        int totalLeconsTermineesCours = 0;
-        int totalExemplesCode = 0;
-        int modulesReussis = 0;
-
-        for (int moduleNumero = 1; moduleNumero <= NOMBRE_MODULES; moduleNumero++) {
-            Map<String, Object> moduleData = new LinkedHashMap<>();
-            moduleData.put("numero", moduleNumero);
-
-            // Vérifier si le module est débloqué
-            boolean debloque = progressionModuleDAO.estModuleDebloque(utilisateurId, coursId, moduleNumero);
-            moduleData.put("debloque", debloque);
-
-            // Récupérer la progression du module
-            ProgressionModule progression = progressionModuleDAO.getProgression(utilisateurId, coursId, moduleNumero);
-            boolean moduleReussi = progression != null && progression.isReussi();
-            moduleData.put("reussi", moduleReussi);
-            moduleData.put("progression", progression);
-
-            if (moduleReussi) {
-                modulesReussis++;
-            }
-
-            // Récupérer l'examen du module
-            ExamenModule examen = null;
-            if (examens != null) {
-                for (ExamenModule e : examens) {
-                    if (e.getModuleNumero() == moduleNumero) {
-                        examen = e;
-                        break;
-                    }
-                }
-            }
-            moduleData.put("examen", examen);
-
-            // Récupérer les chapitres de ce module
-            List<Chapitre> chapitresModule = chapitresParModule.getOrDefault(moduleNumero, new ArrayList<>());
-            moduleData.put("nbChapitres", chapitresModule.size());
-
-            // Construire les données des chapitres avec progression
-            List<Map<String, Object>> chapitresData = new ArrayList<>();
-            int leconsModule = 0;
-            int leconsTermineesModule = 0;
-            int chapitresTerminesModule = 0;
-
-            // Trouver la première leçon du module (pour le bouton "Commencer")
-            int premiereLeconId = 0;
-            int premierChapitreId = 0;
-
-            for (Chapitre chapitre : chapitresModule) {
-                Map<String, Object> chapitreData = new LinkedHashMap<>();
-                chapitreData.put("chapitre", chapitre);
-
-                boolean chapitreTermine = progressionCoursDAO.estChapitreTermine(utilisateurId, chapitre.getId());
-                chapitreData.put("termine", chapitreTermine);
-                if (chapitreTermine) chapitresTerminesModule++;
-
-                // Leçons du chapitre avec progression
-                List<Lecon> lecons = leconDAO.listerParChapitre(chapitre.getId());
-                if (lecons == null) lecons = new ArrayList<>();
-                chapitre.setLecons(lecons);
-
-                List<Map<String, Object>> leconsData = new ArrayList<>();
-                int leconsTermineesChapitre = 0;
-
-                for (int i = 0; i < lecons.size(); i++) {
-                    Lecon lecon = lecons.get(i);
-                    Map<String, Object> leconData = new LinkedHashMap<>();
-                    leconData.put("lecon", lecon);
-                    leconData.put("ordre", i + 1);
-
-                    boolean leconTerminee = progressionCoursDAO.estLeconTerminee(utilisateurId, lecon.getId());
-                    leconData.put("terminee", leconTerminee);
-                    if (leconTerminee) leconsTermineesChapitre++;
-
-                    // Si le module est débloqué ou réussi, toutes les leçons sont accessibles
-                    boolean leconAccessible = debloque || moduleReussi;
-                    leconData.put("accessible", leconAccessible);
-
-                    // Compter les exemples de code
-                    if (lecon.hasCodeSource()) {
-                        totalExemplesCode++;
-                    }
-
-                    // Mémoriser la première leçon accessible du module
-                    if (leconAccessible && premiereLeconId == 0) {
-                        premiereLeconId = lecon.getId();
-                        premierChapitreId = chapitre.getId();
-                    }
-
-                    leconsData.add(leconData);
-                }
-
-                chapitreData.put("lecons", leconsData);
-                chapitreData.put("nbLecons", lecons.size());
-                chapitreData.put("leconsTerminees", leconsTermineesChapitre);
-                chapitreData.put("pourcentage", lecons.size() > 0 ? 
-                    (leconsTermineesChapitre * 100 / lecons.size()) : 0);
-
-                chapitresData.add(chapitreData);
-
-                leconsModule += lecons.size();
-                leconsTermineesModule += leconsTermineesChapitre;
-            }
-
-            moduleData.put("chapitres", chapitresData);
-            moduleData.put("nbChapitres", chapitresModule.size());
-            moduleData.put("chapitresTermines", chapitresTerminesModule);
-            moduleData.put("nbLecons", leconsModule);
-            moduleData.put("leconsTerminees", leconsTermineesModule);
-            moduleData.put("pourcentage", leconsModule > 0 ? 
-                (leconsTermineesModule * 100 / leconsModule) : 0);
-            moduleData.put("premiereLeconId", premiereLeconId);
-            moduleData.put("premierChapitreId", premierChapitreId);
-
-            modulesData.add(moduleData);
-
-            totalLeconsCours += leconsModule;
-            totalLeconsTermineesCours += leconsTermineesModule;
-        }
-
-        // ============================================================
-        // 9. CALCULER LES STATISTIQUES GLOBALES DU COURS
-        // ============================================================
-        boolean coursTermine = progressionCoursDAO.estCoursTermine(utilisateurId, coursId);
-        int pourcentageGlobal = (totalLeconsCours > 0) ? 
-            (totalLeconsTermineesCours * 100 / totalLeconsCours) : 0;
-
-        // Calculer le temps de lecture total estimé
-        int tempsLectureTotalMinutes = 0;
-        for (Chapitre chapitre : chapitres) {
-            List<Lecon> leconsChap = leconDAO.listerParChapitre(chapitre.getId());
-            if (leconsChap != null) {
-                for (Lecon lecon : leconsChap) {
-                    tempsLectureTotalMinutes += lecon.getTempsLectureEstime();
-                }
-            }
-        }
-        String tempsLectureTotalFormate = formaterTempsLecture(tempsLectureTotalMinutes);
-
-        // ============================================================
-        // 10. DÉTERMINER SI L'EXAMEN FINAL EST ACCESSIBLE
-        // ============================================================
-        boolean examenAccessible = modulesReussis >= NOMBRE_MODULES && certificatExistant == null;
-        boolean dejaCertifie = certificatExistant != null;
-
-        // ============================================================
-        // 11. DÉTERMINER LE PROCHAIN MODULE À FAIRE
-        // ============================================================
-        Integer prochainModule = null;
-        for (int m = 1; m <= NOMBRE_MODULES; m++) {
-            if (progressionModuleDAO.estModuleDebloque(utilisateurId, coursId, m) && 
-                !progressionModuleDAO.estModuleReussi(utilisateurId, coursId, m)) {
-                prochainModule = m;
-                break;
-            }
-        }
-
-        // ============================================================
-        // 12. MESSAGE DE MOTIVATION
-        // ============================================================
-        String messageMotivation;
-        String iconeMotivation;
-        if (dejaCertifie) {
-            messageMotivation = "Félicitations ! Vous avez déjà obtenu le certificat pour ce cours.";
-            iconeMotivation = "fas fa-crown";
-        } else if (modulesReussis >= NOMBRE_MODULES) {
-            messageMotivation = "Tous les modules sont terminés ! Passez l'examen final pour obtenir votre certificat.";
-            iconeMotivation = "fas fa-trophy";
-        } else if (modulesReussis >= NOMBRE_MODULES / 2) {
-            messageMotivation = "Vous êtes à mi-chemin ! Continuez vos efforts pour terminer ce cours.";
-            iconeMotivation = "fas fa-fire";
-        } else if (modulesReussis > 0) {
-            messageMotivation = "Bon début ! Chaque module réussi vous rapproche de la maîtrise de ce cours.";
-            iconeMotivation = "fas fa-thumbs-up";
-        } else {
-            messageMotivation = "Commencez dès maintenant votre apprentissage par la lecture et la pratique !";
-            iconeMotivation = "fas fa-rocket";
-        }
-
-        // ============================================================
-        // 13. PASSAGE DES ATTRIBUTS À LA JSP
-        // ============================================================
-        request.setAttribute("pageTitle", "Plan - " + cours.getTitre() + " - AmijayQuiz");
-        request.setAttribute("cours", cours);
-        request.setAttribute("modules", modulesData);
-        request.setAttribute("nombreModules", NOMBRE_MODULES);
-        request.setAttribute("modulesReussis", modulesReussis);
-        request.setAttribute("totalChapitres", chapitres.size());
-        request.setAttribute("totalLecons", totalLeconsCours);
-        request.setAttribute("totalLeconsTerminees", totalLeconsTermineesCours);
-        request.setAttribute("totalExemplesCode", totalExemplesCode);
-        request.setAttribute("tempsLectureTotal", tempsLectureTotalFormate);
-        request.setAttribute("pourcentageGlobal", pourcentageGlobal);
-        request.setAttribute("coursTermine", coursTermine);
-        request.setAttribute("examenAccessible", examenAccessible);
-        request.setAttribute("dejaCertifie", dejaCertifie);
-        request.setAttribute("certificatExistant", certificatExistant);
-        request.setAttribute("prochainModule", prochainModule);
-        request.setAttribute("messageMotivation", messageMotivation);
-        request.setAttribute("iconeMotivation", iconeMotivation);
-
-        // ============================================================
-        // 14. AFFICHAGE DE LA PAGE
-        // ============================================================
-        request.getRequestDispatcher("/views/joueur/cours-plan.jsp").forward(request, response);
-    }
-
-    /**
-     * Formate un temps en minutes en chaîne lisible
-     * Exemples : 45 → "45 min", 120 → "2h", 150 → "2h30"
-     * 
-     * @param minutes Temps en minutes
-     * @return Chaîne formatée
-     */
-    private String formaterTempsLecture(int minutes) {
-        if (minutes == 0) {
-            return "Moins d'1 min";
-        }
-        if (minutes < 60) {
-            return minutes + " min";
-        }
-        int heures = minutes / 60;
-        int minsRestantes = minutes % 60;
-        if (minsRestantes == 0) {
-            return heures + "h";
-        }
-        return heures + "h" + String.format("%02d", minsRestantes);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doGet(request, response);
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ============================================================
-// FICHIER : src/main/java/com/amijayquiz/controllers/LeconCoursServlet.java
-// RÔLE    : Contrôleur de la page d'une leçon de cours
-//           Charge le contenu de la leçon, la progression,
-//           et les données des modules pour la barre latérale
-// ============================================================
-
-package com.amijayquiz.controllers;
-
-import com.amijayquiz.dao.ChapitreDAO;
-import com.amijayquiz.dao.CoursDAO;
-import com.amijayquiz.dao.ExamenModuleDAO;
-import com.amijayquiz.dao.LeconDAO;
-import com.amijayquiz.dao.ProgressionCoursDAO;
-import com.amijayquiz.dao.ProgressionModuleDAO;
-import com.amijayquiz.models.Chapitre;
-import com.amijayquiz.models.Cours;
-import com.amijayquiz.models.ExamenModule;
-import com.amijayquiz.models.Lecon;
-import com.amijayquiz.models.ProgressionCours;
-import com.amijayquiz.models.ProgressionModule;
-import com.amijayquiz.models.Utilisateur;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-/**
- * LeconCoursServlet - Page d'une leçon de cours
- * 
- * Charge et affiche le contenu complet d'une leçon :
- * - Texte enrichi (HTML)
- * - Code source de démonstration
- * - Ressources téléchargeables
- * - Vidéo intégrée (optionnelle)
- * - Barre latérale de navigation par modules
- * - Navigation précédente/suivante dans le module
- * - Enregistrement automatique du début de progression
- * 
- * URL : /joueur/cours/lecon?coursId=1&chapitreId=1&leconId=1
- * 
- * @author AmijayQuiz
- * @version 3.0
- */
-@WebServlet(name = "LeconCoursServlet", urlPatterns = {"/joueur/cours/lecon"})
-public class LeconCoursServlet extends HttpServlet {
-
-    // ===== CONSTANTES =====
-    private static final int NOMBRE_MODULES = 15;
-
-    // ============================================================
-    // MÉTHODE DOGET - AFFICHAGE DE LA LEÇON
-    // ============================================================
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        // ----------------------------------------------------------
-        // 1. VÉRIFICATION DE LA SESSION ET DU RÔLE
-        // ----------------------------------------------------------
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("utilisateur") == null) {
-            response.sendRedirect(request.getContextPath() + "/connexion");
-            return;
-        }
-
-        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (!"joueur".equals(utilisateur.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/connexion");
-            return;
-        }
-
-        int utilisateurId = utilisateur.getId();
-
-        // ----------------------------------------------------------
-        // 2. RÉCUPÉRATION ET VALIDATION DES PARAMÈTRES
-        // ----------------------------------------------------------
-        String coursIdParam = request.getParameter("coursId");
-        String chapitreIdParam = request.getParameter("chapitreId");
-        String leconIdParam = request.getParameter("leconId");
-
-        if (coursIdParam == null || coursIdParam.trim().isEmpty() ||
-            chapitreIdParam == null || chapitreIdParam.trim().isEmpty() ||
-            leconIdParam == null || leconIdParam.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        int coursId;
-        int chapitreId;
-        int leconId;
-
-        try {
-            coursId = Integer.parseInt(coursIdParam.trim());
-            chapitreId = Integer.parseInt(chapitreIdParam.trim());
-            leconId = Integer.parseInt(leconIdParam.trim());
-        } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        if (coursId <= 0 || chapitreId <= 0 || leconId <= 0) {
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        // ----------------------------------------------------------
-        // 3. INITIALISATION DES DAO
-        // ----------------------------------------------------------
-        CoursDAO coursDAO = new CoursDAO();
-        ChapitreDAO chapitreDAO = new ChapitreDAO();
-        LeconDAO leconDAO = new LeconDAO();
-        ProgressionCoursDAO progressionCoursDAO = new ProgressionCoursDAO();
-        ProgressionModuleDAO progressionModuleDAO = new ProgressionModuleDAO();
-        ExamenModuleDAO examenModuleDAO = new ExamenModuleDAO();
-
-        // ----------------------------------------------------------
-        // 4. RÉCUPÉRATION DU COURS
-        // ----------------------------------------------------------
-        Cours cours = coursDAO.trouverParId(coursId);
-        if (cours == null) {
-            session.setAttribute("messageErreur", "Ce cours n'existe pas.");
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        // ----------------------------------------------------------
-        // 5. RÉCUPÉRATION DU CHAPITRE
-        // ----------------------------------------------------------
-        Chapitre chapitre = chapitreDAO.trouverParId(chapitreId);
-        if (chapitre == null || chapitre.getCoursId() != coursId) {
-            session.setAttribute("messageErreur", "Ce chapitre n'existe pas dans ce cours.");
-            response.sendRedirect(request.getContextPath() + "/joueur/cours/plan?coursId=" + coursId);
-            return;
-        }
-
-        // ----------------------------------------------------------
-        // 6. RÉCUPÉRATION DE LA LEÇON
-        // ----------------------------------------------------------
-        Lecon lecon = leconDAO.trouverParId(leconId);
-        if (lecon == null || lecon.getChapitreId() != chapitreId) {
-            session.setAttribute("messageErreur", "Cette leçon n'existe pas dans ce chapitre.");
-            response.sendRedirect(request.getContextPath() + "/joueur/cours/chapitre?coursId=" +
-                    coursId + "&chapitreId=" + chapitreId);
-            return;
-        }
-
-        // ----------------------------------------------------------
-        // 7. DÉTERMINER LE MODULE ACTIF
-        // ----------------------------------------------------------
-        int moduleActifNumero = chapitre.getModuleNumero();
-        if (moduleActifNumero <= 0) {
-            moduleActifNumero = 1;
-        }
-
-        // ----------------------------------------------------------
-        // 8. VÉRIFIER SI LE MODULE EST DÉBLOQUÉ OU RÉUSSI
-        // ----------------------------------------------------------
-        boolean moduleDebloque = progressionModuleDAO.estModuleDebloque(utilisateurId, coursId, moduleActifNumero);
-        boolean moduleReussi = progressionModuleDAO.estModuleReussi(utilisateurId, coursId, moduleActifNumero);
-
-        if (!moduleDebloque && !moduleReussi) {
-            session.setAttribute("messageErreur",
-                    "Ce module n'est pas encore débloqué. Réussissez d'abord le module " +
-                    (moduleActifNumero - 1) + ".");
-            response.sendRedirect(request.getContextPath() + "/joueur/cours/plan?coursId=" + coursId);
-            return;
-        }
-
-        // ----------------------------------------------------------
-        // 9. ENREGISTRER LE DÉBUT DE LA LEÇON
-        // ----------------------------------------------------------
-        progressionCoursDAO.enregistrerDebut(utilisateurId, coursId, chapitreId, leconId);
-
-        // ----------------------------------------------------------
-        // 10. RÉCUPÉRER LA PROGRESSION ACTUELLE
-        // ----------------------------------------------------------
-        ProgressionCours progression = progressionCoursDAO.getProgression(utilisateurId, leconId);
-
-        // ----------------------------------------------------------
-        // 11. CHARGER TOUS LES CHAPITRES DU COURS
-        // ----------------------------------------------------------
-        List<Chapitre> tousLesChapitres = chapitreDAO.listerParCours(coursId);
-        cours.setChapitres(tousLesChapitres);
-
-        // ----------------------------------------------------------
-        // 12. FILTRER LES CHAPITRES DU MODULE ACTIF
-        // ----------------------------------------------------------
-        List<Chapitre> chapitresDuModule = new ArrayList<>();
-        for (Chapitre chap : tousLesChapitres) {
-            int chapModule = chap.getModuleNumero();
-            if (chapModule <= 0) {
-                chapModule = 1;
-            }
-            if (chapModule == moduleActifNumero) {
-                chapitresDuModule.add(chap);
-            }
-        }
-
-        // ----------------------------------------------------------
-        // 13. CONSTRUIRE LA LISTE DE TOUTES LES LEÇONS DU MODULE
-        // ----------------------------------------------------------
-        List<Lecon> toutesLesLeconsDuModule = new ArrayList<>();
-        for (Chapitre chap : chapitresDuModule) {
-            List<Lecon> leconsChap = leconDAO.listerParChapitre(chap.getId());
-            if (leconsChap != null) {
-                toutesLesLeconsDuModule.addAll(leconsChap);
-            }
-        }
-
-        // ----------------------------------------------------------
-        // 14. TROUVER LA LEÇON PRÉCÉDENTE ET SUIVANTE DANS LE MODULE
-        // ----------------------------------------------------------
-        Lecon leconPrecedente = null;
-        Lecon leconSuivante = null;
-
-        for (int i = 0; i < toutesLesLeconsDuModule.size(); i++) {
-            Lecon leconCourante = toutesLesLeconsDuModule.get(i);
-            if (leconCourante.getId() == leconId) {
-                if (i > 0) {
-                    leconPrecedente = toutesLesLeconsDuModule.get(i - 1);
-                }
-                if (i < toutesLesLeconsDuModule.size() - 1) {
-                    leconSuivante = toutesLesLeconsDuModule.get(i + 1);
-                }
-                break;
-            }
-        }
-
-        // ----------------------------------------------------------
-        // 15. DÉTERMINER SI C'EST LA DERNIÈRE LEÇON DU MODULE
-        // ----------------------------------------------------------
-        boolean estDerniereLeconDuModule = (leconSuivante == null);
-
-        // ----------------------------------------------------------
-        // 16. VÉRIFIER SI TOUS LES MODULES SONT RÉUSSIS
-        // ----------------------------------------------------------
-        boolean tousModulesReussis = true;
-        for (int m = 1; m <= NOMBRE_MODULES; m++) {
-            if (!progressionModuleDAO.estModuleReussi(utilisateurId, coursId, m)) {
-                tousModulesReussis = false;
-                break;
-            }
-        }
-
-        // ----------------------------------------------------------
-        // 17. RÉCUPÉRER TOUS LES EXAMENS DU COURS
-        // ----------------------------------------------------------
-        List<ExamenModule> examens = examenModuleDAO.listerParCours(coursId);
-
-        // ----------------------------------------------------------
-        // 18. CONSTRUIRE LES DONNÉES DES MODULES POUR LA BARRE LATÉRALE
-        // ----------------------------------------------------------
-        List<Map<String, Object>> modulesData = new ArrayList<>();
-
-        for (int moduleNumero = 1; moduleNumero <= NOMBRE_MODULES; moduleNumero++) {
-
-            Map<String, Object> moduleData = new LinkedHashMap<>();
-            moduleData.put("numero", moduleNumero);
-
-            // Statut du module
-            boolean debloque = progressionModuleDAO.estModuleDebloque(utilisateurId, coursId, moduleNumero);
-            boolean reussi = progressionModuleDAO.estModuleReussi(utilisateurId, coursId, moduleNumero);
-            moduleData.put("debloque", debloque);
-            moduleData.put("reussi", reussi);
-
-            // Progression du module
-            ProgressionModule progressionModule = progressionModuleDAO.getProgression(
-                    utilisateurId, coursId, moduleNumero);
-            moduleData.put("progression", progressionModule);
-
-            // Examen du module
-            ExamenModule examen = null;
-            if (examens != null) {
-                for (ExamenModule e : examens) {
-                    if (e.getModuleNumero() == moduleNumero) {
-                        examen = e;
-                        break;
-                    }
-                }
-            }
-            moduleData.put("examen", examen);
-
-            // Filtrer les chapitres de ce module
-            List<Chapitre> chapitresModule = new ArrayList<>();
-            for (Chapitre chap : tousLesChapitres) {
-                int chapModule = chap.getModuleNumero();
-                if (chapModule <= 0) {
-                    chapModule = 1;
-                }
-                if (chapModule == moduleNumero) {
-                    chapitresModule.add(chap);
-                }
-            }
-
-            int nbChapitresModule = chapitresModule.size();
-            int nbLeconsModule = 0;
-
-            List<Map<String, Object>> chapitresData = new ArrayList<>();
-
-            for (Chapitre chap : chapitresModule) {
-
-                Map<String, Object> chapitreData = new LinkedHashMap<>();
-                chapitreData.put("chapitre", chap);
-
-                boolean chapTermine = progressionCoursDAO.estChapitreTermine(utilisateurId, chap.getId());
-                chapitreData.put("termine", chapTermine);
-
-                List<Lecon> leconsChap = leconDAO.listerParChapitre(chap.getId());
-                if (leconsChap == null) {
-                    leconsChap = new ArrayList<>();
-                }
-
-                List<Map<String, Object>> leconsData = new ArrayList<>();
-
-                for (int i = 0; i < leconsChap.size(); i++) {
-                    Lecon leconDuChap = leconsChap.get(i);
-
-                    Map<String, Object> leconData = new LinkedHashMap<>();
-                    leconData.put("lecon", leconDuChap);
-                    leconData.put("ordre", i + 1);
-
-                    boolean leconTerminee = progressionCoursDAO.estLeconTerminee(
-                            utilisateurId, leconDuChap.getId());
-                    leconData.put("terminee", leconTerminee);
-
-                    boolean leconAccessible = (debloque || reussi);
-                    leconData.put("accessible", leconAccessible);
-
-                    leconsData.add(leconData);
-                }
-
-                chapitreData.put("lecons", leconsData);
-                chapitreData.put("nbLecons", leconsChap.size());
-
-                chapitresData.add(chapitreData);
-
-                nbLeconsModule += leconsChap.size();
-            }
-
-            moduleData.put("chapitres", chapitresData);
-            moduleData.put("nbChapitres", nbChapitresModule);
-            moduleData.put("nbLecons", nbLeconsModule);
-
-            modulesData.add(moduleData);
-        }
-
-        // ----------------------------------------------------------
-        // 19. PASSAGE DES ATTRIBUTS À LA JSP
-        // ----------------------------------------------------------
-        request.setAttribute("pageTitle", lecon.getTitre() + " - " + cours.getTitre() + " - AmijayQuiz");
-        request.setAttribute("cours", cours);
-        request.setAttribute("chapitre", chapitre);
-        request.setAttribute("lecon", lecon);
-        request.setAttribute("progression", progression);
-        request.setAttribute("leconPrecedente", leconPrecedente);
-        request.setAttribute("leconSuivante", leconSuivante);
-        request.setAttribute("estDerniereLecon", estDerniereLeconDuModule);
-        request.setAttribute("moduleDebloque", moduleDebloque);
-        request.setAttribute("moduleReussi", moduleReussi);
-        request.setAttribute("moduleSuivant", moduleActifNumero < NOMBRE_MODULES ? moduleActifNumero + 1 : 0);
-        request.setAttribute("tousChapitresTermines", tousModulesReussis);
-        request.setAttribute("totalLeconsChapitre", leconDAO.compterParChapitre(chapitreId));
-        request.setAttribute("modules", modulesData);
-        request.setAttribute("moduleActiveNumero", moduleActifNumero);
-        request.setAttribute("leconActiveId", lecon.getId());
-        request.setAttribute("chapitreActiveId", chapitre.getId());
-
-        // ----------------------------------------------------------
-        // 20. AFFICHAGE DE LA PAGE
-        // ----------------------------------------------------------
-        request.getRequestDispatcher("/views/joueur/cours-lecon.jsp").forward(request, response);
-    }
-
-    // ============================================================
-    // MÉTHODE DOPOST - REDIRIGE VERS DOGET
-    // ============================================================
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doGet(request, response);
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-. PlanCoursServlet.java (version actuelle qui ne fonctionne pas)
-2. cours-plan.jsp (version actuelle qui n'affiche pas le plan)
-3. CourseAccessFilter.java (qui pourrait bloquer tout)
-4. NiveauCoursServlet.java (pour les cours qui ne s'affichent plus)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Chapitre" %>
-<%@ page import="com.amijayquiz.models.Lecon" %>
-
-<%-- ============================================================
-     Fichier : cours-chapitre.jsp
-     Rôle    : Page d'un chapitre de cours
-              Affiche le détail du chapitre et la liste des leçons
-              avec leur statut (terminée, en cours, verrouillée)
-              et temps de lecture au lieu de durée vidéo
-     ============================================================ --%>
-
-<%
-    Cours cours = (Cours) request.getAttribute("cours");
-    Chapitre chapitre = (Chapitre) request.getAttribute("chapitre");
-    List<Map<String, Object>> lecons = (List<Map<String, Object>>) request.getAttribute("lecons");
-    Integer totalLecons = (Integer) request.getAttribute("totalLecons");
-    Integer leconsTerminees = (Integer) request.getAttribute("leconsTerminees");
-    Integer pourcentageChapitre = (Integer) request.getAttribute("pourcentageChapitre");
-    Boolean chapitreTermine = (Boolean) request.getAttribute("chapitreTermine");
-    Chapitre chapitrePrecedent = (Chapitre) request.getAttribute("chapitrePrecedent");
-    Chapitre chapitreSuivant = (Chapitre) request.getAttribute("chapitreSuivant");
-    Boolean chapitreSuivantDebloque = (Boolean) request.getAttribute("chapitreSuivantDebloque");
-    Integer totalChapitres = (Integer) request.getAttribute("totalChapitres");
-    Boolean tousChapitresTermines = (Boolean) request.getAttribute("tousChapitresTermines");
-
-    if (cours == null || chapitre == null) {
-        response.sendRedirect(request.getContextPath() + "/joueur/cours");
-        return;
-    }
-
-    if (totalLecons == null) totalLecons = 0;
-    if (leconsTerminees == null) leconsTerminees = 0;
-    if (pourcentageChapitre == null) pourcentageChapitre = 0;
-    if (chapitreTermine == null) chapitreTermine = false;
-    if (chapitreSuivantDebloque == null) chapitreSuivantDebloque = false;
-    if (totalChapitres == null) totalChapitres = 0;
-    if (tousChapitresTermines == null) tousChapitresTermines = false;
-
-    String themeEncode = java.net.URLEncoder.encode(cours.getTheme(), "UTF-8");
-    String niveauEncode = java.net.URLEncoder.encode(cours.getNiveau(), "UTF-8");
-%>
-
-<%@ include file="../header.jsp" %>
-
-<%-- ===== CHARGEMENT DES STYLES ===== --%>
-<%
-    String coursChapitreCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/cours-chapitre.css\">";
-    request.setAttribute("extraHead", coursChapitreCSS);
-%>
-
-<div class="chapitre-container">
-
-    <%-- ============================================================
-         BREADCRUMB
-         ============================================================ --%>
-    <nav class="breadcrumb" aria-label="Fil d'Ariane">
-        <a href="${pageContext.request.contextPath}/joueur/dashboard" class="breadcrumb-link">
-            <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours" class="breadcrumb-link">
-            <i class="fas fa-graduation-cap"></i><span>Cours</span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours/theme?theme=<%= themeEncode %>" class="breadcrumb-link">
-            <span><%= cours.getTheme() %></span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours/niveau?theme=<%= themeEncode %>&niveau=<%= niveauEncode %>" class="breadcrumb-link">
-            <span><%= cours.getNiveauFormate() %></span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours/plan?coursId=<%= cours.getId() %>" class="breadcrumb-link">
-            <i class="fas fa-sitemap"></i><span>Plan</span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <span class="breadcrumb-current">
-            <i class="fas fa-bookmark"></i><span><%= chapitre.getTitre() %></span>
-        </span>
-    </nav>
-
-    <%-- ============================================================
-         EN-TÊTE DU CHAPITRE
-         ============================================================ --%>
-    <div class="chapitre-header">
-        <div class="chapitre-header-top">
-            <div class="chapitre-cours-info">
-                <span class="chapitre-cours-badge" style="background: <%= cours.getCouleurTheme() %>;">
-                    <i class="<%= cours.getIconeTheme() %>"></i> <%= cours.getTitre() %>
-                </span>
-                <span class="chapitre-niveau-badge" style="background: <%= cours.getCouleurNiveau() %>;">
-                    <i class="<%= cours.getIconeNiveau() %>"></i> <%= cours.getNiveauFormate() %>
-                </span>
-            </div>
-            <div class="chapitre-statut">
-                <% if (chapitreTermine) { %>
-                    <span class="badge-statut termine">
-                        <i class="fas fa-check-circle"></i> Chapitre terminé
-                    </span>
-                <% } else if (leconsTerminees > 0) { %>
-                    <span class="badge-statut en-cours">
-                        <i class="fas fa-spinner"></i> En cours
-                    </span>
-                <% } else { %>
-                    <span class="badge-statut a-debuter">
-                        <i class="fas fa-play-circle"></i> À débuter
-                    </span>
-                <% } %>
-            </div>
-        </div>
-
-        <h1 class="chapitre-titre"><%= chapitre.getTitre() %></h1>
-
-        <%-- Description et objectifs --%>
-        <% if (chapitre.getDescription() != null && !chapitre.getDescription().isEmpty()) { %>
-            <div class="chapitre-description">
-                <p><%= chapitre.getDescription() %></p>
-            </div>
-        <% } %>
-
-        <% if (chapitre.getObjectifs() != null && !chapitre.getObjectifs().isEmpty()) { %>
-            <div class="chapitre-objectifs">
-                <h4><i class="fas fa-bullseye"></i> Objectifs du chapitre</h4>
-                <p><%= chapitre.getObjectifs() %></p>
-            </div>
-        <% } %>
-
-        <%-- Barre de progression --%>
-        <div class="chapitre-progression">
-            <div class="chapitre-progression-header">
-                <span><i class="fas fa-chart-simple"></i> Progression du chapitre</span>
-                <span><strong><%= pourcentageChapitre %>%</strong></span>
-            </div>
-            <div class="chapitre-progression-bar">
-                <div class="chapitre-progression-fill" style="width: <%= pourcentageChapitre %>%; background: <%= cours.getCouleurTheme() %>;"></div>
-            </div>
-            <div class="chapitre-progression-detail">
-                <span><i class="fas fa-check-circle"></i> <%= leconsTerminees %> / <%= totalLecons %> leçons terminées</span>
-                <span><i class="fas fa-layer-group"></i> Chapitre <%= chapitre.getOrdre() %> sur <%= totalChapitres %></span>
-            </div>
-        </div>
-    </div>
-
-    <%-- ============================================================
-         LISTE DES LEÇONS
-         ============================================================ --%>
-    <div class="lecons-section">
-        <h2 class="lecons-section-title">
-            <i class="fas fa-list-ol"></i>
-            Leçons du chapitre
-            <span class="lecons-count"><%= totalLecons %> leçon<%= totalLecons > 1 ? "s" : "" %></span>
-        </h2>
-
-        <div class="lecons-timeline">
-            <% if (lecons != null && !lecons.isEmpty()) {
-                int index = 1;
-                for (Map<String, Object> leconData : lecons) {
-                    Lecon lecon = (Lecon) leconData.get("lecon");
-                    boolean estTerminee = (Boolean) leconData.get("estTerminee");
-                    boolean estAccessible = (Boolean) leconData.get("estAccessible");
-                    boolean estActive = (Boolean) leconData.get("estActive");
-                    
-                    String statutClass = estTerminee ? "terminee" : (estActive ? "active" : "verrouillee");
-                    String statutIcon = estTerminee ? "fa-check-circle" : (estActive ? "fa-play-circle" : "fa-lock");
-                    String statutColor = estTerminee ? "#27ae60" : (estActive ? "#667eea" : "#ccc");
-                    String tempsLecture = lecon.getTempsLectureFormate();
-                    boolean hasCode = lecon.hasCodeSource();
-            %>
-                <div class="lecon-item <%= statutClass %>">
-                    <%-- Connecteur timeline --%>
-                    <div class="lecon-timeline-connector">
-                        <div class="lecon-timeline-dot" style="background: <%= statutColor %>;">
-                            <i class="fas <%= statutIcon %>"></i>
-                        </div>
-                        <% if (index < totalLecons) { %>
-                            <div class="lecon-timeline-line <%= estTerminee ? "completed" : "" %>"></div>
-                        <% } %>
-                    </div>
-
-                    <%-- Contenu de la leçon --%>
-                    <div class="lecon-content">
-                        <% if (estAccessible) { %>
-                            <a href="${pageContext.request.contextPath}/joueur/cours/lecon?coursId=<%= cours.getId() %>&chapitreId=<%= chapitre.getId() %>&leconId=<%= lecon.getId() %>" 
-                               class="lecon-card">
-                        <% } else { %>
-                            <div class="lecon-card verrouillee">
-                        <% } %>
-                        
-                            <div class="lecon-card-left">
-                                <span class="lecon-numero"><%= index %></span>
-                            </div>
-                            
-                            <div class="lecon-card-center">
-                                <h3 class="lecon-titre"><%= lecon.getTitre() %></h3>
-                                <div class="lecon-meta">
-                                    <span class="lecon-meta-item">
-                                        <i class="fas fa-book-reader"></i> <%= tempsLecture %> de lecture
-                                    </span>
-                                    <% if (hasCode) { %>
-                                        <span class="lecon-meta-item code">
-                                            <i class="fas fa-code"></i> Exemple de code
-                                        </span>
-                                    <% } %>
-                                    <% if (lecon.hasRessources()) { %>
-                                        <span class="lecon-meta-item">
-                                            <i class="fas fa-paperclip"></i> <%= lecon.getNombreRessources() %> ressource<%= lecon.getNombreRessources() > 1 ? "s" : "" %>
-                                        </span>
-                                    <% } %>
-                                    <% if (!lecon.isGratuit()) { %>
-                                        <span class="lecon-meta-item premium">
-                                            <i class="fas fa-crown"></i> Premium
-                                        </span>
-                                    <% } %>
-                                </div>
-                            </div>
-                            
-                            <div class="lecon-card-right">
-                                <% if (estTerminee) { %>
-                                    <span class="lecon-badge termine">
-                                        <i class="fas fa-check-circle"></i> Terminé
-                                    </span>
-                                <% } else if (estActive) { %>
-                                    <span class="lecon-badge active">
-                                        <i class="fas fa-play"></i> Commencer
-                                    </span>
-                                <% } else { %>
-                                    <span class="lecon-badge verrouille">
-                                        <i class="fas fa-lock"></i> Verrouillé
-                                    </span>
-                                <% } %>
-                                <% if (estAccessible) { %>
-                                    <i class="fas fa-chevron-right lecon-arrow"></i>
-                                <% } %>
-                            </div>
-                            
-                        <% if (estAccessible) { %>
-                            </a>
-                        <% } else { %>
-                            </div>
-                        <% } %>
-                    </div>
                 </div>
-            <%      index++;
-                }
-            } else { %>
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-inbox"></i></div>
-                    <h3>Aucune leçon dans ce chapitre</h3>
-                    <p>Les leçons seront bientôt disponibles.</p>
-                </div>
-            <% } %>
-        </div>
-    </div>
-
-    <%-- ============================================================
-         NAVIGATION ENTRE CHAPITRES
-         ============================================================ --%>
-    <div class="chapitre-navigation">
-        <div class="nav-chapitre">
-            <%-- Chapitre précédent --%>
-            <% if (chapitrePrecedent != null) { %>
-                <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= chapitrePrecedent.getId() %>" 
-                   class="btn-nav-chapitre precedent">
-                    <i class="fas fa-arrow-left"></i>
-                    <div class="nav-chapitre-text">
-                        <span class="nav-label">Chapitre précédent</span>
-                        <span class="nav-titre"><%= chapitrePrecedent.getTitre() %></span>
-                    </div>
-                </a>
-            <% } else { %>
-                <div></div>
-            <% } %>
-
-            <%-- Retour au plan --%>
-            <a href="${pageContext.request.contextPath}/joueur/cours/plan?coursId=<%= cours.getId() %>" 
-               class="btn-nav-chapitre plan">
-                <i class="fas fa-sitemap"></i>
-                <span>Plan du cours</span>
-            </a>
-
-            <%-- Chapitre suivant ou Examen final --%>
-            <% if (chapitreSuivant != null) { %>
-                <% if (chapitreSuivantDebloque) { %>
-                    <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= chapitreSuivant.getId() %>" 
-                       class="btn-nav-chapitre suivant">
-                        <div class="nav-chapitre-text">
-                            <span class="nav-label">Chapitre suivant</span>
-                            <span class="nav-titre"><%= chapitreSuivant.getTitre() %></span>
-                        </div>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                <% } else { %>
-                    <div class="btn-nav-chapitre suivant verrouille">
-                        <div class="nav-chapitre-text">
-                            <span class="nav-label">Chapitre suivant</span>
-                            <span class="nav-titre"><%= chapitreSuivant.getTitre() %></span>
-                            <span class="nav-lock"><i class="fas fa-lock"></i> Terminez ce chapitre</span>
-                        </div>
-                        <i class="fas fa-lock"></i>
-                    </div>
-                <% } %>
-            <% } else if (tousChapitresTermines || chapitreTermine) { %>
-                <a href="${pageContext.request.contextPath}/joueur/cours/examen?coursId=<%= cours.getId() %>" 
-                   class="btn-nav-chapitre examen">
-                    <div class="nav-chapitre-text">
-                        <span class="nav-label">Examen final</span>
-                        <span class="nav-titre">Passer l'examen du cours</span>
-                    </div>
-                    <i class="fas fa-trophy"></i>
-                </a>
-            <% } %>
-        </div>
-    </div>
-
-    <%-- ============================================================
-         BOUTON RETOUR
-         ============================================================ --%>
-    <div class="back-section">
-        <a href="${pageContext.request.contextPath}/joueur/cours/plan?coursId=<%= cours.getId() %>" class="btn-back">
-            <i class="fas fa-arrow-left"></i>
-            <span>Retour au plan du cours</span>
-        </a>
-    </div>
-
-</div>
-
-<%-- ===== CHARGEMENT DES SCRIPTS ===== --%>
-<%
-    String coursChapitreJS = "<script src=\"" + request.getContextPath() + "/views/assets/js/cours-chapitre.js\"></script>";
-    request.setAttribute("extraScripts", coursChapitreJS);
-%>
-
-<%@ include file="../footer.jsp" %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Chapitre" %>
-<%@ page import="com.amijayquiz.models.Lecon" %>
-<%@ page import="com.amijayquiz.models.ProgressionCours" %>
-<%@ page import="com.amijayquiz.models.Ressource" %>
-
-<%-- ============================================================
-     Fichier : cours-lecon.jsp
-     Rôle    : Page de contenu d'une leçon de cours
-              Affiche : explications texte enrichi,
-              exemples de code prêts à copier-coller,
-              ressources téléchargeables et navigation
-              Style W3Schools : texte + code + pratique
-     ============================================================ --%>
-
-<%
-    Cours cours = (Cours) request.getAttribute("cours");
-    Chapitre chapitre = (Chapitre) request.getAttribute("chapitre");
-    Lecon lecon = (Lecon) request.getAttribute("lecon");
-    ProgressionCours progression = (ProgressionCours) request.getAttribute("progression");
-    Lecon leconPrecedente = (Lecon) request.getAttribute("leconPrecedente");
-    Lecon leconSuivante = (Lecon) request.getAttribute("leconSuivante");
-    Boolean estDerniereLecon = (Boolean) request.getAttribute("estDerniereLecon");
-    Boolean estDernierChapitre = (Boolean) request.getAttribute("estDernierChapitre");
-    Chapitre prochainChapitre = (Chapitre) request.getAttribute("prochainChapitre");
-    Integer totalLeconsChapitre = (Integer) request.getAttribute("totalLeconsChapitre");
-    List<Chapitre> chapitresDuCours = (List<Chapitre>) request.getAttribute("chapitresDuCours");
-    Boolean tousChapitresTermines = (Boolean) request.getAttribute("tousChapitresTermines");
-
-    if (cours == null || chapitre == null || lecon == null) {
-        response.sendRedirect(request.getContextPath() + "/joueur/cours");
-        return;
-    }
-
-    boolean estTerminee = (progression != null && progression.isTermine());
-    int leconActive = lecon.getOrdre();
-    if (estDerniereLecon == null) estDerniereLecon = false;
-    if (estDernierChapitre == null) estDernierChapitre = false;
-    if (tousChapitresTermines == null) tousChapitresTermines = false;
-
-    String themeEncode = java.net.URLEncoder.encode(cours.getTheme(), "UTF-8");
-    String niveauEncode = java.net.URLEncoder.encode(cours.getNiveau(), "UTF-8");
-    
-    // Temps de lecture
-    int tempsLecture = lecon.getTempsLectureEstime();
-    String tempsLectureFormate = lecon.getTempsLectureFormate();
-    int nombreMots = lecon.getNombreMots();
-%>
-
-<%@ include file="../header.jsp" %>
-
-<%-- ===== CHARGEMENT DES STYLES ===== --%>
-<%
-    String coursLeconCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/cours-lecon.css\">";
-    request.setAttribute("extraHead", coursLeconCSS);
-%>
-
-<div class="lecon-container">
-
-    <%-- ============================================================
-         BREADCRUMB
-         ============================================================ --%>
-    <nav class="breadcrumb" aria-label="Fil d'Ariane">
-        <a href="${pageContext.request.contextPath}/joueur/dashboard" class="breadcrumb-link">
-            <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours" class="breadcrumb-link">
-            <i class="fas fa-graduation-cap"></i><span>Cours</span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours/theme?theme=<%= themeEncode %>" class="breadcrumb-link">
-            <span><%= cours.getTheme() %></span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours/niveau?theme=<%= themeEncode %>&niveau=<%= niveauEncode %>" class="breadcrumb-link">
-            <span><%= cours.getNiveauFormate() %></span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours/plan?coursId=<%= cours.getId() %>" class="breadcrumb-link">
-            <i class="fas fa-sitemap"></i><span>Plan</span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= chapitre.getId() %>" class="breadcrumb-link">
-            <i class="fas fa-bookmark"></i><span><%= chapitre.getTitre() %></span>
-        </a>
-        <i class="fas fa-chevron-right breadcrumb-separator"></i>
-        <span class="breadcrumb-current">
-            <i class="fas fa-file-alt"></i><span>Leçon <%= leconActive %></span>
-        </span>
-    </nav>
-
-    <%-- ============================================================
-         LAYOUT 2 COLONNES
-         ============================================================ --%>
-    <div class="lecon-layout">
-
-        <%-- ============================================================
-             COLONNE PRINCIPALE : CONTENU DE LA LEÇON
-             ============================================================ --%>
-        <div class="lecon-main">
-
-            <%-- En-tête de la leçon --%>
-            <div class="lecon-header">
-                <div class="lecon-header-badges">
-                    <span class="lecon-badge-cours" style="background: <%= cours.getCouleurTheme() %>;">
-                        <i class="<%= cours.getIconeTheme() %>"></i> <%= cours.getTitre() %>
-                    </span>
-                    <span class="lecon-badge-chapitre">
-                        <i class="fas fa-bookmark"></i> <%= chapitre.getTitre() %>
-                    </span>
-                    <% if (!lecon.isGratuit()) { %>
-                        <span class="lecon-badge-premium">
-                            <i class="fas fa-crown"></i> Premium
-                        </span>
-                    <% } %>
-                </div>
-                <h1 class="lecon-titre"><%= lecon.getTitre() %></h1>
-                <div class="lecon-header-meta">
-                    <span class="lecon-meta-item">
-                        <i class="fas fa-list-ol"></i> Leçon <%= leconActive %> sur <%= totalLeconsChapitre %>
-                    </span>
-                    <span class="lecon-meta-item">
-                        <i class="fas fa-book-reader"></i> <%= tempsLectureFormate %> de lecture
-                    </span>
-                    <span class="lecon-meta-item">
-                        <i class="fas fa-font"></i> <%= nombreMots %> mots
-                    </span>
-                    <% if (lecon.hasCodeSource()) { %>
-                        <span class="lecon-meta-item">
-                            <i class="fas fa-code"></i> Exemple de code inclus
-                        </span>
-                    <% } %>
-                    <% if (estTerminee) { %>
-                        <span class="lecon-meta-item termine">
-                            <i class="fas fa-check-circle"></i> Terminée
-                        </span>
-                    <% } %>
-                </div>
-            </div>
-
-            <%-- ===== VIDÉO (OPTIONNELLE - conservée pour compatibilité) ===== --%>
-            <% if (lecon.hasVideo()) { %>
-                <div class="lecon-video">
-                    <div class="video-container">
-                        <iframe src="<%= lecon.getYoutubeEmbedUrl() %>" 
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen
-                                title="Vidéo de la leçon">
-                        </iframe>
-                    </div>
-                </div>
-            <% } %>
-
-            <%-- ===== CONTENU TEXTE : EXPLICATIONS (STYLE W3SCHOOLS) ===== --%>
-            <% if (lecon.hasContenuTexte()) { %>
-                <div class="lecon-texte">
-                    <%= lecon.getContenuTexte() %>
-                </div>
-            <% } else { %>
-                <div class="lecon-texte-vide">
-                    <div class="empty-icon">
-                        <i class="fas fa-pen-fancy"></i>
-                    </div>
-                    <h3>Contenu en cours de rédaction</h3>
-                    <p>Le contenu détaillé de cette leçon sera bientôt disponible.</p>
-                </div>
-            <% } %>
-
-            <%-- ===== CODE SOURCE : EXEMPLE PRÊT À COPIER-COLLER ===== --%>
-            <% if (lecon.hasCodeSource()) { %>
-                <div class="lecon-code">
-                    <div class="code-header">
-                        <div class="code-header-left">
-                            <i class="fas fa-code"></i>
-                            <span class="code-title">Exemple de code</span>
-                            <span class="code-badge">Prêt à copier-coller</span>
-                        </div>
-                        <div class="code-header-right">
-                            <button class="code-copy-btn" onclick="copierCode()" title="Copier le code dans le presse-papier">
-                                <i class="fas fa-copy"></i>
-                                <span>Copier le code</span>
-                            </button>
-                            <button class="code-expand-btn" onclick="toggleCodeExpand()" title="Afficher en plein écran">
-                                <i class="fas fa-expand"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <pre class="code-block" id="codeBlock"><code><%= lecon.getCodeSource().replace("<", "&lt;").replace(">", "&gt;") %></code></pre>
-                    <div class="code-footer">
-                        <span class="code-langage">💡 Conseil : Copiez ce code et testez-le dans votre environnement de développement.</span>
-                    </div>
-                </div>
-            <% } %>
-
-            <%-- ===== RESSOURCES ===== --%>
-            <% if (lecon.hasRessources()) { %>
-                <div class="lecon-ressources">
-                    <h3 class="ressources-title">
-                        <i class="fas fa-paperclip"></i> Ressources téléchargeables
-                    </h3>
-                    <div class="ressources-grid">
-                        <% for (Ressource ressource : lecon.getRessources()) { %>
-                            <a href="<%= ressource.getUrlFichier() %>" 
-                               class="ressource-card" 
-                               download
-                               title="Télécharger <%= ressource.getTitre() %>">
-                                <div class="ressource-icon" style="background: <%= ressource.getCouleurType() %>;">
-                                    <i class="<%= ressource.getIcone() %>"></i>
-                                </div>
-                                <div class="ressource-info">
-                                    <span class="ressource-nom"><%= ressource.getTitre() %></span>
-                                    <% if (ressource.getTaille() != null) { %>
-                                        <span class="ressource-taille"><%= ressource.getTaille() %></span>
-                                    <% } %>
-                                </div>
-                                <i class="fas fa-download ressource-download"></i>
-                            </a>
-                        <% } %>
-                    </div>
-                </div>
-            <% } %>
-
-            <%-- ===== MESSAGE DE FIN DE LEÇON ===== --%>
-            <div class="lecon-fin-message">
-                <div class="fin-message-icon">
-                    <i class="fas fa-flag-checkered"></i>
-                </div>
-                <div class="fin-message-content">
-                    <h4>
-                        <% if (estTerminee) { %>
-                            ✅ Leçon terminée !
-                        <% } else { %>
-                            📚 Fin de la leçon
-                        <% } %>
-                    </h4>
+                <div class="premium-banner-text">
+                    <h3>Débloquez tout le potentiel d'AmijayQuiz</h3>
                     <p>
-                        <% if (estTerminee) { %>
-                            Vous avez déjà validé cette leçon. Passez à la suite !
-                        <% } else if (leconSuivante != null) { %>
-                            Prêt à passer à la leçon suivante ? Cliquez sur le bouton ci-dessous.
-                        <% } else if (estDerniereLecon && !estDernierChapitre) { %>
-                            Dernière leçon de ce chapitre ! Validez pour passer au chapitre suivant.
-                        <% } else if (estDerniereLecon && estDernierChapitre && !tousChapitresTermines) { %>
-                            Dernière leçon du cours ! Validez pour terminer ce chapitre.
-                        <% } else if (estDerniereLecon && estDernierChapitre && tousChapitresTermines) { %>
-                            🎉 Tous les chapitres sont terminés ! Vous pouvez passer l'examen final.
-                        <% } %>
+                        <strong>4$ seulement</strong> — Accès à vie à tous les niveaux Moyen & Avancé.
+                        <span class="premium-banner-features">
+                            <span><i class="fas fa-check"></i> Tous les cours</span>
+                            <span><i class="fas fa-check"></i> Tous les quiz</span>
+                            <span><i class="fas fa-check"></i> Certificats</span>
+                        </span>
                     </p>
                 </div>
+                <a href="${pageContext.request.contextPath}/paiement" class="premium-banner-btn">
+                    <i class="fas fa-rocket"></i>
+                    <span>Devenir Premium</span>
+                    <small>4$ / 10 000 FC</small>
+                </a>
             </div>
-
-            <%-- ===== NAVIGATION BAS ===== --%>
-            <div class="lecon-navigation">
-                <% if (leconPrecedente != null) { %>
-                    <a href="${pageContext.request.contextPath}/joueur/cours/lecon?coursId=<%= cours.getId() %>&chapitreId=<%= chapitre.getId() %>&leconId=<%= leconPrecedente.getId() %>" 
-                       class="btn-nav-lecon precedent">
-                        <i class="fas fa-arrow-left"></i>
-                        <div class="btn-nav-text">
-                            <span class="nav-label">Leçon précédente</span>
-                            <span class="nav-titre"><%= leconPrecedente.getTitre() %></span>
-                        </div>
-                    </a>
-                <% } else { %>
-                    <div></div>
-                <% } %>
-
-                <% if (leconSuivante != null) { %>
-                    <button type="button" class="btn-nav-lecon valider" onclick="validerLecon()">
-                        <div class="btn-nav-text">
-                            <span class="nav-label">Valider & continuer</span>
-                            <span class="nav-titre"><%= leconSuivante.getTitre() %></span>
-                        </div>
-                        <i class="fas fa-check-circle"></i>
-                    </button>
-                <% } else if (estDerniereLecon && !estDernierChapitre && prochainChapitre != null) { %>
-                    <button type="button" class="btn-nav-lecon valider" onclick="validerLecon()">
-                        <div class="btn-nav-text">
-                            <span class="nav-label">Valider & passer au chapitre suivant</span>
-                            <span class="nav-titre"><%= prochainChapitre.getTitre() %></span>
-                        </div>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                <% } else if (estDerniereLecon && estDernierChapitre && tousChapitresTermines) { %>
-                    <a href="${pageContext.request.contextPath}/joueur/cours/examen?coursId=<%= cours.getId() %>" 
-                       class="btn-nav-lecon examen">
-                        <div class="btn-nav-text">
-                            <span class="nav-label">Valider & passer l'examen final</span>
-                            <span class="nav-titre">🎓 Obtenir le certificat</span>
-                        </div>
-                        <i class="fas fa-trophy"></i>
-                    </a>
-                <% } else if (estDerniereLecon && estDernierChapitre) { %>
-                    <button type="button" class="btn-nav-lecon valider" onclick="validerLecon()">
-                        <div class="btn-nav-text">
-                            <span class="nav-label">Valider la leçon</span>
-                            <span class="nav-titre">✅ Terminer</span>
-                        </div>
-                        <i class="fas fa-check-circle"></i>
-                    </button>
-                <% } %>
-            </div>
-
         </div>
+    <% } %>
 
-        <%-- ============================================================
-             COLONNE LATÉRALE : SOMMAIRE DU CHAPITRE
-             ============================================================ --%>
-        <aside class="lecon-sidebar">
-            <%-- Carte sommaire --%>
-            <div class="sidebar-card">
-                <div class="sidebar-header">
-                    <h3><i class="fas fa-list"></i> Sommaire du chapitre</h3>
-                    <span class="sidebar-progress"><%= leconActive %>/<%= totalLeconsChapitre %></span>
+<%-- ===== DANS LA SECTION STATISTIQUES, REMPLACER OU AJOUTER UNE CARTE : ===== --%>
+            <%-- 🆕 Statut Premium --%>
+            <div class="stat-card <%= estPremium ? "stat-card-premium-actif" : "stat-card-premium-inactif" %>">
+                <div class="stat-icon-wrapper stat-icon-premium">
+                    <i class="fas fa-crown"></i>
                 </div>
-                
-                <div class="sidebar-lecons">
-                    <% if (chapitresDuCours != null) {
-                        for (Chapitre chap : chapitresDuCours) {
-                            if (chap.getId() == chapitre.getId() && chap.getLecons() != null) {
-                                for (Lecon l : chap.getLecons()) {
-                                    boolean isActive = (l.getId() == lecon.getId());
-                                    boolean isTermineeLecon = (progression != null && progression.isTermine() && l.getOrdre() <= leconActive);
-                                    boolean isAccessible = (l.getOrdre() <= leconActive);
-                    %>
-                        <a href="${pageContext.request.contextPath}/joueur/cours/lecon?coursId=<%= cours.getId() %>&chapitreId=<%= chapitre.getId() %>&leconId=<%= l.getId() %>" 
-                           class="sidebar-lecon <%= isActive ? "active" : "" %> <%= !isAccessible ? "verrouillee" : "" %>">
-                            <span class="sidebar-lecon-numero">
-                                <% if (isActive) { %>
-                                    <i class="fas fa-play-circle"></i>
-                                <% } else if (isTermineeLecon) { %>
-                                    <i class="fas fa-check-circle"></i>
-                                <% } else if (isAccessible) { %>
-                                    <%= l.getOrdre() %>
+                <div class="stat-content">
+                    <span class="stat-number"><%= estPremium ? "Actif" : "Free" %></span>
+                    <span class="stat-label">Statut Premium</span>
+                </div>
+                <% if (!estPremium) { %>
+                    <a href="${pageContext.request.contextPath}/paiement" class="stat-upgrade-link">
+                        <i class="fas fa-arrow-up"></i> Upgrade
+                    </a>
+                <% } %>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%-- ============================================================
+     MODIFICATIONS À APPORTER AU FICHIER EXISTANT :
+     src/main/webapp/views/header.jsp
+     
+     AJOUTS :
+     1. Badge "Premium" dans le menu utilisateur
+     2. Icône couronne dans la navbar
+     ============================================================ --%>
+
+<%-- ===== DANS LE MENU JOUEUR (section "MENU JOUEUR"), 
+     AJOUTER UN LIEN VERS LE PAIEMENT SI NON PREMIUM : ===== --%>
+
+<%-- ===== REMPLACER LE BLOC DU MENU JOUEUR (else final) PAR : ===== --%>
+        <%-- ============================================================
+             MENU JOUEUR
+             Quiz | Cours | Historique | Premium | Menu Joueur
+             ============================================================ --%>
+        <% } else { 
+            // 🆕 Vérification premium pour le header
+            com.amijayquiz.dao.AccessPremiumDAO premiumDAONav = new com.amijayquiz.dao.AccessPremiumDAO();
+            boolean estPremiumNav = premiumDAONav.estPremium(utilisateurConnecte.getId());
+        %>
+            
+            <li>
+                <a href="${pageContext.request.contextPath}/joueur/dashboard"
+                   class="<%= uri.contains("/joueur/dashboard") || uri.contains("/joueur/theme") || uri.contains("/joueur/niveau") ? "active" : "" %>">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i>
+                    <span>Quiz</span>
+                </a>
+            </li>
+            <li>
+                <a href="${pageContext.request.contextPath}/joueur/cours"
+                   class="<%= uri.contains("/joueur/cours") ? "active" : "" %>">
+                    <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                    <span>Cours</span>
+                </a>
+            </li>
+            <li>
+                <a href="${pageContext.request.contextPath}/joueur/historique"
+                   class="<%= uri.contains("/joueur/historique") ? "active" : "" %>">
+                    <i class="fas fa-history" aria-hidden="true"></i>
+                    <span>Historique</span>
+                </a>
+            </li>
+            
+            <%-- 🆕 BOUTON PREMIUM DANS LA NAVBAR --%>
+            <% if (!estPremiumNav) { %>
+                <li>
+                    <a href="${pageContext.request.contextPath}/paiement" 
+                       class="nav-premium-btn">
+                        <i class="fas fa-crown"></i>
+                        <span>Premium</span>
+                    </a>
+                </li>
+            <% } %>
+            
+            <%-- Menu utilisateur joueur --%>
+            <li class="user-menu-container">
+                <button class="user-menu-trigger" id="userMenuTrigger" aria-expanded="false" aria-haspopup="true" title="Menu utilisateur">
+                    <span class="user-avatar-mini">
+                        <i class="fas fa-user-circle"></i>
+                    </span>
+                    <span class="user-name"><%= utilisateurConnecte.getPseudo() %></span>
+                    <%-- 🆕 BADGE PREMIUM DANS LE MENU --%>
+                    <% if (estPremiumNav) { %>
+                        <i class="fas fa-crown premium-crown-icon" title="Premium"></i>
+                    <% } %>
+                    <i class="fas fa-chevron-down menu-arrow"></i>
+                </button>
+                <div class="user-menu-dropdown" id="userMenuDropdown" role="menu" aria-label="Menu utilisateur">
+                    <div class="user-menu-header">
+                        <div class="user-menu-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="user-menu-info">
+                            <strong><%= utilisateurConnecte.getPseudo() %></strong>
+                            <span>
+                                Joueur
+                                <% if (estPremiumNav) { %>
+                                    <span class="menu-premium-badge">
+                                        <i class="fas fa-crown"></i> Premium
+                                    </span>
                                 <% } else { %>
-                                    <i class="fas fa-lock"></i>
+                                    <span class="menu-gratuit-badge">Gratuit</span>
                                 <% } %>
                             </span>
-                            <span class="sidebar-lecon-titre"><%= l.getTitre() %></span>
-                            <span class="sidebar-lecon-duree">
-                                <%= l.getTempsLectureFormate() %>
-                            </span>
+                        </div>
+                    </div>
+                    <div class="user-menu-divider"></div>
+                    
+                    <%-- 🆕 LIEN PREMIUM DANS LE MENU DÉROULANT --%>
+                    <% if (!estPremiumNav) { %>
+                        <a href="${pageContext.request.contextPath}/paiement" class="user-menu-item user-menu-premium" role="menuitem">
+                            <i class="fas fa-crown"></i>
+                            <span>Devenir Premium (4$)</span>
                         </a>
-                    <%          }
-                            }
-                        }
-                    } %>
+                        <div class="user-menu-divider"></div>
+                    <% } %>
+                    
+                    <a href="${pageContext.request.contextPath}/changer-mot-de-passe" class="user-menu-item" role="menuitem">
+                        <i class="fas fa-key"></i>
+                        <span>Changer mon mot de passe</span>
+                    </a>
+                    <div class="user-menu-divider"></div>
+                    <a href="${pageContext.request.contextPath}/deconnexion" class="user-menu-item user-menu-danger" role="menuitem">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </a>
                 </div>
-            </div>
-
-            <%-- Carte infos leçon --%>
-            <div class="sidebar-info-card">
-                <h4><i class="fas fa-info-circle"></i> Informations</h4>
-                <div class="sidebar-info-item">
-                    <i class="fas fa-book-reader"></i>
-                    <span><strong>Temps de lecture :</strong> <%= tempsLectureFormate %></span>
-                </div>
-                <div class="sidebar-info-item">
-                    <i class="fas fa-font"></i>
-                    <span><strong>Nombre de mots :</strong> <%= nombreMots %></span>
-                </div>
-                <% if (lecon.hasCodeSource()) { %>
-                    <div class="sidebar-info-item">
-                        <i class="fas fa-code"></i>
-                        <span><strong>Exemple de code :</strong> Oui</span>
-                    </div>
-                <% } %>
-                <% if (lecon.hasRessources()) { %>
-                    <div class="sidebar-info-item">
-                        <i class="fas fa-paperclip"></i>
-                        <span><strong>Ressources :</strong> <%= lecon.getNombreRessources() %></span>
-                    </div>
-                <% } %>
-                <div class="sidebar-info-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span><strong>Statut :</strong> <%= estTerminee ? "Terminée" : "En cours" %></span>
-                </div>
-            </div>
-
-            <%-- Navigation rapide --%>
-            <div class="sidebar-nav">
-                <a href="${pageContext.request.contextPath}/joueur/cours/plan?coursId=<%= cours.getId() %>" 
-                   class="sidebar-nav-btn">
-                    <i class="fas fa-sitemap"></i>
-                    <span>Plan du cours</span>
-                </a>
-                <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= chapitre.getId() %>" 
-                   class="sidebar-nav-btn">
-                    <i class="fas fa-bookmark"></i>
-                    <span>Vue du chapitre</span>
-                </a>
-            </div>
-        </aside>
-
-    </div>
-
-</div>
-
-<%-- ===== FORMULAIRE CACHÉ POUR VALIDATION ===== --%>
-<form id="formValiderLecon" action="${pageContext.request.contextPath}/joueur/cours/valider" method="POST" style="display: none;">
-    <input type="hidden" name="coursId" value="<%= cours.getId() %>">
-    <input type="hidden" name="chapitreId" value="<%= chapitre.getId() %>">
-    <input type="hidden" name="leconId" value="<%= lecon.getId() %>">
-    <input type="hidden" name="tempsPasse" id="tempsPasseInput" value="0">
-</form>
-
-<%-- ===== NOTIFICATION DE COPIE ===== --%>
-<div class="copie-notification" id="copieNotification" style="display: none;">
-    <i class="fas fa-check-circle"></i>
-    <span>Code copié dans le presse-papier !</span>
-</div>
-
-<%-- ===== CHARGEMENT DES SCRIPTS ===== --%>
-<%
-    String coursLeconJS = "<script src=\"" + request.getContextPath() + "/views/assets/js/cours-lecon.js\"></script>";
-    request.setAttribute("extraScripts", coursLeconJS);
-%>
-
-<script>
-    var TEMPS_DEBUT_LECON = Date.now();
-    var EST_TERMINEE = <%= estTerminee %>;
-    var LECON_ID = <%= lecon.getId() %>;
-    var COURS_ID = <%= cours.getId() %>;
-    var CHAPITRE_ID = <%= chapitre.getId() %>;
-</script>
-
-<%@ include file="../footer.jsp" %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ============================================================
-// FICHIER : src/main/java/com/amijayquiz/controllers/PlanCoursServlet.java
-// RÔLE    : Contrôleur du plan détaillé d'un cours
-//           Affiche l'arborescence complète du cours :
-//           tous les chapitres avec leurs leçons visibles
-// ============================================================
-
-package com.amijayquiz.controllers;
-
-import com.amijayquiz.dao.CertificatDAO;
-import com.amijayquiz.dao.ChapitreDAO;
-import com.amijayquiz.dao.CoursDAO;
-import com.amijayquiz.dao.ProgressionCoursDAO;
-import com.amijayquiz.models.Certificat;
-import com.amijayquiz.models.Chapitre;
-import com.amijayquiz.models.Cours;
-import com.amijayquiz.models.Lecon;
-import com.amijayquiz.models.Utilisateur;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-/**
- * PlanCoursServlet - Plan détaillé d'un cours
- * 
- * Affiche l'arborescence complète d'un cours :
- * - Tous les chapitres avec leurs titres et descriptions
- * - Toutes les leçons de chaque chapitre avec leur statut
- * - Progression globale du cours
- * - Statut de chaque chapitre (terminé, en cours, verrouillé)
- * - Accès à l'examen final si tous les chapitres sont terminés
- * - Lien vers le certificat si déjà obtenu
- * 
- * URL : /joueur/cours/plan?coursId=1
- * 
- * @author AmijayQuiz
- * @version 1.1
- */
-@WebServlet(name = "PlanCoursServlet", urlPatterns = {"/joueur/cours/plan"})
-public class PlanCoursServlet extends HttpServlet {
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        // 1. Vérification de la session et du rôle
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("utilisateur") == null) {
-            response.sendRedirect(request.getContextPath() + "/connexion");
-            return;
-        }
-
-        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (!"joueur".equals(utilisateur.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/connexion");
-            return;
-        }
-
-        int utilisateurId = utilisateur.getId();
-
-        // 2. Récupération et validation du paramètre coursId
-        String coursIdParam = request.getParameter("coursId");
-        if (coursIdParam == null || coursIdParam.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        int coursId;
-        try {
-            coursId = Integer.parseInt(coursIdParam);
-        } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        // 3. Initialisation des DAO
-        CoursDAO coursDAO = new CoursDAO();
-        ChapitreDAO chapitreDAO = new ChapitreDAO();
-        ProgressionCoursDAO progressionDAO = new ProgressionCoursDAO();
-        CertificatDAO certificatDAO = new CertificatDAO();
-
-        // 4. Récupérer le cours complet avec ses chapitres et leçons
-        Cours cours = coursDAO.trouverParId(coursId);
-        if (cours == null) {
-            session.setAttribute("messageErreur", "Ce cours n'existe pas.");
-            response.sendRedirect(request.getContextPath() + "/joueur/cours");
-            return;
-        }
-
-        // 5. Récupérer tous les chapitres avec leurs leçons
-        List<Chapitre> chapitres = chapitreDAO.listerParCours(coursId);
-        cours.setChapitres(chapitres);
-        cours.setNombreChapitres(chapitres.size());
-        cours.setNombreLecons(cours.getNombreTotalLecons());
-
-        // 6. Vérifier si l'utilisateur a déjà un certificat pour ce cours
-        Certificat certificatExistant = certificatDAO.trouverParUtilisateurEtCours(utilisateurId, coursId);
-
-        // 7. Construire l'arborescence avec progression
-        List<Map<String, Object>> chapitresAvecProgression = new ArrayList<>();
-        int totalLeconsCours = 0;
-        int totalLeconsTermineesCours = 0;
-        int totalExemplesCode = 0;
-        int chapitresTerminesCount = 0;
-        int ordreChapitre = 0;
-
-        for (Chapitre chapitre : chapitres) {
-            ordreChapitre++;
-            Map<String, Object> chapitreData = new LinkedHashMap<>();
-            chapitreData.put("chapitre", chapitre);
-            chapitreData.put("ordre", ordreChapitre);
-
-            // Vérifier si le chapitre est terminé
-            boolean chapitreTermine = progressionDAO.estChapitreTermine(utilisateurId, chapitre.getId());
-            chapitreData.put("termine", chapitreTermine);
-            if (chapitreTermine) chapitresTerminesCount++;
-
-            // Vérifier si le chapitre est accessible
-            boolean estAccessible;
-            if (ordreChapitre == 1) {
-                estAccessible = true;
-            } else {
-                Chapitre chapitrePrecedent = chapitres.get(ordreChapitre - 2);
-                estAccessible = progressionDAO.estChapitreTermine(utilisateurId, chapitrePrecedent.getId());
-            }
-            chapitreData.put("accessible", estAccessible);
-
-            // Déterminer le statut visuel du chapitre
-            String statutChapitre;
-            String iconeStatutChapitre;
-            String couleurStatutChapitre;
-            if (chapitreTermine) {
-                statutChapitre = "Terminé";
-                iconeStatutChapitre = "fas fa-check-circle";
-                couleurStatutChapitre = "#27ae60";
-            } else if (estAccessible) {
-                statutChapitre = "En cours";
-                iconeStatutChapitre = "fas fa-play-circle";
-                couleurStatutChapitre = "#667eea";
-            } else {
-                statutChapitre = "Verrouillé";
-                iconeStatutChapitre = "fas fa-lock";
-                couleurStatutChapitre = "#aaa";
-            }
-            chapitreData.put("statut", statutChapitre);
-            chapitreData.put("iconeStatut", iconeStatutChapitre);
-            chapitreData.put("couleurStatut", couleurStatutChapitre);
-
-            // Leçons du chapitre avec leur progression
-            List<Lecon> lecons = chapitre.getLecons();
-            if (lecons == null) lecons = new ArrayList<>();
+            </li>
             
-            List<Map<String, Object>> leconsAvecProgression = new ArrayList<>();
-            int leconsTermineesChapitre = 0;
-
-            for (int i = 0; i < lecons.size(); i++) {
-                Lecon lecon = lecons.get(i);
-                Map<String, Object> leconData = new LinkedHashMap<>();
-                leconData.put("lecon", lecon);
-                leconData.put("ordre", i + 1);
-
-                boolean leconTerminee = progressionDAO.estLeconTerminee(utilisateurId, lecon.getId());
-                leconData.put("terminee", leconTerminee);
-                if (leconTerminee) leconsTermineesChapitre++;
-
-                // Accessibilité de la leçon dans le chapitre
-                boolean leconAccessible;
-                if (i == 0) {
-                    leconAccessible = estAccessible;
-                } else {
-                    leconAccessible = estAccessible && 
-                        progressionDAO.estLeconTerminee(utilisateurId, lecons.get(i - 1).getId());
-                }
-                leconData.put("accessible", leconAccessible);
-
-                // Compter les exemples de code
-                if (lecon.hasCodeSource()) {
-                    totalExemplesCode++;
-                }
-
-                leconsAvecProgression.add(leconData);
-            }
-
-            chapitreData.put("lecons", leconsAvecProgression);
-            chapitreData.put("nbLecons", lecons.size());
-            chapitreData.put("leconsTerminees", leconsTermineesChapitre);
-            chapitreData.put("pourcentageChapitre", lecons.size() > 0 ? 
-                (leconsTermineesChapitre * 100 / lecons.size()) : 0);
-
-            chapitresAvecProgression.add(chapitreData);
-
-            totalLeconsCours += lecons.size();
-            totalLeconsTermineesCours += leconsTermineesChapitre;
-        }
-
-        // 8. Calculer les statistiques globales du cours
-        boolean coursTermine = progressionDAO.estCoursTermine(utilisateurId, coursId);
-        int pourcentageGlobal = (totalLeconsCours > 0) ? 
-            (totalLeconsTermineesCours * 100 / totalLeconsCours) : 0;
-
-        // 9. Calculer le temps de lecture total estimé
-        int tempsLectureTotalMinutes = 0;
-        for (Chapitre chapitre : chapitres) {
-            if (chapitre.getLecons() != null) {
-                for (Lecon lecon : chapitre.getLecons()) {
-                    tempsLectureTotalMinutes += lecon.getTempsLectureEstime();
-                }
-            }
-        }
-        String tempsLectureTotalFormate = formaterTempsLecture(tempsLectureTotalMinutes);
-
-        // 10. Déterminer si l'examen final est accessible
-        boolean examenAccessible = coursTermine && certificatExistant == null;
-        boolean dejaCertifie = certificatExistant != null;
-
-        // 11. Déterminer le prochain chapitre à faire
-        Integer prochainChapitreId = null;
-        String prochainChapitreTitre = null;
-        for (Map<String, Object> chapData : chapitresAvecProgression) {
-            boolean termine = (Boolean) chapData.get("termine");
-            boolean accessible = (Boolean) chapData.get("accessible");
-            if (!termine && accessible && prochainChapitreId == null) {
-                Chapitre chap = (Chapitre) chapData.get("chapitre");
-                prochainChapitreId = chap.getId();
-                prochainChapitreTitre = chap.getTitre();
-                break;
-            }
-        }
-
-        // 12. Message de motivation
-        String messageMotivation;
-        String iconeMotivation;
-        if (dejaCertifie) {
-            messageMotivation = "Félicitations ! Vous avez déjà obtenu le certificat pour ce cours.";
-            iconeMotivation = "fas fa-crown";
-        } else if (coursTermine) {
-            messageMotivation = "Tous les chapitres sont terminés ! Passez l'examen final pour obtenir votre certificat.";
-            iconeMotivation = "fas fa-trophy";
-        } else if (pourcentageGlobal >= 50) {
-            messageMotivation = "Vous êtes à mi-chemin ! Continuez vos efforts pour terminer ce cours.";
-            iconeMotivation = "fas fa-fire";
-        } else if (pourcentageGlobal > 0) {
-            messageMotivation = "Bon début ! Chaque leçon vous rapproche de la maîtrise de ce cours.";
-            iconeMotivation = "fas fa-thumbs-up";
-        } else {
-            messageMotivation = "Commencez dès maintenant votre apprentissage par la lecture et la pratique !";
-            iconeMotivation = "fas fa-rocket";
-        }
-
-        // 13. Passage des attributs à la JSP
-        request.setAttribute("pageTitle", "Plan - " + cours.getTitre() + " - AmijayQuiz");
-        request.setAttribute("cours", cours);
-        request.setAttribute("chapitresAvecProgression", chapitresAvecProgression);
-        request.setAttribute("totalChapitres", chapitres.size());
-        request.setAttribute("chapitresTermines", chapitresTerminesCount);
-        request.setAttribute("totalLecons", totalLeconsCours);
-        request.setAttribute("totalLeconsTerminees", totalLeconsTermineesCours);
-        request.setAttribute("totalExemplesCode", totalExemplesCode);
-        request.setAttribute("tempsLectureTotal", tempsLectureTotalFormate);
-        request.setAttribute("pourcentageGlobal", pourcentageGlobal);
-        request.setAttribute("coursTermine", coursTermine);
-        request.setAttribute("examenAccessible", examenAccessible);
-        request.setAttribute("dejaCertifie", dejaCertifie);
-        request.setAttribute("certificatExistant", certificatExistant);
-        request.setAttribute("prochainChapitreId", prochainChapitreId);
-        request.setAttribute("prochainChapitreTitre", prochainChapitreTitre);
-        request.setAttribute("messageMotivation", messageMotivation);
-        request.setAttribute("iconeMotivation", iconeMotivation);
-
-        // 14. Affichage de la page
-        request.getRequestDispatcher("/views/joueur/cours-plan.jsp").forward(request, response);
-    }
-
-    /**
-     * Formate un temps en minutes en chaîne lisible
-     * Exemples : 45 → "45 min", 120 → "2h", 150 → "2h30"
-     * 
-     * @param minutes Temps en minutes
-     * @return Chaîne formatée
-     */
-    private String formaterTempsLecture(int minutes) {
-        if (minutes == 0) {
-            return "Moins d'1 min";
-        }
-        if (minutes < 60) {
-            return minutes + " min";
-        }
-        int heures = minutes / 60;
-        int minsRestantes = minutes % 60;
-        if (minsRestantes == 0) {
-            return heures + "h";
-        }
-        return heures + "h" + String.format("%02d", minsRestantes);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doGet(request, response);
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <% } %>

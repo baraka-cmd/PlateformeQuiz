@@ -48,6 +48,11 @@
     Utilisateur joueur = (Utilisateur) session.getAttribute("utilisateur");
     String pseudo = (joueur != null) ? joueur.getPseudo() : "Joueur";
     int joueurId = (joueur != null) ? joueur.getId() : 0;
+    
+    // Vérification premium
+    com.amijayquiz.dao.AccessPremiumDAO premiumDAO = new com.amijayquiz.dao.AccessPremiumDAO();
+    boolean estPremium = premiumDAO.estPremium(joueurId);
+    request.setAttribute("estPremium", estPremium);
 
     // ===== VALEURS PAR DÉFAUT =====
     if (nombreParties == null) nombreParties = 0;
@@ -134,6 +139,18 @@
                 <%= dateAujourdhui %>
             </p>
             
+            <div class="welcome-premium-status">
+                <% if (estPremium) { %>
+                    <span class="premium-badge-actif">
+                        <i class="fas fa-crown"></i> Premium actif
+                    </span>
+                <% } else { %>
+                    <a href="${pageContext.request.contextPath}/paiement" class="premium-badge-inactif">
+                        <i class="fas fa-crown"></i> Devenir Premium (4$)
+                    </a>
+                <% } %>
+            </div>
+            
             <div class="welcome-quote">
                 <i class="fas fa-quote-left"></i>
                 <span>L'apprentissage est un trésor qui suivra son propriétaire partout.</span>
@@ -206,6 +223,34 @@
             }
         }
     %>
+    
+    
+    <% if (!estPremium) { %>
+        <div class="dashboard-premium-banner">
+            <div class="premium-banner-glow"></div>
+            <div class="premium-banner-content">
+                <div class="premium-banner-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="premium-banner-text">
+                    <h3>Débloquez tout le potentiel d'AmijayQuiz</h3>
+                    <p>
+                        <strong>4$ seulement</strong> — Accès à vie à tous les niveaux Moyen & Avancé.
+                        <span class="premium-banner-features">
+                            <span><i class="fas fa-check"></i> Tous les cours</span>
+                            <span><i class="fas fa-check"></i> Tous les quiz</span>
+                            <span><i class="fas fa-check"></i> Certificats</span>
+                        </span>
+                    </p>
+                </div>
+                <a href="${pageContext.request.contextPath}/paiement" class="premium-banner-btn">
+                    <i class="fas fa-rocket"></i>
+                    <span>Devenir Premium</span>
+                    <small>4$ / 10 000 FC</small>
+                </a>
+            </div>
+        </div>
+    <% } %>
 
     <div class="resume-section">
         <div class="resume-grid">
@@ -370,6 +415,22 @@
                     <span class="stat-label">Niveaux Quiz terminés</span>
                 </div>
                 <div class="stat-badge-theme">Quiz</div>
+            </div>
+                    
+            <%-- 🆕 Statut Premium --%>
+            <div class="stat-card <%= estPremium ? "stat-card-premium-actif" : "stat-card-premium-inactif" %>">
+                <div class="stat-icon-wrapper stat-icon-premium">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number"><%= estPremium ? "Actif" : "Free" %></span>
+                    <span class="stat-label">Statut Premium</span>
+                </div>
+                <% if (!estPremium) { %>
+                    <a href="${pageContext.request.contextPath}/paiement" class="stat-upgrade-link">
+                        <i class="fas fa-arrow-up"></i> Upgrade
+                    </a>
+                <% } %>
             </div>
         </div>
     </section>

@@ -5,6 +5,7 @@ com\amijayquiz\controllers\CertificatServlet.class
 com\amijayquiz\utils\TestConnexion.class
 com\amijayquiz\models\Partie.class
 com\amijayquiz\dao\QuizDAO.class
+com\amijayquiz\dao\AccessPremiumDAO.class
 com\amijayquiz\dao\UtilisateurDAO.class
 com\amijayquiz\models\ProgressionCours.class
 com\amijayquiz\utils\ConnexionDB.class
@@ -12,10 +13,15 @@ com\amijayquiz\models\Chapitre.class
 com\amijayquiz\models\QuestionExamen.class
 com\amijayquiz\controllers\ConnexionServlet.class
 com\amijayquiz\models\ProgressionModule.class
+com\amijayquiz\models\Paiement.class
+com\amijayquiz\utils\SecuriteUtil.class
+com\amijayquiz\filters\AccesPayantFilter.class
 com\amijayquiz\controllers\ValiderLeconServlet.class
 com\amijayquiz\utils\EmailUtil.class
 com\amijayquiz\utils\HashUtil.class
+com\amijayquiz\controllers\PaiementServlet.class
 com\amijayquiz\controllers\LeconCoursServlet.class
+com\amijayquiz\controllers\WebhookPaiementServlet.class
 com\amijayquiz\dao\QuizQuestionDAO.class
 com\amijayquiz\dao\ExamenModuleDAO.class
 com\amijayquiz\controllers\ChangerMotDePasseServlet.class
@@ -38,8 +44,10 @@ com\amijayquiz\models\ExamenModule.class
 com\amijayquiz\dao\ProgressionCoursDAO.class
 com\amijayquiz\dao\RessourceDAO.class
 com\amijayquiz\controllers\DeconnexionServlet.class
+com\amijayquiz\dao\PaiementDAO.class
 com\amijayquiz\utils\EmailUtil$1.class
 com\amijayquiz\models\Certificat.class
+com\amijayquiz\utils\PawaPayUtil.class
 com\amijayquiz\models\Ressource.class
 com\amijayquiz\dao\LeconDAO.class
 com\amijayquiz\controllers\DashboardJoueurServlet.class

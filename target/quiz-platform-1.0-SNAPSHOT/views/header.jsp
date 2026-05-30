@@ -179,9 +179,13 @@
             
         <%-- ============================================================
              MENU JOUEUR
-             Parcours (Quiz) | Cours | Historique | Menu Joueur
+             Quiz | Cours | Historique | Premium | Menu Joueur
              ============================================================ --%>
-        <% } else { %>
+        <% } else { 
+            // 🆕 Vérification premium pour le header
+            com.amijayquiz.dao.AccessPremiumDAO premiumDAONav = new com.amijayquiz.dao.AccessPremiumDAO();
+            boolean estPremiumNav = premiumDAONav.estPremium(utilisateurConnecte.getId());
+        %>
             
             <li>
                 <a href="${pageContext.request.contextPath}/joueur/dashboard"
@@ -205,6 +209,17 @@
                 </a>
             </li>
             
+            <%-- 🆕 BOUTON PREMIUM DANS LA NAVBAR --%>
+            <% if (!estPremiumNav) { %>
+                <li>
+                    <a href="${pageContext.request.contextPath}/paiement" 
+                       class="nav-premium-btn">
+                        <i class="fas fa-crown"></i>
+                        <span>Premium</span>
+                    </a>
+                </li>
+            <% } %>
+            
             <%-- Menu utilisateur joueur --%>
             <li class="user-menu-container">
                 <button class="user-menu-trigger" id="userMenuTrigger" aria-expanded="false" aria-haspopup="true" title="Menu utilisateur">
@@ -212,6 +227,10 @@
                         <i class="fas fa-user-circle"></i>
                     </span>
                     <span class="user-name"><%= utilisateurConnecte.getPseudo() %></span>
+                    <%-- 🆕 BADGE PREMIUM DANS LE MENU --%>
+                    <% if (estPremiumNav) { %>
+                        <i class="fas fa-crown premium-crown-icon" title="Premium"></i>
+                    <% } %>
                     <i class="fas fa-chevron-down menu-arrow"></i>
                 </button>
                 <div class="user-menu-dropdown" id="userMenuDropdown" role="menu" aria-label="Menu utilisateur">
@@ -221,10 +240,29 @@
                         </div>
                         <div class="user-menu-info">
                             <strong><%= utilisateurConnecte.getPseudo() %></strong>
-                            <span>Joueur</span>
+                            <span>
+                                Joueur
+                                <% if (estPremiumNav) { %>
+                                    <span class="menu-premium-badge">
+                                        <i class="fas fa-crown"></i> Premium
+                                    </span>
+                                <% } else { %>
+                                    <span class="menu-gratuit-badge">Gratuit</span>
+                                <% } %>
+                            </span>
                         </div>
                     </div>
                     <div class="user-menu-divider"></div>
+                    
+                    <%-- 🆕 LIEN PREMIUM DANS LE MENU DÉROULANT --%>
+                    <% if (!estPremiumNav) { %>
+                        <a href="${pageContext.request.contextPath}/paiement" class="user-menu-item user-menu-premium" role="menuitem">
+                            <i class="fas fa-crown"></i>
+                            <span>Devenir Premium (4$)</span>
+                        </a>
+                        <div class="user-menu-divider"></div>
+                    <% } %>
+                    
                     <a href="${pageContext.request.contextPath}/changer-mot-de-passe" class="user-menu-item" role="menuitem">
                         <i class="fas fa-key"></i>
                         <span>Changer mon mot de passe</span>
