@@ -6,9 +6,11 @@
 <%-- ============================================================
      Fichier : niveau.jsp
      Rôle    : Page d'un niveau spécifique dans un thème Quiz
-              MODIFIÉ : Parties 6+ masquées si non premium
-              Badge "Premium" sur parties bloquées
-              Message d'incitation au paiement
+              - Guide l'utilisateur dans sa progression
+              - Parties 1 à 5 gratuites (niveau élémentaire)
+              - Parties 6+ et niveaux supérieurs : premium requis
+              - Une seule bannière premium après la partie 5
+              - Chaque partie utilise le composant partie-card.jsp
      ============================================================ --%>
 
 <%
@@ -26,12 +28,11 @@
     Boolean niveauTermine = (Boolean) request.getAttribute("niveauTermine");
     Boolean niveauDebloque = (Boolean) request.getAttribute("niveauDebloque");
 
-    // ===== 🆕 ATTRIBUTS PREMIUM =====
+    // Attributs premium
     Boolean estPremium = (Boolean) request.getAttribute("estPremium");
     Integer maxPartiesGratuites = (Integer) request.getAttribute("maxPartiesGratuites");
-    String messagePremium = (String) request.getAttribute("messagePremium");
 
-    // Valeurs par défaut sécurisées
+    // Valeurs par défaut
     if (nomCategorie == null) nomCategorie = "Thème";
     if (nomNiveau == null) nomNiveau = "elementaire";
     if (nomNiveauFormate == null) nomNiveauFormate = "Niveau";
@@ -45,14 +46,13 @@
     if (estPremium == null) estPremium = false;
     if (maxPartiesGratuites == null) maxPartiesGratuites = 5;
 
-    // URL encodée pour les liens
     String categorieEncodee = java.net.URLEncoder.encode(nomCategorie, "UTF-8");
     
     // Message de statut
     String statutMessage = "";
     String statutIcone = "";
     if (niveauTermine) {
-        statutMessage = "Niveau terminé - Félicitations !";
+        statutMessage = "Niveau terminé — Félicitations !";
         statutIcone = "fas fa-trophy";
     } else if (partiesReussies == 0) {
         statutMessage = "Commencez votre première partie !";
@@ -62,11 +62,8 @@
         statutIcone = "fas fa-forward";
     }
 
-    // Titre de la page
     request.setAttribute("pageTitle", nomNiveauFormate + " - " + nomCategorie + " - AmijayQuiz");
 %>
-
-
 
 <%
     String niveauCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/niveau.css\">"
@@ -78,7 +75,9 @@
 
 <div class="niveau-page-container">
 
-    <%-- ===== BREADCRUMB ===== --%>
+    <%-- ============================================================
+         BREADCRUMB
+         ============================================================ --%>
     <nav class="breadcrumb" aria-label="Fil d'Ariane">
         <a href="${pageContext.request.contextPath}/joueur/dashboard" class="breadcrumb-link">
             <i class="fas fa-tachometer-alt"></i>
@@ -96,7 +95,9 @@
         </span>
     </nav>
 
-    <%-- ===== EN-TÊTE DU NIVEAU ===== --%>
+    <%-- ============================================================
+         EN-TÊTE DU NIVEAU
+         ============================================================ --%>
     <header class="niveau-header">
         <div class="niveau-header-left">
             <div class="niveau-header-icon" style="background: linear-gradient(135deg, <%= couleurNiveau %>, <%= couleurNiveau %>dd);">
@@ -105,7 +106,6 @@
             <div class="niveau-header-text">
                 <h1>
                     <%= nomNiveauFormate %>
-                    <%-- 🆕 BADGE PREMIUM --%>
                     <% if (estPremium) { %>
                         <span class="badge-premium-actif">
                             <i class="fas fa-crown"></i> Premium
@@ -129,24 +129,29 @@
         </div>
     </header>
 
-    <%-- ===== 🆕 BANNIÈRE PREMIUM (NIVEAU ÉLÉMENTAIRE GRATUIT) ===== --%>
-    <% if (!estPremium && "elementaire".equals(nomNiveau)) { %>
-        <div class="premium-info-banner">
-            <div class="premium-info-icon">
-                <i class="fas fa-info-circle"></i>
-            </div>
-            <div class="premium-info-content">
-                <strong>Accès gratuit limité</strong>
-                <p>Vous avez accès aux <strong><%= maxPartiesGratuites %> premières parties</strong> gratuitement. 
-                Passez Premium pour débloquer toutes les parties et tous les niveaux !</p>
-            </div>
-            <a href="${pageContext.request.contextPath}/paiement" class="premium-info-btn">
-                <i class="fas fa-crown"></i> Premium (4$)
-            </a>
+    <%-- ============================================================
+         GUIDE DE PROGRESSION QUIZ
+         ============================================================ --%>
+    <div class="plan-guide">
+        <div class="guide-icon">
+            <i class="fas fa-info-circle"></i>
         </div>
-    <% } %>
+        <div class="guide-content">
+            <strong>Comment progresser dans ce niveau ?</strong>
+            <p>
+                Réussissez chaque partie (score minimum : <strong>8/10</strong>) pour débloquer la suivante.
+                <br>Terminez toutes les parties de ce niveau pour accéder au <strong>niveau supérieur</strong>.
+                <% if (!estPremium && "elementaire".equals(nomNiveau)) { %>
+                    <br>Les <strong><%= maxPartiesGratuites %> premières parties</strong> sont gratuites. 
+                    Passez Premium pour débloquer la suite.
+                <% } %>
+            </p>
+        </div>
+    </div>
 
-    <%-- ===== BARRE DE PROGRESSION ===== --%>
+    <%-- ============================================================
+         BARRE DE PROGRESSION
+         ============================================================ --%>
     <section class="progression-section">
         <div class="progression-header">
             <h3>
@@ -162,13 +167,15 @@
             <span>0%</span>
             <span class="progression-seuil">
                 <i class="fas fa-flag-checkered"></i>
-                Score minimum : <strong>8/10</strong>
+                Score minimum par partie : <strong>8/10</strong>
             </span>
             <span>100%</span>
         </div>
     </section>
 
-    <%-- ===== ALERTE : PROCHAINE PARTIE À JOUER ===== --%>
+    <%-- ============================================================
+         ALERTE : PROCHAINE PARTIE À JOUER
+         ============================================================ --%>
     <% if (prochainQuiz != null && !niveauTermine) { %>
         <div class="alerte-info alerte-prochaine">
             <div class="alerte-icon-wrapper">
@@ -184,7 +191,9 @@
         </div>
     <% } %>
 
-    <%-- ===== ALERTE : NIVEAU TERMINÉ ===== --%>
+    <%-- ============================================================
+         ALERTE : NIVEAU TERMINÉ
+         ============================================================ --%>
     <% if (niveauTermine) { %>
         <div class="alerte-info alerte-termine">
             <div class="alerte-icon-wrapper">
@@ -195,16 +204,18 @@
                 <p>
                     Vous avez réussi toutes les parties de ce niveau. 
                     <% if (!"avance".equals(nomNiveau)) { %>
-                        Le niveau suivant est désormais <strong>débloqué</strong> !
+                        Le <strong>niveau supérieur</strong> est maintenant débloqué. Continuez votre progression !
                     <% } else { %>
-                        Vous maîtrisez complètement ce thème !
+                        Vous maîtrisez complètement ce thème. Quel exploit !
                     <% } %>
                 </p>
             </div>
         </div>
     <% } %>
 
-    <%-- ===== GRILLE DES PARTIES ===== --%>
+    <%-- ============================================================
+         GRILLE DES PARTIES
+         ============================================================ --%>
     <section class="parties-section">
         <div class="section-header">
             <h2>
@@ -219,67 +230,79 @@
 
         <% if (parties != null && !parties.isEmpty()) { %>
             <div class="parties-grid">
-                <% for (Map<String, Object> partieData : parties) {
-                    Quiz quiz = (Quiz) partieData.get("quiz");
-                    boolean reussie = (Boolean) partieData.get("reussie");
-                    boolean estProchaine = (Boolean) partieData.get("estProchaine");
-                    int ordrePartie = (Integer) partieData.get("ordrePartie");
-                    Boolean bloque = (Boolean) partieData.get("bloque");
-                    boolean estBloque = (bloque != null && bloque);
+                <%
+                    boolean bannierePremiumAffichee = false;
+                    for (Map<String, Object> partieData : parties) {
+                        Quiz quiz = (Quiz) partieData.get("quiz");
+                        boolean reussie = (Boolean) partieData.get("reussie");
+                        boolean estProchaine = (Boolean) partieData.get("estProchaine");
+                        int ordrePartie = (Integer) partieData.get("ordrePartie");
+                        Boolean bloque = (Boolean) partieData.get("bloque");
+                        boolean estBloque = (bloque != null && bloque);
 
-                    // Passer les attributs au composant partie-card.jsp
-                    request.setAttribute("quiz", quiz);
-                    request.setAttribute("reussie", reussie);
-                    request.setAttribute("estProchaine", estProchaine && !estBloque);
-                    request.setAttribute("ordrePartie", ordrePartie);
-                    request.setAttribute("estBloque", estBloque);
+                        // Afficher la bannière premium APRÈS la partie 5 (une seule fois)
+                        if (estBloque && !bannierePremiumAffichee) {
+                            bannierePremiumAffichee = true;
                 %>
-                    <% if (estBloque) { %>
-                        <%-- 🆕 PARTIE BLOQUÉE (PREMIUM REQUIS) --%>
-                        <div class="partie-card bloque-premium">
-                            <div class="partie-card-lock">
-                                <i class="fas fa-crown"></i>
+                            <%-- ===== BANNIÈRE PREMIUM QUIZ (UNIQUE) ===== --%>
+                            <div class="premium-banner full-width">
+                                <div class="premium-banner-glow"></div>
+                                <div class="premium-banner-icon">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                                <div class="premium-banner-content">
+                                    <h3>Continuez votre progression</h3>
+                                    <p>
+                                        Les <strong>parties <%= maxPartiesGratuites + 1 %> à <%= totalParties %></strong> de ce niveau nécessitent un compte Premium.
+                                        <br>Un seul paiement vous donne accès à :
+                                    </p>
+                                    <ul class="premium-banner-features">
+                                        <li><i class="fas fa-check"></i> Toutes les parties de ce niveau</li>
+                                        <li><i class="fas fa-check"></i> Tous les niveaux Moyen & Avancé (6 thèmes)</li>
+                                        <li><i class="fas fa-check"></i> Tous les cours et modules premium</li>
+                                        <li><i class="fas fa-check"></i> Certificats vérifiables à vie</li>
+                                    </ul>
+                                    <p class="premium-banner-note">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <em>Votre progression est conservée. Vous continuez exactement où vous en étiez.</em>
+                                    </p>
+                                </div>
+                                <div class="premium-banner-action">
+                                    <span class="premium-price">4$ ou 10 000 FC</span>
+                                    <span class="premium-duration">Paiement unique — Accès à vie</span>
+                                    <a href="${pageContext.request.contextPath}/paiement" class="premium-btn">
+                                        <i class="fas fa-unlock-alt"></i> Débloquer maintenant
+                                    </a>
+                                </div>
                             </div>
-                            <span class="partie-numero"><%= ordrePartie %></span>
-                            <h4><%= quiz.getTitre() %></h4>
-                            <p class="partie-premium-text">Premium requis</p>
-                            <a href="${pageContext.request.contextPath}/paiement" class="partie-premium-link">
-                                <i class="fas fa-unlock-alt"></i> 4$
-                            </a>
-                        </div>
-                    <% } else { %>
-                        <jsp:include page="components/partie-card.jsp" />
-                    <% } %>
-                <% } %>
-            </div>
+                <%
+                        }
 
-            <%-- 🆕 MESSAGE SI PARTIES BLOQUÉES ===== --%>
-            <% 
-                boolean hasPartiesBloquees = false;
-                for (Map<String, Object> p : parties) {
-                    if (p.get("bloque") != null && (Boolean) p.get("bloque")) {
-                        hasPartiesBloquees = true;
-                        break;
+                        if (estBloque) {
+                %>
+                            <%-- Partie bloquée (premium) --%>
+                            <div class="partie-card bloque-premium">
+                                <div class="partie-card-lock">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <span class="partie-numero"><%= ordrePartie %></span>
+                                <h4><%= quiz.getTitre() %></h4>
+                                <p class="partie-premium-text">Premium requis</p>
+                            </div>
+                <%
+                        } else {
+                            // Partie accessible
+                            request.setAttribute("quiz", quiz);
+                            request.setAttribute("reussie", reussie);
+                            request.setAttribute("estProchaine", estProchaine);
+                            request.setAttribute("ordrePartie", ordrePartie);
+                %>
+                            <jsp:include page="components/partie-card.jsp" />
+                <%
+                        }
                     }
-                }
-                if (hasPartiesBloquees) { 
-            %>
-                <div class="parties-premium-cta">
-                    <div class="premium-cta-card">
-                        <div class="premium-cta-icon">
-                            <i class="fas fa-crown"></i>
-                        </div>
-                        <div class="premium-cta-content">
-                            <h4>Débloquez toutes les parties</h4>
-                            <p>Accédez aux <%= totalParties - maxPartiesGratuites %> parties restantes de ce niveau, 
-                            ainsi qu'à tous les niveaux Moyen et Avancé.</p>
-                        </div>
-                        <a href="${pageContext.request.contextPath}/paiement" class="premium-cta-btn">
-                            <i class="fas fa-unlock-alt"></i> Premium (4$)
-                        </a>
-                    </div>
-                </div>
-            <% } %>
+                %>
+            </div>
         <% } else { %>
             <div class="empty-state">
                 <div class="empty-icon">
@@ -294,7 +317,9 @@
         <% } %>
     </section>
 
-    <%-- ===== BOUTON RETOUR ===== --%>
+    <%-- ============================================================
+         BOUTON RETOUR
+         ============================================================ --%>
     <div class="niveau-back">
         <a href="${pageContext.request.contextPath}/joueur/theme?categorie=<%= categorieEncodee %>" class="btn-retour-niveau">
             <i class="fas fa-arrow-left"></i>

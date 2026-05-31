@@ -6,17 +6,20 @@
 <%@ page import="com.amijayquiz.models.Lecon" %>
 
 <%-- ============================================================
-     Fichier : cours-niveau.jsp
-     Rôle    : Page niveau d'un thème de cours
-              Affiche la liste de tous les cours disponibles
-              pour un thème et un niveau donnés
-              Chaque cours est une carte avec progression
-              et bouton pour voir le plan détaillé du cours
-              Stats : leçons, exemples de code, temps de lecture
+     FICHIER : views/joueur/cours-niveau.jsp
+     RÔLE    : Page niveau d'un theme de cours AmijayQuiz
+              Affiche tous les cours disponibles pour un theme
+              et un niveau donnes (elementaire, moyen, avance)
+              - Banniere du niveau avec icone, statistiques
+              - Guide de progression expliquant l'architecture
+              - Barre de progression globale du niveau
+              - Message Premium si non premium (niveaux moyen/avance)
+              - Grille des cours avec cartes detaillees
+              - Boutons Voir le plan et Commencer
      ============================================================ --%>
 
 <%
-    // Récupération des attributs depuis le servlet
+    // ===== RECUPERATION DES ATTRIBUTS =====
     String nomTheme = (String) request.getAttribute("nomTheme");
     String nomNiveau = (String) request.getAttribute("nomNiveau");
     String nomNiveauFormate = (String) request.getAttribute("nomNiveauFormate");
@@ -29,9 +32,10 @@
     Integer totalLecons = (Integer) request.getAttribute("totalLecons");
     Integer pourcentageNiveau = (Integer) request.getAttribute("pourcentageNiveau");
     Boolean niveauTermine = (Boolean) request.getAttribute("niveauTermine");
+    Boolean estPremium = (Boolean) request.getAttribute("estPremium");
 
-    // Valeurs par défaut
-    if (nomTheme == null) nomTheme = "Thème";
+    // ===== VALEURS PAR DEFAUT =====
+    if (nomTheme == null) nomTheme = "Theme";
     if (nomNiveau == null) nomNiveau = "elementaire";
     if (nomNiveauFormate == null) nomNiveauFormate = "Niveau";
     if (iconeNiveau == null) iconeNiveau = "fas fa-circle";
@@ -42,32 +46,37 @@
     if (totalLecons == null) totalLecons = 0;
     if (pourcentageNiveau == null) pourcentageNiveau = 0;
     if (niveauTermine == null) niveauTermine = false;
+    if (estPremium == null) estPremium = false;
 
-    // URL encodée pour les liens
     String themeEncode = java.net.URLEncoder.encode(nomTheme, "UTF-8");
-    
-    // Message de statut
+
+    // ===== MESSAGE DE STATUT =====
     String statutMessage;
     String statutIcone;
     String statutClass;
     if (niveauTermine) {
-        statutMessage = "Niveau terminé - Félicitations !";
+        statutMessage = "Niveau termine";
         statutIcone = "fas fa-trophy";
         statutClass = "termine";
     } else if (pourcentageNiveau > 0) {
-        statutMessage = "Continuez vos efforts !";
+        statutMessage = "En cours";
         statutIcone = "fas fa-forward";
         statutClass = "en-cours";
     } else {
-        statutMessage = "Commencez votre premier cours !";
+        statutMessage = "A debuter";
         statutIcone = "fas fa-play-circle";
         statutClass = "a-debuter";
     }
+
+    // ===== MESSAGE PREMIUM =====
+    boolean afficherBannierePremium = false;
+    if (!estPremium && ("moyen".equals(nomNiveau) || "avance".equals(nomNiveau))) {
+        afficherBannierePremium = true;
+    }
+
+    request.setAttribute("pageTitle", nomNiveauFormate + " - " + nomTheme + " - AmijayQuiz");
 %>
 
-
-
-<%-- ===== CHARGEMENT DES STYLES ===== --%>
 <%
     String coursNiveauCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/cours-niveau.css\">";
     request.setAttribute("extraHead", coursNiveauCSS);
@@ -102,15 +111,15 @@
     </nav>
 
     <%-- ============================================================
-         BANNIÈRE DU NIVEAU
+         BANNIERE DU NIVEAU
          ============================================================ --%>
     <header class="niveau-banner" style="background: linear-gradient(135deg, <%= couleurNiveau %>, <%= couleurNiveau %>dd);">
         <div class="niveau-banner-bg"></div>
-        
+
         <div class="niveau-banner-icon">
             <i class="<%= iconeNiveau %>"></i>
         </div>
-        
+
         <div class="niveau-banner-content">
             <span class="niveau-banner-theme">
                 <i class="fas fa-tag"></i> <%= nomTheme %>
@@ -121,18 +130,18 @@
                     <i class="fas fa-book"></i>
                     <strong><%= totalCours %></strong> cours
                 </span>
-                <span class="banner-stat-separator">•</span>
+                <span class="banner-stat-separator">&bull;</span>
                 <span class="banner-stat-item">
                     <i class="fas fa-list-ul"></i>
                     <strong><%= totalChapitres %></strong> chapitres
                 </span>
-                <span class="banner-stat-separator">•</span>
+                <span class="banner-stat-separator">&bull;</span>
                 <span class="banner-stat-item">
                     <i class="fas fa-file-alt"></i>
-                    <strong><%= totalLecons %></strong> leçons
+                    <strong><%= totalLecons %></strong> lecons
                 </span>
             </div>
-            
+
             <%-- Barre de progression --%>
             <div class="banner-progress">
                 <div class="banner-progress-header">
@@ -143,12 +152,14 @@
                     <div class="banner-progress-fill" style="width: <%= pourcentageNiveau %>%; background: rgba(255,255,255,0.5);"></div>
                 </div>
                 <div class="banner-progress-detail">
-                    <span><i class="fas fa-check-circle"></i> <%= totalCoursTermines %>/<%= totalCours %> cours terminés</span>
+                    <span>
+                        <i class="fas fa-check-circle"></i>
+                        <%= totalCoursTermines %>/<%= totalCours %> cours termines
+                    </span>
                 </div>
             </div>
         </div>
-        
-        <%-- Badge statut --%>
+
         <div class="niveau-banner-status">
             <div class="status-badge <%= statutClass %>">
                 <i class="<%= statutIcone %>"></i>
@@ -158,37 +169,148 @@
     </header>
 
     <%-- ============================================================
+         GUIDE D'ARCHITECTURE DES NIVEAUX
+         ============================================================ --%>
+    <div class="architecture-guide">
+        <div class="architecture-guide-header">
+            <div class="guide-icon-wrapper">
+                <i class="fas fa-sitemap"></i>
+            </div>
+            <h2>Comment fonctionne l'apprentissage sur AmijayQuiz ?</h2>
+        </div>
+
+        <div class="architecture-levels">
+            <%-- Niveau 1 : Theme --%>
+            <div class="arch-level">
+                <div class="arch-level-number" style="background: #667eea;">1</div>
+                <div class="arch-level-content">
+                    <h4><i class="fas fa-layer-group"></i> Choisissez un theme</h4>
+                    <p>12 themes disponibles : Developpement Web, Java, Python, PHP, Bases de Donnees, Cybersecurite, Mobile, IA, Design UI/UX, Reseaux, Systemes, Data Science.</p>
+                </div>
+            </div>
+
+            <%-- Niveau 2 : Niveau --%>
+            <div class="arch-level">
+                <div class="arch-level-number" style="background: <%= couleurNiveau %>;">2</div>
+                <div class="arch-level-content">
+                    <h4><i class="<%= iconeNiveau %>"></i> Progressez par niveau</h4>
+                    <p>
+                        Chaque theme contient <strong>3 niveaux</strong> :
+                        <span style="color: #27ae60; font-weight: 600;">Elementaire</span>
+                        <i class="fas fa-arrow-right" style="font-size: 10px; color: #ccc;"></i>
+                        <span style="color: #f39c12; font-weight: 600;">Moyen</span>
+                        <i class="fas fa-arrow-right" style="font-size: 10px; color: #ccc;"></i>
+                        <span style="color: #e74c3c; font-weight: 600;">Avance</span>.
+                        Terminez le niveau Elementaire pour debloquer le niveau Moyen, puis le niveau Avance.
+                    </p>
+                </div>
+            </div>
+
+            <%-- Niveau 3 : Cours --%>
+            <div class="arch-level">
+                <div class="arch-level-number" style="background: #f39c12;">3</div>
+                <div class="arch-level-content">
+                    <h4><i class="fas fa-book"></i> Suivez un cours</h4>
+                    <p>Chaque niveau contient <strong>un ou plusieurs cours</strong>. Choisissez celui qui vous interesse et consultez son plan detaille.</p>
+                </div>
+            </div>
+
+            <%-- Niveau 4 : Modules --%>
+            <div class="arch-level">
+                <div class="arch-level-number" style="background: #e74c3c;">4</div>
+                <div class="arch-level-content">
+                    <h4><i class="fas fa-cubes"></i> Progressez module par module</h4>
+                    <p>
+                        Chaque cours est divise en <strong>15 modules</strong>.
+                        Lisez les lecons de chaque chapitre, puis <strong>reussissez l'examen du module (75%)</strong> pour debloquer le suivant.
+                    </p>
+                </div>
+            </div>
+
+            <%-- Niveau 5 : Certificat --%>
+            <div class="arch-level">
+                <div class="arch-level-number" style="background: #ffd700; color: #1a1a2e;">5</div>
+                <div class="arch-level-content">
+                    <h4><i class="fas fa-certificate"></i> Obtenez votre certificat</h4>
+                    <p>
+                        Apres avoir reussi les <strong>15 modules</strong>, passez l'<strong>examen final (80%)</strong>.
+                        Vous recevrez un <strong>certificat verifiable</strong> avec un code unique.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%-- ============================================================
+         BANNIERE PREMIUM (NIVEAUX MOYEN ET AVANCE)
+         ============================================================ --%>
+    <% if (afficherBannierePremium) { %>
+        <div class="premium-banner">
+            <div class="premium-banner-glow"></div>
+            <div class="premium-banner-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div class="premium-banner-content">
+                <h3>Niveau <%= nomNiveauFormate %> - Premium requis</h3>
+                <p>
+                    Le niveau <strong><%= nomNiveauFormate %></strong> et le niveau
+                    <strong><%="moyen".equals(nomNiveau) ? "Avance" : "Moyen"%></strong>
+                    necessitent un compte Premium.
+                </p>
+                <ul class="premium-banner-features">
+                    <li><i class="fas fa-check"></i> Tous les cours des niveaux Moyen et Avance</li>
+                    <li><i class="fas fa-check"></i> Tous les modules (2 a 15) de chaque cours</li>
+                    <li><i class="fas fa-check"></i> Tous les quiz (360+ parties)</li>
+                    <li><i class="fas fa-check"></i> Certificats verifiables a vie</li>
+                </ul>
+                <p class="premium-banner-note">
+                    <i class="fas fa-lightbulb"></i>
+                    <em>Un seul paiement de <strong>4$ (10 000 FC)</strong> vous donne acces a toute la plateforme a vie.
+                    Votre progression est conservee.</em>
+                </p>
+            </div>
+            <div class="premium-banner-action">
+                <span class="premium-price">4$ ou 10 000 FC</span>
+                <span class="premium-duration">Paiement unique - Acces a vie</span>
+                <a href="${pageContext.request.contextPath}/paiement" class="premium-btn">
+                    <i class="fas fa-unlock-alt"></i> Debloquer maintenant
+                </a>
+            </div>
+        </div>
+    <% } %>
+
+    <%-- ============================================================
          MESSAGE DE MOTIVATION
          ============================================================ --%>
     <div class="motivation-banner" style="border-left-color: <%= couleurNiveau %>;">
         <i class="fas fa-lightbulb" style="color: <%= couleurNiveau %>;"></i>
         <p>
             <% if (niveauTermine) { %>
-                🎉 Vous avez terminé tous les cours de ce niveau ! 
+                Vous avez termine tous les cours de ce niveau.
                 <% if (!"avance".equals(nomNiveau)) { %>
-                    Le niveau suivant est débloqué.
+                    Le niveau suivant est debloque. Continuez votre progression !
                 <% } else { %>
-                    Vous maîtrisez complètement ce thème !
+                    Vous maîtrisez completement ce theme. Quel accomplissement !
                 <% } %>
             <% } else if (pourcentageNiveau >= 50) { %>
-                💪 Vous êtes à mi-chemin ! Continuez vos efforts pour terminer ce niveau.
+                Vous etes a mi-chemin ! Continuez vos efforts pour terminer ce niveau.
             <% } else if (pourcentageNiveau > 0) { %>
-                🚀 Bon début ! Choisissez un cours ci-dessous et commencez votre apprentissage.
+                Bon debut ! Choisissez un cours ci-dessous et commencez votre apprentissage.
             <% } else { %>
-                🎯 Choisissez un cours parmi ceux disponibles ci-dessous pour débuter votre formation.
+                Choisissez un cours parmi ceux disponibles ci-dessous pour debuter votre formation.
             <% } %>
         </p>
     </div>
 
     <%-- ============================================================
-         SECTION : CHOISISSEZ UN COURS
+         SECTION : LISTE DES COURS
          ============================================================ --%>
     <section class="cours-section">
         <div class="section-header">
             <div class="section-header-left">
                 <h2>
                     <i class="fas fa-book-open"></i>
-                    Choisissez un cours pour voir son plan détaillé
+                    Choisissez un cours pour voir son plan detaille
                 </h2>
                 <span class="badge-count" style="background: <%= couleurNiveau %>;">
                     <i class="fas fa-book"></i>
@@ -198,7 +320,7 @@
             <div class="section-header-right">
                 <span class="section-hint">
                     <i class="fas fa-info-circle"></i>
-                    Cliquez sur "Voir le plan" pour accéder au plan complet du cours
+                    Cliquez sur <strong>Voir le plan</strong> pour acceder au plan complet du cours
                 </span>
             </div>
         </div>
@@ -218,12 +340,10 @@
                     String statutCours = (String) coursData.get("statutCours");
                     String iconeStatutCours = (String) coursData.get("iconeStatutCours");
                     String couleurStatutCours = (String) coursData.get("couleurStatutCours");
-                    
-                    // Icône du cours basée sur son thème
+
                     String iconeCours = cours.getIconeTheme();
                     String couleurCours = cours.getCouleurTheme();
-                    
-                    // Calculer le nombre d'exemples de code et temps de lecture
+
                     int exemplesCode = 0;
                     int tempsLectureTotal = 0;
                     if (cours.getChapitres() != null) {
@@ -239,15 +359,15 @@
                     String tempsLectureFormate = formaterTempsLecture(tempsLectureTotal);
             %>
                 <div class="cours-card <%= estTermine ? "termine" : "" %>">
-                    
-                    <%-- Badge "Terminé" --%>
+
+                    <%-- Badge Termine --%>
                     <% if (estTermine) { %>
                         <div class="cours-card-badge-termine">
                             <i class="fas fa-trophy"></i>
                         </div>
                     <% } %>
-                    
-                    <%-- En-tête du cours --%>
+
+                    <%-- En-tete du cours --%>
                     <div class="cours-card-header">
                         <div class="cours-card-icon" style="background: linear-gradient(135deg, <%= couleurCours %>, <%= couleurCours %>dd);">
                             <i class="<%= iconeCours %>"></i>
@@ -262,17 +382,17 @@
                             <i class="<%= iconeStatutCours %>"></i>
                         </div>
                     </div>
-                    
-                    <%-- Description du cours --%>
+
+                    <%-- Description --%>
                     <% if (cours.getDescription() != null && !cours.getDescription().isEmpty()) { %>
                         <p class="cours-card-description">
-                            <%= cours.getDescription().length() > 150 ? 
-                                cours.getDescription().substring(0, 150) + "..." : 
-                                cours.getDescription() %>
+                            <%= cours.getDescription().length() > 150
+                                ? cours.getDescription().substring(0, 150) + "..."
+                                : cours.getDescription() %>
                         </p>
                     <% } %>
-                    
-                    <%-- Statistiques du cours --%>
+
+                    <%-- Statistiques --%>
                     <div class="cours-card-stats">
                         <div class="cours-stat">
                             <i class="fas fa-list-ul"></i>
@@ -280,7 +400,7 @@
                         </div>
                         <div class="cours-stat">
                             <i class="fas fa-file-alt"></i>
-                            <span><strong><%= nbLecons %></strong> leçons</span>
+                            <span><strong><%= nbLecons %></strong> lecons</span>
                         </div>
                         <div class="cours-stat">
                             <i class="fas fa-code"></i>
@@ -291,7 +411,7 @@
                             <span><%= tempsLectureFormate %></span>
                         </div>
                     </div>
-                    
+
                     <%-- Barre de progression --%>
                     <div class="cours-card-progress">
                         <div class="cours-progress-header">
@@ -303,55 +423,54 @@
                         </div>
                         <div class="cours-progress-detail">
                             <span>
-                                <i class="fas fa-check-circle"></i> 
-                                <%= leconsTerminees %>/<%= nbLecons %> leçons terminées
+                                <i class="fas fa-check-circle"></i>
+                                <%= leconsTerminees %>/<%= nbLecons %> lecons terminees
                             </span>
                         </div>
                     </div>
-                    
-                    <%-- Statut du cours --%>
+
+                    <%-- Statut --%>
                     <div class="cours-card-statut">
                         <span class="statut-badge" style="color: <%= couleurStatutCours %>; background: <%= couleurStatutCours %>15;">
                             <i class="<%= iconeStatutCours %>"></i>
                             <%= statutCours %>
                         </span>
                     </div>
-                    
+
                     <%-- Boutons d'action --%>
                     <div class="cours-card-actions">
-                        <a href="${pageContext.request.contextPath}/joueur/cours/plan?coursId=<%= cours.getId() %>" 
+                        <a href="${pageContext.request.contextPath}/joueur/cours/plan?coursId=<%= cours.getId() %>"
                            class="btn-cours-action btn-voir-plan">
                             <i class="fas fa-sitemap"></i>
                             <span>Voir le plan du cours</span>
                         </a>
-                        
+
                         <% if (!estTermine && premierChapitreId > 0) { %>
-                            <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= premierChapitreId %>" 
+                            <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= premierChapitreId %>"
                                class="btn-cours-action btn-commencer-cours">
                                 <i class="fas fa-play"></i>
                                 <span>Commencer</span>
                             </a>
                         <% } else if (estTermine && premierChapitreId > 0) { %>
-                            <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= premierChapitreId %>" 
+                            <a href="${pageContext.request.contextPath}/joueur/cours/chapitre?coursId=<%= cours.getId() %>&chapitreId=<%= premierChapitreId %>"
                                class="btn-cours-action btn-revoir-cours">
                                 <i class="fas fa-redo"></i>
                                 <span>Revoir</span>
                             </a>
                         <% } %>
                     </div>
-                    
+
                 </div>
             <%  }
             } else { %>
-                <%-- État vide --%>
                 <div class="empty-state full-width">
                     <div class="empty-icon">
                         <i class="fas fa-inbox"></i>
                     </div>
                     <h3>Aucun cours disponible</h3>
-                    <p>Ce niveau ne contient pas encore de cours. Revenez bientôt !</p>
+                    <p>Ce niveau ne contient pas encore de cours. Revenez bientot !</p>
                     <a href="${pageContext.request.contextPath}/joueur/cours/theme?theme=<%= themeEncode %>" class="btn-retour-empty">
-                        <i class="fas fa-arrow-left"></i> Retour au thème
+                        <i class="fas fa-arrow-left"></i> Retour au theme
                     </a>
                 </div>
             <% } %>
@@ -368,17 +487,17 @@
             </div>
             <div class="info-card-content">
                 <h4>Apprentissage par la lecture</h4>
-                <p>Chaque leçon contient des explications détaillées et des exemples de code prêts à copier-coller.</p>
+                <p>Chaque lecon contient des explications detaillees et des exemples de code prêts a copier-coller.</p>
             </div>
         </div>
-        
+
         <div class="info-card">
             <div class="info-card-icon">
                 <i class="fas fa-code"></i>
             </div>
             <div class="info-card-content">
                 <h4>Exemples pratiques</h4>
-                <p>Des exemples de code complets et commentés pour comprendre et pratiquer immédiatement.</p>
+                <p>Des exemples de code complets et commentes pour comprendre et pratiquer immediatement.</p>
             </div>
         </div>
     </div>
@@ -389,17 +508,16 @@
     <div class="back-section">
         <a href="${pageContext.request.contextPath}/joueur/cours/theme?theme=<%= themeEncode %>" class="btn-back">
             <i class="fas fa-arrow-left"></i>
-            <span>Retour au thème <%= nomTheme %></span>
+            <span>Retour au theme <%= nomTheme %></span>
         </a>
     </div>
 
 </div>
 
-<%-- ===== MÉTHODE UTILITAIRE JSP ===== --%>
+<%-- ============================================================
+     METHODE UTILITAIRE
+     ============================================================ --%>
 <%!
-    /**
-     * Formate un temps en minutes en chaîne lisible
-     */
     private String formaterTempsLecture(int minutes) {
         if (minutes == 0) return "N/A";
         if (minutes < 60) return minutes + " min";
@@ -410,7 +528,6 @@
     }
 %>
 
-<%-- ===== CHARGEMENT DES SCRIPTS ===== --%>
 <%
     String coursNiveauJS = "<script src=\"" + request.getContextPath() + "/views/assets/js/cours-niveau.js\"></script>";
     request.setAttribute("extraScripts", coursNiveauJS);

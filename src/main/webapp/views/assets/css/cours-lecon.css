@@ -1,13 +1,16 @@
 /* ============================================================
    FICHIER : views/assets/css/cours-lecon.css
-   RÔLE    : Styles de la page de contenu d'une leçon
+   RÔLE    : Styles de la page de contenu d'une lecon AmijayQuiz
              - Style W3Schools : texte enrichi + code
-             - Typographie variée pour le contenu pédagogique
-             - Mise en valeur des mots importants, définitions
+             - Typographie variee pour le contenu pedagogique
+             - Mise en valeur des mots importants, definitions
              - Blocs de code avec coloration syntaxique
              - Alertes, notes, astuces, warnings
-             - Liens externes stylisés
+             - Liens externes stylises
              - Tableaux, listes, citations
+             - Modales pour le plan du cours et la vue du chapitre
+             - Barre laterale sticky avec sommaire
+             - Barre de progression de lecture
              - Responsive design complet
    ============================================================ */
 
@@ -33,8 +36,12 @@
     --cl-code-light: #f5f0ff;
     --cl-link: #2980b9;
     --cl-link-hover: #1a5276;
+    --cl-gold: #f39c12;
+    --cl-gold-dark: #e67e22;
+    --cl-gold-light: #fef3e2;
     --cl-white: #ffffff;
     --cl-bg: #f5f6fa;
+    --cl-bg-light: #fafbfe;
     --cl-text: #1a1a2e;
     --cl-text-light: #555555;
     --cl-text-muted: #8b8fa3;
@@ -43,9 +50,11 @@
     --cl-radius: 10px;
     --cl-radius-lg: 14px;
     --cl-radius-xl: 20px;
+    --cl-radius-2xl: 26px;
     --cl-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
     --cl-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     --cl-shadow-lg: 0 10px 35px rgba(0, 0, 0, 0.08);
+    --cl-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12);
     --cl-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -88,22 +97,19 @@
     display: flex;
     align-items: center;
     gap: 5px;
+    padding: 4px 8px;
+    border-radius: var(--cl-radius-sm);
     transition: var(--cl-transition);
     white-space: nowrap;
 }
 
 .lecon-container .breadcrumb-link:hover {
     color: var(--cl-primary);
+    background: rgba(102, 126, 234, 0.05);
 }
 
-.lecon-container .breadcrumb-link i {
-    font-size: 12px;
-}
-
-.lecon-container .breadcrumb-separator {
-    color: #ccc;
-    font-size: 10px;
-}
+.lecon-container .breadcrumb-link i { font-size: 12px; }
+.lecon-container .breadcrumb-separator { color: #ccc; font-size: 10px; }
 
 .lecon-container .breadcrumb-current {
     color: var(--cl-text);
@@ -111,12 +117,13 @@
     display: flex;
     align-items: center;
     gap: 5px;
+    padding: 4px 10px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: var(--cl-radius-sm);
     white-space: nowrap;
 }
 
-.lecon-container .breadcrumb-current i {
-    color: var(--cl-primary);
-}
+.lecon-container .breadcrumb-current i { color: var(--cl-primary); }
 
 /* ==========================================================
    LAYOUT 2 COLONNES
@@ -136,20 +143,44 @@
     width: 300px;
     flex-shrink: 0;
     position: sticky;
-    top: 20px;
+    top: 85px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding-right: 4px;
 }
 
+/* Scrollbar de la sidebar */
+.lecon-sidebar::-webkit-scrollbar { width: 5px; }
+.lecon-sidebar::-webkit-scrollbar-track { background: transparent; }
+.lecon-sidebar::-webkit-scrollbar-thumb { background: #d0d4e0; border-radius: 10px; }
+.lecon-sidebar::-webkit-scrollbar-thumb:hover { background: #b0b4c0; }
+
 /* ==========================================================
-   EN-TÊTE DE LA LEÇON
+   EN-TETE DE LA LECON
    ========================================================== */
 .lecon-header {
     background: var(--cl-white);
-    border-radius: var(--cl-radius-xl);
+    border-radius: var(--cl-radius-2xl);
     padding: 28px 30px;
     margin-bottom: 25px;
     box-shadow: var(--cl-shadow-lg);
     border: 1px solid rgba(102, 126, 234, 0.06);
     animation: clFadeIn 0.5s ease 0.1s both;
+    position: relative;
+    overflow: hidden;
+}
+
+.lecon-header::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: var(--cl-gradient);
+    opacity: 0.03;
+    pointer-events: none;
 }
 
 .lecon-header-badges {
@@ -157,6 +188,8 @@
     gap: 8px;
     margin-bottom: 12px;
     flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
 }
 
 .lecon-badge-cours {
@@ -182,13 +215,25 @@
     gap: 5px;
 }
 
+.lecon-badge-module {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #f5f0ff;
+    color: var(--cl-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 .lecon-badge-premium {
     padding: 5px 14px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 600;
-    background: var(--cl-warning-light);
-    color: var(--cl-warning-dark);
+    background: var(--cl-gold-light);
+    color: var(--cl-gold-dark);
     display: flex;
     align-items: center;
     gap: 5px;
@@ -200,6 +245,8 @@
     color: var(--cl-text);
     margin: 0 0 12px 0;
     line-height: 1.3;
+    position: relative;
+    z-index: 1;
 }
 
 .lecon-header-meta {
@@ -207,6 +254,8 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
 }
 
 .lecon-meta-item {
@@ -217,10 +266,7 @@
     gap: 5px;
 }
 
-.lecon-meta-item i {
-    color: var(--cl-primary);
-    font-size: 13px;
-}
+.lecon-meta-item i { color: var(--cl-primary); font-size: 13px; }
 
 .lecon-meta-item.termine {
     color: var(--cl-success);
@@ -231,40 +277,12 @@
 }
 
 /* ==========================================================
-   VIDÉO (OPTIONNELLE)
-   ========================================================== */
-.lecon-video {
-    background: var(--cl-white);
-    border-radius: var(--cl-radius-xl);
-    padding: 20px;
-    margin-bottom: 25px;
-    box-shadow: var(--cl-shadow);
-}
-
-.video-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: var(--cl-radius);
-}
-
-.video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-/* ==========================================================
    CONTENU TEXTE : STYLE W3SCHOOLS
    ========================================================== */
 .lecon-texte {
     background: var(--cl-white);
-    border-radius: var(--cl-radius-xl);
-    padding: 30px 35px;
+    border-radius: var(--cl-radius-2xl);
+    padding: 32px 36px;
     margin-bottom: 25px;
     box-shadow: var(--cl-shadow);
     line-height: 1.9;
@@ -274,8 +292,6 @@
 }
 
 /* ===== TYPOGRAPHIE DU CONTENU ===== */
-
-/* Titres */
 .lecon-texte h1,
 .lecon-texte h2,
 .lecon-texte h3,
@@ -284,7 +300,7 @@
 .lecon-texte h6 {
     color: var(--cl-text);
     font-weight: 700;
-    margin: 28px 0 14px 0;
+    margin: 30px 0 14px 0;
     line-height: 1.4;
 }
 
@@ -298,30 +314,16 @@
 .lecon-texte h1:first-child,
 .lecon-texte h2:first-child,
 .lecon-texte h3:first-child,
-.lecon-texte h4:first-child {
-    margin-top: 0;
-}
+.lecon-texte h4:first-child { margin-top: 0; }
 
-/* Paragraphes */
-.lecon-texte p {
-    margin: 0 0 16px 0;
-    color: var(--cl-text-light);
-}
+.lecon-texte p { margin: 0 0 16px 0; color: var(--cl-text-light); }
 
-/* Texte important / mis en valeur */
 .lecon-texte strong,
-.lecon-texte b {
-    color: var(--cl-text);
-    font-weight: 700;
-}
+.lecon-texte b { color: var(--cl-text); font-weight: 700; }
 
 .lecon-texte em,
-.lecon-texte i {
-    color: var(--cl-primary-dark);
-    font-style: italic;
-}
+.lecon-texte i { color: var(--cl-primary-dark); font-style: italic; }
 
-/* Texte marqué / surligné */
 .lecon-texte mark {
     background: linear-gradient(180deg, transparent 60%, #ffeaa7 60%);
     padding: 2px 4px;
@@ -329,7 +331,6 @@
     color: var(--cl-text);
 }
 
-/* Mots-clés / termes techniques */
 .lecon-texte code {
     background: var(--cl-code-light);
     color: var(--cl-code);
@@ -341,7 +342,6 @@
     border: 1px solid #e8dff5;
 }
 
-/* Liens */
 .lecon-texte a {
     color: var(--cl-link);
     text-decoration: none;
@@ -357,7 +357,6 @@
     background: rgba(41, 128, 185, 0.05);
 }
 
-/* Liens externes */
 .lecon-texte a[href^="http"]::after,
 .lecon-texte a[target="_blank"]::after {
     content: '\f35d';
@@ -371,14 +370,9 @@
 
 /* Listes */
 .lecon-texte ul,
-.lecon-texte ol {
-    margin: 0 0 16px 0;
-    padding-left: 24px;
-}
+.lecon-texte ol { margin: 0 0 16px 0; padding-left: 24px; }
 
-.lecon-texte ul {
-    list-style: none;
-}
+.lecon-texte ul { list-style: none; }
 
 .lecon-texte ul li {
     position: relative;
@@ -405,15 +399,9 @@
     top: 11px;
 }
 
-.lecon-texte ol li {
-    margin-bottom: 8px;
-    padding-left: 6px;
-}
+.lecon-texte ol li { margin-bottom: 8px; padding-left: 6px; }
 
-.lecon-texte ol li::marker {
-    color: var(--cl-primary);
-    font-weight: 700;
-}
+.lecon-texte ol li::marker { color: var(--cl-primary); font-weight: 700; }
 
 /* Citations */
 .lecon-texte blockquote {
@@ -426,9 +414,7 @@
     color: var(--cl-text);
 }
 
-.lecon-texte blockquote p {
-    margin: 0;
-}
+.lecon-texte blockquote p { margin: 0; }
 
 .lecon-texte blockquote cite {
     display: block;
@@ -449,10 +435,7 @@
     box-shadow: var(--cl-shadow-sm);
 }
 
-.lecon-texte thead {
-    background: var(--cl-gradient);
-    color: white;
-}
+.lecon-texte thead { background: var(--cl-gradient); color: white; }
 
 .lecon-texte th {
     padding: 12px 16px;
@@ -468,13 +451,8 @@
     border-bottom: 1px solid var(--cl-border);
 }
 
-.lecon-texte tbody tr:nth-child(even) {
-    background: #fafbfc;
-}
-
-.lecon-texte tbody tr:hover {
-    background: #f0f2ff;
-}
+.lecon-texte tbody tr:nth-child(even) { background: #fafbfc; }
+.lecon-texte tbody tr:hover { background: #f0f2ff; }
 
 /* Images */
 .lecon-texte img {
@@ -485,9 +463,14 @@
     margin: 16px 0;
 }
 
-/* ===== BLOCS SPÉCIAUX (NOTES, ASTUCES, WARNINGS) ===== */
+/* Ligne horizontale */
+.lecon-texte hr {
+    border: none;
+    border-top: 2px solid var(--cl-border);
+    margin: 28px 0;
+}
 
-/* Note d'information */
+/* ===== BLOCS SPECIAUX ===== */
 .lecon-texte .note-info {
     background: var(--cl-info-light);
     border-left: 4px solid var(--cl-info);
@@ -507,7 +490,6 @@
     color: var(--cl-info);
 }
 
-/* Note de succès */
 .lecon-texte .note-success {
     background: var(--cl-success-light);
     border-left: 4px solid var(--cl-success);
@@ -527,7 +509,6 @@
     color: var(--cl-success);
 }
 
-/* Note d'avertissement */
 .lecon-texte .note-warning {
     background: var(--cl-warning-light);
     border-left: 4px solid var(--cl-warning);
@@ -547,7 +528,6 @@
     color: var(--cl-warning);
 }
 
-/* Note de danger */
 .lecon-texte .note-danger {
     background: var(--cl-danger-light);
     border-left: 4px solid var(--cl-danger);
@@ -567,7 +547,6 @@
     color: var(--cl-danger);
 }
 
-/* Astuce / Conseil */
 .lecon-texte .note-tip {
     background: linear-gradient(135deg, #f0f2ff, #faf5ff);
     border-left: 4px solid var(--cl-primary);
@@ -586,7 +565,6 @@
     color: var(--cl-primary);
 }
 
-/* Définition */
 .lecon-texte .definition {
     background: #fafbff;
     border: 2px solid var(--cl-primary);
@@ -602,7 +580,6 @@
     margin-bottom: 6px;
 }
 
-/* Exemple (bloc) */
 .lecon-texte .exemple {
     background: #f9fafb;
     border: 1px solid var(--cl-border);
@@ -612,7 +589,7 @@
 }
 
 .lecon-texte .exemple::before {
-    content: '📝 Exemple';
+    content: 'Exemple';
     display: block;
     font-weight: 700;
     font-size: 14px;
@@ -622,7 +599,6 @@
     letter-spacing: 0.5px;
 }
 
-/* Résumé / Récapitulatif */
 .lecon-texte .resume {
     background: linear-gradient(135deg, #f0f2ff, #faf5ff);
     border: 2px solid var(--cl-primary);
@@ -632,7 +608,7 @@
 }
 
 .lecon-texte .resume::before {
-    content: '📋 Résumé';
+    content: 'Resume';
     display: block;
     font-weight: 700;
     font-size: 14px;
@@ -642,7 +618,6 @@
     letter-spacing: 0.5px;
 }
 
-/* Exercice */
 .lecon-texte .exercice {
     background: #fffdf5;
     border: 2px dashed var(--cl-warning);
@@ -652,7 +627,7 @@
 }
 
 .lecon-texte .exercice::before {
-    content: '🏋️ Exercice pratique';
+    content: 'Exercice pratique';
     display: block;
     font-weight: 700;
     font-size: 14px;
@@ -662,19 +637,12 @@
     letter-spacing: 0.5px;
 }
 
-/* Ligne horizontale */
-.lecon-texte hr {
-    border: none;
-    border-top: 2px solid var(--cl-border);
-    margin: 28px 0;
-}
-
 /* ==========================================================
-   ÉTAT VIDE (CONTENU NON DISPONIBLE)
+   ETAT VIDE
    ========================================================== */
 .lecon-texte-vide {
     background: var(--cl-white);
-    border-radius: var(--cl-radius-xl);
+    border-radius: var(--cl-radius-2xl);
     padding: 50px 30px;
     margin-bottom: 25px;
     box-shadow: var(--cl-shadow);
@@ -694,24 +662,15 @@
     color: #ccc;
 }
 
-.lecon-texte-vide h3 {
-    font-size: 18px;
-    color: var(--cl-text);
-    margin: 0 0 8px 0;
-}
-
-.lecon-texte-vide p {
-    font-size: 14px;
-    color: var(--cl-text-muted);
-    margin: 0;
-}
+.lecon-texte-vide h3 { font-size: 18px; color: var(--cl-text); margin: 0 0 8px 0; }
+.lecon-texte-vide p { font-size: 14px; color: var(--cl-text-muted); margin: 0; }
 
 /* ==========================================================
    BLOC DE CODE SOURCE
    ========================================================== */
 .lecon-code {
     background: #1e1e2e;
-    border-radius: var(--cl-radius-xl);
+    border-radius: var(--cl-radius-2xl);
     margin-bottom: 25px;
     overflow: hidden;
     box-shadow: var(--cl-shadow-lg);
@@ -738,9 +697,7 @@
     font-weight: 600;
 }
 
-.code-header-left i {
-    color: var(--cl-primary);
-}
+.code-header-left i { color: var(--cl-primary); }
 
 .code-badge {
     font-size: 10px;
@@ -752,10 +709,7 @@
     letter-spacing: 0.3px;
 }
 
-.code-header-right {
-    display: flex;
-    gap: 8px;
-}
+.code-header-right { display: flex; gap: 8px; }
 
 .code-copy-btn,
 .code-expand-btn {
@@ -772,25 +726,11 @@
     border: none;
 }
 
-.code-copy-btn {
-    background: rgba(102, 126, 234, 0.2);
-    color: #cdd6f4;
-}
+.code-copy-btn { background: rgba(102, 126, 234, 0.2); color: #cdd6f4; }
+.code-copy-btn:hover { background: rgba(102, 126, 234, 0.4); transform: translateY(-1px); }
 
-.code-copy-btn:hover {
-    background: rgba(102, 126, 234, 0.4);
-    transform: translateY(-1px);
-}
-
-.code-expand-btn {
-    background: rgba(255, 255, 255, 0.08);
-    color: #cdd6f4;
-}
-
-.code-expand-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
-}
+.code-expand-btn { background: rgba(255, 255, 255, 0.08); color: #cdd6f4; }
+.code-expand-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-1px); }
 
 .code-block {
     margin: 0;
@@ -806,33 +746,13 @@
     transition: max-height 0.4s ease;
 }
 
-.code-block.expanded {
-    max-height: none;
-}
+.code-block.expanded { max-height: none; }
+.code-block code { white-space: pre; display: block; }
 
-.code-block code {
-    white-space: pre;
-    display: block;
-}
-
-/* Scrollbar du bloc de code */
-.code-block::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-.code-block::-webkit-scrollbar-track {
-    background: #2d2d3f;
-}
-
-.code-block::-webkit-scrollbar-thumb {
-    background: #4d4d6f;
-    border-radius: 10px;
-}
-
-.code-block::-webkit-scrollbar-thumb:hover {
-    background: #5d5d7f;
-}
+.code-block::-webkit-scrollbar { width: 8px; height: 8px; }
+.code-block::-webkit-scrollbar-track { background: #2d2d3f; }
+.code-block::-webkit-scrollbar-thumb { background: #4d4d6f; border-radius: 10px; }
+.code-block::-webkit-scrollbar-thumb:hover { background: #5d5d7f; }
 
 .code-footer {
     padding: 10px 20px;
@@ -845,12 +765,14 @@
     gap: 6px;
 }
 
+.code-footer i { color: var(--cl-warning); font-size: 12px; }
+
 /* ==========================================================
    RESSOURCES
    ========================================================== */
 .lecon-ressources {
     background: var(--cl-white);
-    border-radius: var(--cl-radius-xl);
+    border-radius: var(--cl-radius-2xl);
     padding: 24px 28px;
     margin-bottom: 25px;
     box-shadow: var(--cl-shadow);
@@ -867,9 +789,7 @@
     gap: 8px;
 }
 
-.ressources-title i {
-    color: var(--cl-primary);
-}
+.ressources-title i { color: var(--cl-primary); }
 
 .ressources-grid {
     display: grid;
@@ -909,10 +829,7 @@
     flex-shrink: 0;
 }
 
-.ressource-info {
-    flex: 1;
-    min-width: 0;
-}
+.ressource-info { flex: 1; min-width: 0; }
 
 .ressource-nom {
     display: block;
@@ -934,16 +851,14 @@
     transition: var(--cl-transition);
 }
 
-.ressource-card:hover .ressource-download {
-    transform: translateY(-2px);
-}
+.ressource-card:hover .ressource-download { transform: translateY(-2px); }
 
 /* ==========================================================
-   MESSAGE DE FIN DE LEÇON
+   MESSAGE DE FIN DE LECON
    ========================================================== */
 .lecon-fin-message {
     background: var(--cl-white);
-    border-radius: var(--cl-radius-xl);
+    border-radius: var(--cl-radius-2xl);
     padding: 22px 28px;
     margin-bottom: 25px;
     box-shadow: var(--cl-shadow);
@@ -967,16 +882,16 @@
     flex-shrink: 0;
 }
 
-.fin-message-content {
-    flex: 1;
-    min-width: 0;
-}
+.fin-message-content { flex: 1; min-width: 0; }
 
 .fin-message-content h4 {
     font-size: 16px;
     font-weight: 600;
     color: var(--cl-text);
     margin: 0 0 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .fin-message-content p {
@@ -1011,26 +926,12 @@
     flex: 1;
 }
 
-.btn-nav-lecon i {
-    font-size: 20px;
-    flex-shrink: 0;
-}
+.btn-nav-lecon i { font-size: 20px; flex-shrink: 0; }
 
-.btn-nav-text {
-    display: flex;
-    flex-direction: column;
-}
+.btn-nav-text { display: flex; flex-direction: column; }
 
-.nav-label {
-    font-size: 12px;
-    font-weight: 500;
-    opacity: 0.8;
-}
-
-.nav-titre {
-    font-size: 14px;
-    font-weight: 600;
-}
+.nav-label { font-size: 12px; font-weight: 500; opacity: 0.8; }
+.nav-titre { font-size: 14px; font-weight: 600; }
 
 .precedent {
     background: var(--cl-white);
@@ -1058,9 +959,7 @@
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
-.valider .btn-nav-text {
-    align-items: flex-end;
-}
+.valider .btn-nav-text { align-items: flex-end; }
 
 .examen {
     background: linear-gradient(135deg, #f39c12, #e67e22);
@@ -1078,7 +977,7 @@
 }
 
 /* ==========================================================
-   BARRE LATÉRALE
+   BARRE LATERALE (SIDEBAR)
    ========================================================== */
 .lecon-sidebar {
     display: flex;
@@ -1086,10 +985,9 @@
     gap: 16px;
 }
 
-/* Carte sommaire */
 .sidebar-card {
     background: var(--cl-white);
-    border-radius: var(--cl-radius-lg);
+    border-radius: var(--cl-radius-xl);
     padding: 20px;
     box-shadow: var(--cl-shadow);
     animation: clFadeIn 0.5s ease 0.15s both;
@@ -1114,9 +1012,7 @@
     gap: 8px;
 }
 
-.sidebar-header h3 i {
-    color: var(--cl-primary);
-}
+.sidebar-header h3 i { color: var(--cl-primary); }
 
 .sidebar-progress {
     font-size: 12px;
@@ -1145,9 +1041,7 @@
     font-size: 13px;
 }
 
-.sidebar-lecon:hover {
-    background: #fafbff;
-}
+.sidebar-lecon:hover { background: #fafbff; }
 
 .sidebar-lecon.active {
     background: rgba(102, 126, 234, 0.08);
@@ -1161,8 +1055,8 @@
 }
 
 .sidebar-lecon-numero {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1192,15 +1086,10 @@
     white-space: nowrap;
 }
 
-.sidebar-lecon-icon {
-    color: var(--cl-text-muted);
-    font-size: 10px;
-}
-
-/* Carte infos leçon */
+/* Carte infos lecon */
 .sidebar-info-card {
     background: var(--cl-white);
-    border-radius: var(--cl-radius-lg);
+    border-radius: var(--cl-radius-xl);
     padding: 20px;
     box-shadow: var(--cl-shadow);
     animation: clFadeIn 0.5s ease 0.2s both;
@@ -1216,9 +1105,7 @@
     gap: 8px;
 }
 
-.sidebar-info-card h4 i {
-    color: var(--cl-primary);
-}
+.sidebar-info-card h4 i { color: var(--cl-primary); }
 
 .sidebar-info-item {
     display: flex;
@@ -1230,9 +1117,7 @@
     border-bottom: 1px solid #f5f5fa;
 }
 
-.sidebar-info-item:last-child {
-    border-bottom: none;
-}
+.sidebar-info-item:last-child { border-bottom: none; }
 
 .sidebar-info-item i {
     color: var(--cl-primary);
@@ -1261,18 +1146,367 @@
     font-weight: 500;
     box-shadow: var(--cl-shadow-sm);
     transition: var(--cl-transition);
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    text-align: left;
 }
 
 .sidebar-nav-btn:hover {
     box-shadow: var(--cl-shadow);
     transform: translateX(3px);
     color: var(--cl-primary);
+    border-color: var(--cl-primary);
 }
 
 .sidebar-nav-btn i {
     color: var(--cl-primary);
     font-size: 14px;
+    transition: var(--cl-transition);
 }
+
+.sidebar-nav-btn:hover i { transform: scale(1.1); }
+
+/* ==========================================================
+   MODALES
+   ========================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: clModalOverlayIn 0.3s ease;
+    backdrop-filter: blur(3px);
+}
+
+@keyframes clModalOverlayIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-container {
+    background: var(--cl-white);
+    border-radius: var(--cl-radius-2xl);
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--cl-shadow-xl);
+    animation: clModalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.modal-vue-chapitre {
+    max-width: 600px;
+}
+
+@keyframes clModalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(30px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 26px;
+    border-bottom: 2px solid var(--cl-border);
+    flex-shrink: 0;
+}
+
+.modal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.modal-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--cl-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.modal-header-text h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cl-text);
+    margin: 0 0 3px 0;
+}
+
+.modal-header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    background: #f0f2ff;
+    color: var(--cl-primary);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.modal-close-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f5f5fa;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--cl-text-muted);
+    transition: var(--cl-transition);
+    flex-shrink: 0;
+}
+
+.modal-close-btn:hover {
+    background: var(--cl-danger);
+    color: white;
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 22px 26px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-body::-webkit-scrollbar { width: 6px; }
+.modal-body::-webkit-scrollbar-track { background: transparent; }
+.modal-body::-webkit-scrollbar-thumb { background: #d0d4e0; border-radius: 10px; }
+
+/* Guide dans la modale plan */
+.modal-plan-guide {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 18px;
+    background: #fafbff;
+    border-radius: var(--cl-radius);
+    margin-bottom: 18px;
+    font-size: 13px;
+    color: var(--cl-text-muted);
+    border: 1px solid #eef0ff;
+}
+
+.modal-plan-guide i { color: var(--cl-primary); font-size: 16px; margin-top: 1px; }
+.modal-plan-guide strong { color: var(--cl-text); }
+
+/* Modules dans la modale */
+.modal-modules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-module-item {
+    background: var(--cl-bg-light);
+    border-radius: var(--cl-radius);
+    padding: 14px 18px;
+    transition: var(--cl-transition);
+    border: 1px solid transparent;
+}
+
+.modal-module-item:hover { background: var(--cl-white); border-color: var(--cl-border); }
+
+.modal-module-item.reussi { border-left: 3px solid var(--cl-success); }
+.modal-module-item.debloque { border-left: 3px solid var(--cl-primary); }
+.modal-module-item.verrouille { border-left: 3px solid #ccc; opacity: 0.6; }
+
+.modal-module-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-module-numero {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+
+.modal-module-titre { font-size: 14px; font-weight: 600; color: var(--cl-text); }
+
+.modal-module-lecons {
+    font-size: 11px;
+    color: var(--cl-text-muted);
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.modal-module-status { font-size: 14px; flex-shrink: 0; }
+
+/* Chapitres dans la modale */
+.modal-module-chapitres {
+    margin-top: 10px;
+    padding-left: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modal-chapitre-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: var(--cl-radius-sm);
+    font-size: 12px;
+    color: var(--cl-text-muted);
+    transition: var(--cl-transition);
+}
+
+.modal-chapitre-item.actif {
+    background: rgba(102, 126, 234, 0.06);
+    color: var(--cl-primary);
+    font-weight: 600;
+}
+
+.modal-chapitre-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.modal-chapitre-badge {
+    font-size: 10px;
+    background: var(--cl-primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+/* Description et objectifs dans la modale chapitre */
+.modal-chapitre-desc {
+    margin-bottom: 16px;
+    padding: 14px 18px;
+    background: var(--cl-bg-light);
+    border-radius: var(--cl-radius);
+}
+
+.modal-chapitre-desc p {
+    font-size: 13px;
+    color: var(--cl-text-muted);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.modal-chapitre-objectifs {
+    margin-bottom: 18px;
+    padding: 14px 18px;
+    background: #f0f2ff;
+    border-radius: var(--cl-radius);
+    border: 1px solid #d4d8ff;
+}
+
+.modal-chapitre-objectifs h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cl-primary);
+    margin: 0 0 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.modal-chapitre-objectifs p {
+    font-size: 13px;
+    color: var(--cl-text-light);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Lecons dans la modale */
+.modal-lecons-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.modal-lecons-liste h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cl-text);
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.modal-lecons-liste h4 i { color: var(--cl-primary); }
+
+.modal-lecon-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--cl-radius-sm);
+    text-decoration: none;
+    color: var(--cl-text-light);
+    transition: var(--cl-transition);
+    font-size: 13px;
+    border: 1px solid transparent;
+}
+
+.modal-lecon-item:hover { background: #fafbff; border-color: var(--cl-border); }
+
+.modal-lecon-item.actif {
+    background: rgba(102, 126, 234, 0.06);
+    color: var(--cl-primary);
+    font-weight: 600;
+    border-color: #d4d8ff;
+}
+
+.modal-lecon-numero {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.modal-lecon-item.actif .modal-lecon-numero {
+    background: var(--cl-primary);
+    color: white;
+}
+
+.modal-lecon-titre { flex: 1; }
+.modal-lecon-duree { font-size: 11px; color: var(--cl-text-muted); }
+.modal-lecon-fleche { font-size: 12px; color: var(--cl-primary); opacity: 0; transition: var(--cl-transition); }
+.modal-lecon-item:hover .modal-lecon-fleche { opacity: 1; transform: translateX(3px); }
 
 /* ==========================================================
    NOTIFICATION DE COPIE
@@ -1292,153 +1526,101 @@
     align-items: center;
     gap: 10px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    z-index: 9999;
+    z-index: 10000;
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
 }
 
-.copie-notification.show {
-    transform: translateX(-50%) translateY(0);
-}
-
-.copie-notification i {
-    color: var(--cl-success);
-    font-size: 18px;
-}
+.copie-notification.show { transform: translateX(-50%) translateY(0); }
+.copie-notification i { color: var(--cl-success); font-size: 18px; }
 
 /* ==========================================================
-   FORMULAIRE CACHÉ
+   FORMULAIRE CACHE
    ========================================================== */
-#formValiderLecon {
-    display: none;
-}
+#formValiderLecon { display: none; }
 
 /* ==========================================================
    RESPONSIVE
    ========================================================== */
 
-/* Tablette */
-@media (max-width: 900px) {
-    .lecon-layout {
-        flex-direction: column;
-    }
-    
+/* Tablette large */
+@media (max-width: 1000px) {
+    .lecon-layout { flex-direction: column; }
+
     .lecon-sidebar {
         width: 100%;
         position: static;
+        max-height: none;
+        overflow-y: visible;
         order: -1;
     }
-    
-    .lecon-texte {
-        padding: 22px 20px;
-        font-size: 14px;
-    }
-    
-    .lecon-titre {
-        font-size: 22px;
-    }
-    
-    .code-block {
-        font-size: 12px;
-        max-height: 350px;
-    }
-    
-    .lecon-navigation {
-        flex-direction: column;
-    }
-    
-    .btn-nav-lecon {
-        flex: auto;
-    }
-    
-    .valider .btn-nav-text {
-        align-items: flex-end;
-    }
-    
-    .sidebar-nav {
-        flex-direction: row;
-    }
-    
-    .sidebar-nav-btn {
-        flex: 1;
-    }
+
+    .sidebar-nav { flex-direction: row; }
+    .sidebar-nav-btn { flex: 1; justify-content: center; }
+
+    .modal-container { max-width: 90%; }
+}
+
+/* Tablette */
+@media (max-width: 850px) {
+    .lecon-texte { padding: 24px 20px; font-size: 14px; }
+    .lecon-titre { font-size: 22px; }
+    .lecon-header { padding: 22px 20px; }
+
+    .code-block { font-size: 12px; max-height: 350px; }
+
+    .lecon-navigation { flex-direction: column; }
+    .btn-nav-lecon { flex: auto; }
+    .valider .btn-nav-text { align-items: flex-end; }
+
+    .modal-container { max-width: 95%; max-height: 90vh; }
+    .modal-header { padding: 16px 18px; }
+    .modal-body { padding: 16px 18px; }
 }
 
 /* Mobile */
 @media (max-width: 600px) {
-    .lecon-container {
-        padding: 10px 10px 30px;
-    }
-    
-    .lecon-header {
-        padding: 20px 18px;
-    }
-    
-    .lecon-titre {
-        font-size: 20px;
-    }
-    
+    .lecon-container { padding: 10px 10px 30px; }
+    .lecon-header { padding: 18px 15px; border-radius: var(--cl-radius-xl); }
+    .lecon-titre { font-size: 20px; }
+
     .lecon-texte {
         padding: 18px 16px;
         font-size: 14px;
-        border-radius: var(--cl-radius);
+        border-radius: var(--cl-radius-xl);
     }
-    
+
     .lecon-texte h1 { font-size: 22px; }
     .lecon-texte h2 { font-size: 20px; }
     .lecon-texte h3 { font-size: 18px; }
-    
-    .code-block {
-        padding: 14px 16px;
-        font-size: 11px;
-        max-height: 300px;
-    }
-    
-    .code-header {
-        padding: 10px 14px;
-    }
-    
+
+    .code-block { padding: 14px 16px; font-size: 11px; max-height: 300px; }
+    .code-header { padding: 10px 14px; }
     .code-copy-btn span,
-    .code-expand-btn span {
-        display: none;
-    }
-    
-    .ressources-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .sidebar-nav {
-        flex-direction: column;
-    }
-    
-    .fin-message-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-    }
+    .code-expand-btn span { display: none; }
+    .code-copy-btn,
+    .code-expand-btn { padding: 8px 12px; }
+
+    .ressources-grid { grid-template-columns: 1fr; }
+    .sidebar-nav { flex-direction: column; }
+
+    .fin-message-icon { width: 40px; height: 40px; font-size: 18px; }
+    .fin-message-content h4 { font-size: 14px; }
+
+    .modal-container { max-width: 100%; border-radius: var(--cl-radius-xl) var(--cl-radius-xl) 0 0; max-height: 90vh; }
+    .modal-header-text h2 { font-size: 16px; }
 }
 
-/* Très petit mobile */
+/* Tres petit mobile */
 @media (max-width: 380px) {
-    .lecon-texte {
-        font-size: 13px;
-    }
-    
-    .lecon-texte table {
-        font-size: 11px;
-    }
-    
+    .lecon-texte { font-size: 13px; padding: 14px 12px; }
+    .lecon-texte table { font-size: 11px; }
     .lecon-texte th,
-    .lecon-texte td {
-        padding: 8px 10px;
-    }
-    
-    .btn-nav-lecon {
-        padding: 12px 16px;
-    }
-    
-    .nav-titre {
-        font-size: 12px;
-    }
+    .lecon-texte td { padding: 8px 10px; }
+    .btn-nav-lecon { padding: 12px 16px; }
+    .nav-titre { font-size: 12px; }
+    .modal-header { padding: 12px 14px; }
+    .modal-body { padding: 12px 14px; }
 }
 
 /* ===== IMPRESSION ===== */
@@ -1448,26 +1630,13 @@
     .copie-notification,
     .btn-nav-lecon,
     .code-copy-btn,
-    .code-expand-btn {
+    .code-expand-btn,
+    .modal-overlay {
         display: none;
     }
-    
-    .lecon-layout {
-        display: block;
-    }
-    
-    .lecon-main {
-        max-width: 100%;
-    }
-    
-    .lecon-texte {
-        box-shadow: none;
-        border: 1px solid #ddd;
-    }
-    
-    .code-block {
-        background: #f5f5f5 !important;
-        color: #333 !important;
-        border: 1px solid #ddd;
-    }
+
+    .lecon-layout { display: block; }
+    .lecon-main { max-width: 100%; }
+    .lecon-texte { box-shadow: none; border: 1px solid #ddd; }
+    .code-block { background: #f5f5f5 !important; color: #333 !important; border: 1px solid #ddd; }
 }

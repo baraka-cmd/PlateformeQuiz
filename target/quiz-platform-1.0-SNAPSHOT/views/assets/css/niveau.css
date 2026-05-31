@@ -759,3 +759,450 @@
         border: 1px solid #ddd;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================
+   GUIDE DE PROGRESSION (NIVEAU QUIZ)
+   ========================================================== */
+.plan-guide {
+    background: var(--nv-white);
+    border-radius: var(--nv-radius-lg);
+    padding: 18px 24px;
+    margin-bottom: 25px;
+    box-shadow: var(--nv-shadow);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    animation: nvFadeIn 0.5s ease 0.1s both;
+    border: 1px solid rgba(102, 126, 234, 0.06);
+}
+
+@keyframes nvFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.plan-guide .guide-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--nv-radius-sm);
+    background: #eef0ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--nv-primary);
+    flex-shrink: 0;
+}
+
+.plan-guide .guide-content {
+    flex: 1;
+}
+
+.plan-guide .guide-content strong {
+    display: block;
+    font-size: 14px;
+    color: var(--nv-text);
+    margin-bottom: 4px;
+}
+
+.plan-guide .guide-content p {
+    font-size: 13px;
+    color: var(--nv-text-muted);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.plan-guide .guide-content p strong {
+    display: inline;
+    color: var(--nv-text);
+}
+
+/* ==========================================================
+   BANNIÈRE PREMIUM (NIVEAU QUIZ)
+   ========================================================== */
+.premium-banner {
+    background: var(--nv-white);
+    border-radius: var(--nv-radius-xl);
+    padding: 28px 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--nv-shadow-xl);
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    border: 2px solid #f39c12;
+    position: relative;
+    overflow: hidden;
+    animation: nvFadeIn 0.6s ease 0.2s both;
+    flex-wrap: wrap;
+}
+
+.premium-banner.full-width {
+    grid-column: 1 / -1;
+    margin: 5px 0 15px;
+}
+
+.premium-banner .premium-banner-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(243, 156, 18, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    animation: nvGlowRotate 8s linear infinite;
+}
+
+@keyframes nvGlowRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.premium-banner .premium-banner-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 8px 30px rgba(243, 156, 18, 0.3);
+    position: relative;
+    z-index: 1;
+    animation: nvIconPulse 3s ease-in-out infinite;
+}
+
+@keyframes nvIconPulse {
+    0%, 100% { box-shadow: 0 8px 30px rgba(243, 156, 18, 0.3); }
+    50% { box-shadow: 0 8px 50px rgba(243, 156, 18, 0.5); }
+}
+
+.premium-banner .premium-banner-content {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+    z-index: 1;
+}
+
+.premium-banner .premium-banner-content h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--nv-text);
+    margin: 0 0 6px 0;
+}
+
+.premium-banner .premium-banner-content p {
+    font-size: 13px;
+    color: var(--nv-text-muted);
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+}
+
+.premium-banner .premium-banner-content p strong {
+    color: var(--nv-text);
+}
+
+.premium-banner .premium-banner-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.premium-banner .premium-banner-features li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--nv-text-light);
+    font-weight: 500;
+}
+
+.premium-banner .premium-banner-features li i {
+    color: #27ae60;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.premium-banner .premium-banner-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--nv-text-muted);
+    background: var(--nv-bg);
+    padding: 10px 14px;
+    border-radius: var(--nv-radius-sm);
+}
+
+.premium-banner .premium-banner-note i {
+    color: #f39c12;
+    font-size: 13px;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.premium-banner .premium-banner-note strong {
+    color: var(--nv-text);
+}
+
+.premium-banner .premium-banner-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+.premium-banner .premium-price {
+    font-size: 19px;
+    font-weight: 700;
+    color: #e67e22;
+}
+
+.premium-banner .premium-duration {
+    font-size: 11px;
+    color: var(--nv-text-muted);
+    text-align: center;
+}
+
+.premium-banner .premium-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 28px;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    border-radius: var(--nv-radius);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    transition: var(--nv-transition);
+    box-shadow: 0 8px 30px rgba(243, 156, 18, 0.3);
+    white-space: nowrap;
+}
+
+.premium-banner .premium-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(243, 156, 18, 0.45);
+    color: white;
+}
+
+.premium-banner .premium-btn:active {
+    transform: translateY(0);
+}
+
+/* ==========================================================
+   CARTE PREMIUM CTA (NIVEAU QUIZ)
+   ========================================================== */
+.parties-premium-cta {
+    margin-top: 20px;
+    animation: nvFadeIn 0.6s ease;
+}
+
+.premium-cta-card {
+    background: var(--nv-white);
+    border-radius: var(--nv-radius-lg);
+    padding: 24px 28px;
+    box-shadow: var(--nv-shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    border: 2px solid #f39c12;
+    position: relative;
+    overflow: hidden;
+    flex-wrap: wrap;
+}
+
+.premium-cta-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(243, 156, 18, 0.05), transparent 70%);
+    pointer-events: none;
+}
+
+.premium-cta-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #fef3e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #f39c12;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.premium-cta-content {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+    z-index: 1;
+}
+
+.premium-cta-content h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--nv-text);
+    margin: 0 0 4px 0;
+}
+
+.premium-cta-content p {
+    font-size: 13px;
+    color: var(--nv-text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.premium-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 24px;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    border-radius: var(--nv-radius);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    transition: var(--nv-transition);
+    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.3);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.premium-cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(243, 156, 18, 0.45);
+    color: white;
+}
+
+/* ==========================================================
+   CARTE PARTIE BLOQUÉE PREMIUM
+   ========================================================== */
+.partie-card.bloque-premium {
+    background: linear-gradient(135deg, #fffef9 0%, #fdfaf5 100%);
+    border-color: #ffe0a3;
+    opacity: 0.9;
+}
+
+.partie-card.bloque-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #f39c12, #e67e22);
+}
+
+.partie-card-lock {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fef3e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #e67e22;
+}
+
+.partie-premium-text {
+    font-size: 11px;
+    color: #e67e22;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ==========================================================
+   RESPONSIVE (NIVEAU QUIZ)
+   ========================================================== */
+@media (max-width: 850px) {
+    .premium-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 22px 18px;
+    }
+
+    .premium-banner .premium-banner-features {
+        align-items: flex-start;
+    }
+
+    .premium-cta-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .premium-cta-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .plan-guide {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    .premium-banner {
+        padding: 18px 14px;
+    }
+
+    .premium-banner .premium-banner-content h3 {
+        font-size: 15px;
+    }
+
+    .premium-banner .premium-price {
+        font-size: 17px;
+    }
+
+    .premium-banner .premium-btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 13px;
+    }
+
+    .premium-cta-content h4 {
+        font-size: 14px;
+    }
+
+    .premium-cta-content p {
+        font-size: 12px;
+    }
+}

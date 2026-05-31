@@ -1,439 +1,516 @@
-/**
- * ============================================================
- * FICHIER : views/assets/js/accueil.js
- * RÔLE    : Scripts de la page d'accueil AmijayQuiz
- *           - Animation des compteurs de statistiques
- *           - Animation des nombres (défilement)
- *           - Gestion du scroll pour les animations
- *           - Effet parallaxe léger sur le hero
- *           - Animation des formes géométriques
- *           - Gestion des cartes flottantes (hero visuel)
- *           - Intersection Observer pour révéler les sections
- *           - Effet de vague sur le titre
- *           - Gestion du responsive
- * ============================================================
- */
+// ============================================================
+// FICHIER : views/assets/js/accueil.js
+// RÔLE    : Script de la page d'accueil AmijayQuiz
+//           - Animation des compteurs statistiques
+//           - Animation au scroll (reveal)
+//           - FAQ accordeon
+//           - Smooth scroll pour le scroll indicator
+//           - Effet parallaxe sur le hero
+//           - Animation des cartes au survol
+//           - Gestion du header transparent
+//           - Particules dynamiques dans le hero
+// ============================================================
 
 (function() {
     'use strict';
 
     /* ==========================================================
-     SECTION 1 : INITIALISATION
+     SECTION 1 : CONFIGURATION
+     ========================================================== */
+    var config = {
+        compteurDuree: 2000,
+        revealThreshold: 0.15,
+        parallaxIntensity: 0.3,
+        navbarScrollThreshold: 50
+    };
+
+    /* ==========================================================
+     SECTION 2 : INITIALISATION
      ========================================================== */
     document.addEventListener('DOMContentLoaded', function() {
-        initCounters();
-        initParallaxEffect();
-        initFloatingCards();
+        initCompteursStatistiques();
         initScrollReveal();
-        initTypewriterEffect();
-        initMouseParallax();
+        initFaqAccordeon();
+        initSmoothScroll();
+        initHeroParallax();
+        initHeaderScroll();
+        initHeroParticles();
+        initCardsHover();
+        initScrollIndicator();
+        console.log('Page d\'accueil AmijayQuiz initialisee');
     });
 
     /* ==========================================================
-     SECTION 2 : COMPTEURS ANIMÉS (STATISTIQUES)
+     SECTION 3 : COMPTEURS STATISTIQUES ANIMES
      ========================================================== */
-    function initCounters() {
-        const counters = document.querySelectorAll('.stats-section .counter');
-        if (counters.length === 0) return;
+    function initCompteursStatistiques() {
+        var compteurs = document.querySelectorAll('.stat-number');
 
-        let countersAnimated = false;
+        if (!('IntersectionObserver' in window)) {
+            compteurs.forEach(function(c) { c.style.opacity = '1'; });
+            return;
+        }
 
-        // Configuration de l'Intersection Observer
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px -80px 0px',
-            threshold: 0.3
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
+        var observer = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
-                if (entry.isIntersecting && !countersAnimated) {
-                    countersAnimated = true;
-                    animateAllCounters(counters);
+                if (entry.isIntersecting) {
+                    animerCompteur(entry.target);
                     observer.unobserve(entry.target);
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.5 });
 
-        // Observer la section des statistiques
-        const statsSection = document.querySelector('.stats-section');
-        if (statsSection) {
-            observer.observe(statsSection);
-        } else {
-            // Fallback : animer immédiatement
-            animateAllCounters(counters);
-        }
+        compteurs.forEach(function(compteur) {
+            compteur.style.opacity = '0';
+            observer.observe(compteur);
+        });
     }
 
-    function animateAllCounters(counters) {
-        counters.forEach(function(counter) {
-            const targetText = counter.textContent.trim();
-            const target = parseInt(targetText, 10);
-            
-            if (isNaN(target)) return;
+    function animerCompteur(element) {
+        var texteComplet = element.textContent.trim();
+        var match = texteComplet.match(/(\d+)/);
+        if (!match) { element.style.opacity = '1'; return; }
 
-            const duration = 2000; // Durée totale en ms
-            const startTime = performance.now();
-            const startValue = 0;
+        var valeurFinale = parseInt(match[1]);
+        var suffixe = texteComplet.replace(match[1], '');
+        var debut = 0;
+        var duree = config.compteurDuree;
+        var debutTimestamp = null;
 
-            function updateCounter(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
+        element.style.opacity = '1';
 
-                // Fonction d'easing easeOutExpo pour un effet de ralentissement
-                const easedProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-                
-                const currentValue = Math.floor(startValue + (target - startValue) * easedProgress);
-                counter.textContent = currentValue;
+        function step(timestamp) {
+            if (!debutTimestamp) debutTimestamp = timestamp;
+            var progression = Math.min((timestamp - debutTimestamp) / duree, 1);
+            var eased = 1 - Math.pow(1 - progression, 3);
+            var valeurActuelle = Math.floor(debut + (valeurFinale - debut) * eased);
 
-                if (progress < 1) {
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    counter.textContent = target; // Valeur finale exacte
-                    
-                    // Petite animation de pulsation à la fin
-                    counter.style.transform = 'scale(1.1)';
-                    counter.style.transition = 'transform 0.3s ease';
-                    setTimeout(function() {
-                        counter.style.transform = 'scale(1)';
-                    }, 300);
-                }
+            element.innerHTML = valeurActuelle + suffixe;
+
+            if (progression < 1) {
+                requestAnimationFrame(step);
+            } else {
+                element.innerHTML = texteComplet;
             }
+        }
 
-            requestAnimationFrame(updateCounter);
+        requestAnimationFrame(step);
+    }
+
+    /* ==========================================================
+     SECTION 4 : ANIMATIONS AU SCROLL (REVEAL)
+     ========================================================== */
+    function initScrollReveal() {
+        if (!('IntersectionObserver' in window)) return;
+
+        var elementsToReveal = document.querySelectorAll(
+            '.feature-card, .step-card, .dual-card, .theme-card, ' +
+            '.testimonial-card, .faq-item, .stat-card'
+        );
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: config.revealThreshold,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        elementsToReveal.forEach(function(element, index) {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(30px)';
+            element.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            element.style.transitionDelay = (index % 4) * 0.08 + 's';
+            observer.observe(element);
         });
     }
 
     /* ==========================================================
-     SECTION 3 : EFFET PARALLAXE SUR LE HERO
+     SECTION 5 : FAQ ACCORDEON
      ========================================================== */
-    function initParallaxEffect() {
-        const heroSection = document.querySelector('.hero-section');
-        const shapes = document.querySelectorAll('.shape');
-        
-        if (!heroSection || shapes.length === 0) return;
+    function initFaqAccordeon() {
+        var faqQuestions = document.querySelectorAll('.faq-question');
 
-        let ticking = false;
+        faqQuestions.forEach(function(question) {
+            question.addEventListener('click', function() {
+                var faqItem = this.closest('.faq-item');
+                if (!faqItem) return;
 
-        window.addEventListener('scroll', function() {
-            if (!ticking) {
-                window.requestAnimationFrame(function() {
-                    const scrollY = window.scrollY;
-                    const heroHeight = heroSection.offsetHeight;
-                    
-                    // Ne pas appliquer le parallaxe si on a dépassé le hero
-                    if (scrollY <= heroHeight) {
-                        const factor = scrollY / heroHeight;
-                        
-                        shapes.forEach(function(shape, index) {
-                            const speed = 0.3 + (index * 0.15);
-                            const yOffset = scrollY * speed;
-                            const xOffset = scrollY * (speed * 0.5);
-                            
-                            shape.style.transform = 'translateY(' + yOffset + 'px) translateX(' + xOffset + 'px)';
-                        });
+                var isActive = faqItem.classList.contains('active');
+
+                // Fermer tous les autres
+                document.querySelectorAll('.faq-item.active').forEach(function(item) {
+                    if (item !== faqItem) {
+                        item.classList.remove('active');
                     }
-                    
-                    ticking = false;
                 });
-                ticking = true;
+
+                // Toggle celui-ci
+                if (isActive) {
+                    faqItem.classList.remove('active');
+                } else {
+                    faqItem.classList.add('active');
+                }
+            });
+
+            // Accessibilite clavier
+            question.setAttribute('tabindex', '0');
+            question.setAttribute('role', 'button');
+            question.setAttribute('aria-expanded', 'false');
+
+            question.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+
+            // Mettre a jour aria-expanded
+            question.addEventListener('click', function() {
+                var faqItem = this.closest('.faq-item');
+                if (faqItem) {
+                    var isActive = faqItem.classList.contains('active');
+                    this.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+                }
+            });
+        });
+    }
+
+    /* ==========================================================
+     SECTION 6 : SMOOTH SCROLL
+     ========================================================== */
+    function initSmoothScroll() {
+        var smoothLinks = document.querySelectorAll('a[href^="#"]:not([href="#"])');
+
+        smoothLinks.forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                var targetId = this.getAttribute('href').substring(1);
+                var target = document.getElementById(targetId);
+
+                if (target) {
+                    e.preventDefault();
+                    var headerHeight = document.querySelector('.navbar') ?
+                        document.querySelector('.navbar').offsetHeight : 65;
+                    var targetPosition = target.getBoundingClientRect().top +
+                        window.pageYOffset - headerHeight - 20;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+
+                    if (history.pushState) {
+                        history.pushState(null, null, '#' + targetId);
+                    }
+                }
+            });
+        });
+    }
+
+    /* ==========================================================
+     SECTION 7 : SCROLL INDICATOR
+     ========================================================== */
+    function initScrollIndicator() {
+        var scrollIndicator = document.querySelector('.hero-scroll-indicator');
+        if (!scrollIndicator) return;
+
+        scrollIndicator.addEventListener('click', function() {
+            var statsSection = document.querySelector('.stats-section');
+            if (statsSection) {
+                var headerHeight = document.querySelector('.navbar') ?
+                    document.querySelector('.navbar').offsetHeight : 65;
+                var targetPosition = statsSection.getBoundingClientRect().top +
+                    window.pageYOffset - headerHeight;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+
+        // Masquer le scroll indicator quand on a scrolle
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 200) {
+                scrollIndicator.style.opacity = '0';
+                scrollIndicator.style.transition = 'opacity 0.3s ease';
+            } else {
+                scrollIndicator.style.opacity = '1';
             }
         }, { passive: true });
     }
 
     /* ==========================================================
-     SECTION 4 : CARTES FLOTTANTES (HERO VISUEL)
+     SECTION 8 : EFFET PARALLAXE SUR LE HERO
      ========================================================== */
-    function initFloatingCards() {
-        const floatingCards = document.querySelectorAll('.floating-card');
-        if (floatingCards.length === 0) return;
+    function initHeroParallax() {
+        var heroBg = document.querySelector('.hero-bg-image');
+        if (!heroBg) return;
 
-        // Animation subtile au survol
-        floatingCards.forEach(function(card) {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-20px) scale(1.05)';
-                this.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.2)';
-                this.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            });
+        window.addEventListener('scroll', function() {
+            var scrollY = window.scrollY || window.pageYOffset;
+            var heroSection = document.querySelector('.hero-section');
+            if (!heroSection) return;
 
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-                this.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.12)';
-            });
-        });
+            var heroHeight = heroSection.offsetHeight;
 
-        // Animation d'entrée séquentielle
-        floatingCards.forEach(function(card, index) {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px) scale(0.8)';
-            card.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            
-            setTimeout(function() {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0) scale(1)';
-            }, 600 + (index * 200));
-        });
-    }
-
-    /* ==========================================================
-     SECTION 5 : RÉVÉLATION DES SECTIONS AU SCROLL
-     ========================================================== */
-    function initScrollReveal() {
-        // Éléments à révéler
-        const revealElements = document.querySelectorAll(
-            '.step-card, .feature-card, .theme-card, .testimonial-card, .stat-item'
-        );
-
-        if (revealElements.length === 0) return;
-
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px -30px 0px',
-            threshold: 0.15
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry, index) {
-                if (entry.isIntersecting) {
-                    // Délai progressif pour effet cascade
-                    const delay = index * 60;
-                    
-                    setTimeout(function() {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0) scale(1)';
-                    }, delay);
-                    
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        // Initialiser les éléments
-        revealElements.forEach(function(el) {
-            // Vérifier si l'élément n'a pas déjà une animation CSS
-            const computedStyle = window.getComputedStyle(el);
-            if (computedStyle.animationName === 'none' || computedStyle.animationName === '') {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(35px) scale(0.95)';
-                el.style.transition = 'all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            if (scrollY < heroHeight) {
+                var translateY = scrollY * config.parallaxIntensity;
+                heroBg.style.transform = 'translateY(' + translateY + 'px)';
             }
-            observer.observe(el);
-        });
+        }, { passive: true });
     }
 
     /* ==========================================================
-     SECTION 6 : EFFET TYPEWRITER SUR LE SLOGAN
+     SECTION 9 : HEADER TRANSPARENT AU DEBUT
      ========================================================== */
-    function initTypewriterEffect() {
-        const slogan = document.querySelector('.hero-subtitle');
-        if (!slogan) return;
+    function initHeaderScroll() {
+        var navbar = document.querySelector('.navbar');
+        if (!navbar) return;
 
-        const originalText = slogan.textContent.trim();
-        const words = originalText.split(' ');
-        
-        // Animation subtile : les mots apparaissent un par un
-        slogan.style.opacity = '0';
-        slogan.textContent = '';
-        
-        let wordIndex = 0;
-        const interval = setInterval(function() {
-            if (wordIndex < words.length) {
-                slogan.textContent += (wordIndex > 0 ? ' ' : '') + words[wordIndex];
-                wordIndex++;
+        var heroSection = document.querySelector('.hero-section');
+        if (!heroSection) return;
+
+        function updateHeaderStyle() {
+            var scrollY = window.scrollY || window.pageYOffset;
+
+            if (scrollY > config.navbarScrollThreshold) {
+                navbar.style.background = '#ffffff';
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.08)';
+                navbar.classList.add('navbar-scrolled');
             } else {
-                clearInterval(interval);
-                slogan.style.opacity = '1';
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.04)';
+                navbar.classList.remove('navbar-scrolled');
             }
-        }, 150);
+        }
 
-        // Fallback si l'animation ne se termine pas
-        setTimeout(function() {
-            if (slogan.textContent !== originalText) {
-                slogan.textContent = originalText;
-                slogan.style.opacity = '1';
-            }
-        }, words.length * 200 + 500);
+        updateHeaderStyle();
+        window.addEventListener('scroll', updateHeaderStyle, { passive: true });
     }
 
     /* ==========================================================
-     SECTION 7 : EFFET PARALLAXE SOURIS (DESKTOP UNIQUEMENT)
+     SECTION 10 : PARTICULES DYNAMIQUES DANS LE HERO
      ========================================================== */
-    function initMouseParallax() {
-        // Ne pas activer sur mobile/touchscreen
-        if (window.isTouchDevice && window.isTouchDevice()) return;
+    function initHeroParticles() {
+        var heroSection = document.querySelector('.hero-section');
+        if (!heroSection) return;
 
-        const heroVisual = document.querySelector('.hero-visual');
-        const illustrationCircle = document.querySelector('.illustration-circle');
-        
-        if (!heroVisual || !illustrationCircle) return;
+        var canvas = document.createElement('canvas');
+        canvas.className = 'hero-particles-canvas';
+        canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;';
+        heroSection.appendChild(canvas);
 
-        let mouseX = 0;
-        let mouseY = 0;
-        let targetX = 0;
-        let targetY = 0;
-        let currentX = 0;
-        let currentY = 0;
+        var ctx = canvas.getContext('2d');
+        var particles = [];
+        var maxParticles = 40;
+        var mouseX = -100;
+        var mouseY = -100;
 
-        document.addEventListener('mousemove', function(e) {
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-            
-            // Normaliser les coordonnées entre -1 et 1
-            mouseX = (e.clientX / windowWidth - 0.5) * 2;
-            mouseY = (e.clientY / windowHeight - 0.5) * 2;
+        function resizeCanvas() {
+            canvas.width = heroSection.offsetWidth;
+            canvas.height = heroSection.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Suivre la souris
+        heroSection.addEventListener('mousemove', function(e) {
+            var rect = heroSection.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
         });
 
-        // Animation fluide avec requestAnimationFrame
+        heroSection.addEventListener('mouseleave', function() {
+            mouseX = -100;
+            mouseY = -100;
+        });
+
+        // Creer les particules
+        for (var i = 0; i < maxParticles; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: 1 + Math.random() * 2.5,
+                speedX: -0.2 + Math.random() * 0.4,
+                speedY: -0.2 + Math.random() * 0.4,
+                opacity: 0.2 + Math.random() * 0.5
+            });
+        }
+
         function animate() {
-            // Interpolation linéaire pour un mouvement fluide
-            const ease = 0.05;
-            targetX += (mouseX - targetX) * ease;
-            targetY += (mouseY - targetY) * ease;
-            
-            currentX += (targetX - currentX) * ease;
-            currentY += (targetY - currentY) * ease;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            const moveX = currentX * 25;
-            const moveY = currentY * 25;
+            particles.forEach(function(p) {
+                p.x += p.speedX;
+                p.y += p.speedY;
 
-            if (heroVisual) {
-                heroVisual.style.transform = 'translateX(' + moveX + 'px) translateY(' + moveY + 'px)';
-                heroVisual.style.transition = 'none';
-            }
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
 
-            if (illustrationCircle) {
-                illustrationCircle.style.transform = 
-                    'translate(-50%, -50%) translateX(' + (moveX * 0.5) + 'px) translateY(' + (moveY * 0.5) + 'px)';
+                p.x = Math.max(0, Math.min(canvas.width, p.x));
+                p.y = Math.max(0, Math.min(canvas.height, p.y));
+
+                // Attraction legere vers la souris
+                var dx = mouseX - p.x;
+                var dy = mouseY - p.y;
+                var distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 150 && distance > 0) {
+                    p.x += dx * 0.005;
+                    p.y += dy * 0.005;
+                }
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, ' + p.opacity + ')';
+                ctx.fill();
+            });
+
+            // Lignes entre particules proches
+            for (var i = 0; i < particles.length; i++) {
+                for (var j = i + 1; j < particles.length; j++) {
+                    var dx = particles[i].x - particles[j].x;
+                    var dy = particles[i].y - particles[j].y;
+                    var distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = 'rgba(255, 255, 255, ' + (0.06 * (1 - distance / 100)) + ')';
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
             }
 
             requestAnimationFrame(animate);
         }
 
-        requestAnimationFrame(animate);
-
-        // Réinitialiser au redimensionnement
-        window.addEventListener('resize', function() {
-            mouseX = 0;
-            mouseY = 0;
-            targetX = 0;
-            targetY = 0;
-            currentX = 0;
-            currentY = 0;
-        });
+        animate();
     }
 
     /* ==========================================================
-     SECTION 8 : EFFET DE SURVOL DES CARTES THÈMES
+     SECTION 11 : EFFET HOVER SUR LES CARTES
      ========================================================== */
-    function initThemeCardHover() {
-        const themeCards = document.querySelectorAll('.theme-card');
-        if (themeCards.length === 0) return;
+    function initCardsHover() {
+        var cards = document.querySelectorAll(
+            '.feature-card, .step-card, .theme-card, .testimonial-card, .stat-card'
+        );
 
-        themeCards.forEach(function(card) {
-            card.addEventListener('mouseenter', function(e) {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const rotateX = (y - centerY) / centerY * -8;
-                const rotateY = (x - centerX) / centerX * 8;
-                
-                card.style.transform = 
-                    'translateY(-8px) perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
-                card.style.transition = 'transform 0.1s ease';
+        cards.forEach(function(card) {
+            card.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
             });
 
             card.addEventListener('mousemove', function(e) {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const rotateX = (y - centerY) / centerY * -8;
-                const rotateY = (x - centerX) / centerX * 8;
-                
-                card.style.transform = 
-                    'translateY(-8px) perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
+                var rect = this.getBoundingClientRect();
+                var x = e.clientX - rect.left;
+                var y = e.clientY - rect.top;
+                var centerX = rect.width / 2;
+                var centerY = rect.height / 2;
+
+                var rotateX = (y - centerY) / centerY * -5;
+                var rotateY = (x - centerX) / centerX * 5;
+
+                this.style.transform = 'perspective(800px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-5px)';
             });
 
             card.addEventListener('mouseleave', function() {
-                card.style.transform = 'translateY(0) perspective(1000px) rotateX(0) rotateY(0)';
-                card.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                this.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
             });
         });
     }
 
-    // Initialiser l'effet 3D des cartes thèmes
-    if (!window.isTouchDevice || !window.isTouchDevice()) {
-        setTimeout(initThemeCardHover, 1000);
-    }
+    /* ==========================================================
+     SECTION 12 : ANIMATION DU BOUTON PREMIUM
+     ========================================================== */
+    (function initPremiumButtonGlow() {
+        var premiumBtn = document.querySelector('.premium-offer-btn');
+        if (!premiumBtn) return;
+
+        setInterval(function() {
+            premiumBtn.style.boxShadow = '0 8px 35px rgba(243, 156, 18, 0.5)';
+            setTimeout(function() {
+                premiumBtn.style.boxShadow = '0 8px 30px rgba(243, 156, 18, 0.3)';
+            }, 1200);
+        }, 2500);
+    })();
 
     /* ==========================================================
-     SECTION 9 : ANIMATION DES ÉTOILES (TÉMOIGNAGES)
+     SECTION 13 : ANIMATION DES ETAPES (HOW IT WORKS)
      ========================================================== */
-    function initStarAnimation() {
-        const testimonialCards = document.querySelectorAll('.testimonial-card');
-        if (testimonialCards.length === 0) return;
+    (function initStepsAnimation() {
+        var steps = document.querySelectorAll('.step-card');
+        if (steps.length === 0) return;
 
-        testimonialCards.forEach(function(card) {
-            card.addEventListener('mouseenter', function() {
-                const stars = this.querySelectorAll('.fa-star, .fa-star-half-alt');
-                stars.forEach(function(star, index) {
-                    star.style.transition = 'all 0.3s ease';
-                    star.style.transform = 'scale(1.3) rotate(' + ((index - 2) * 10) + 'deg)';
-                    star.style.color = '#ffd700';
-                    star.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
-                    
-                    setTimeout(function() {
-                        star.style.transform = 'scale(1) rotate(0deg)';
-                        star.style.textShadow = 'none';
-                    }, 300 + (index * 80));
-                });
+        if (!('IntersectionObserver' in window)) return;
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    var number = entry.target.querySelector('.step-number');
+                    if (number) {
+                        number.style.transform = 'scale(0)';
+                        number.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                        setTimeout(function() {
+                            number.style.transform = 'scale(1)';
+                        }, 200);
+                    }
+                    observer.unobserve(entry.target);
+                }
             });
-        });
-    }
+        }, { threshold: 0.3 });
 
-    initStarAnimation();
+        steps.forEach(function(step) {
+            observer.observe(step);
+        });
+    })();
 
     /* ==========================================================
-     SECTION 10 : GESTION DU REDIMENSIONNEMENT
+     SECTION 14 : TYPING EFFECT SUR LE HERO (OPTIONNEL)
      ========================================================== */
-    let resizeTimeout;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(function() {
-            // Réinitialiser les animations si nécessaire
-            const heroSection = document.querySelector('.hero-section');
-            if (heroSection && window.innerWidth <= 768) {
-                // Sur mobile, réinitialiser les transformations parallaxe
-                const shapes = document.querySelectorAll('.shape');
-                shapes.forEach(function(shape) {
-                    shape.style.transform = 'translateY(0) translateX(0)';
-                });
-            }
-        }, 250);
+    (function initHeroTypingEffect() {
+        var subtitle = document.querySelector('.hero-subtitle');
+        if (!subtitle) return;
+
+        var textes = [
+            'Apprenez, testez vos connaissances et obtenez des <strong>certificats verifiables</strong>.<br>Progressez niveau par niveau et devenez expert dans votre domaine.',
+            'Des <strong>cours complets</strong> avec exemples de code et ressources telechargeables.<br>Votre progression est sauvegardee automatiquement.',
+            'Rejoignez <strong>500+ apprenants</strong> qui progressent chaque jour.<br>Commencez gratuitement des maintenant !'
+        ];
+
+        var index = 0;
+        setInterval(function() {
+            index = (index + 1) % textes.length;
+            subtitle.style.opacity = '0';
+            subtitle.style.transition = 'opacity 0.4s ease';
+
+            setTimeout(function() {
+                subtitle.innerHTML = textes[index];
+                subtitle.style.opacity = '1';
+            }, 400);
+        }, 6000);
+    })();
+
+    /* ==========================================================
+     SECTION 15 : PERFORMANCE
+     ========================================================== */
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.body.classList.add('page-hidden');
+        } else {
+            document.body.classList.remove('page-hidden');
+        }
     });
 
-    /* ==========================================================
-     SECTION 11 : DÉTECTION DU MODE SOMBRE DU SYSTÈME (FUTUR)
-     ========================================================== */
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
-    function handleDarkModeChange(e) {
-        // Préparé pour une future fonctionnalité de thème sombre
-        if (e.matches) {
-            console.log('Mode sombre détecté - fonctionnalité à venir');
-        } else {
-            console.log('Mode clair détecté');
-        }
-    }
-    
-    darkModeQuery.addEventListener('change', handleDarkModeChange);
-    // handleDarkModeChange(darkModeQuery); // Décommenter pour activer
+    var perfStyle = document.createElement('style');
+    perfStyle.textContent = '.page-hidden .hero-particles-canvas { display: none; }';
+    document.head.appendChild(perfStyle);
 
 })();

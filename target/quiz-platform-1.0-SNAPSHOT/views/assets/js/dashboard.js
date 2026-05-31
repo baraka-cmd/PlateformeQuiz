@@ -1,751 +1,460 @@
-/**
- * ============================================================
- * FICHIER : views/assets/js/dashboard.js
- * RÔLE    : Scripts du tableau de bord joueur AmijayQuiz
- *           - Animation des compteurs de statistiques (6 cartes)
- *           - Animation des cartes au scroll (Intersection Observer)
- *           - Gestion du message de bienvenue selon l'heure
- *           - Mise à jour automatique de la date
- *           - Animation de la carte "Reprendre" (Quiz + Cours)
- *           - Gestion des tooltips sur les badges
- *           - Effets de survol avancés
- *           - Animation des barres de progression (Quiz + Cours)
- *           - Gestion du responsive (tableau scrollable)
- *           - Raccourcis clavier
- *           - Gestion des onglets (Quiz/Cours)
- * ============================================================
- */
+// ============================================================
+// FICHIER : views/assets/js/dashboard.js
+// RÔLE    : Script du tableau de bord unifié AmijayQuiz
+//           - Animation des compteurs statistiques
+//           - Animation des barres de progression
+//           - Effet hover sur les cartes thèmes
+//           - Gestion du "Voir plus" de thèmes
+//           - Animation de la bannière Premium
+//           - Actualisation du temps réel (date)
+//           - Effet vague sur le header
+//           - Animation des tips au scroll
+// ============================================================
 
-(function() {
-    'use strict';
+'use strict';
 
-    /* ==========================================================
-     SECTION 1 : INITIALISATION PRINCIPALE
-     ========================================================== */
-    document.addEventListener('DOMContentLoaded', function() {
-        initCounters();
-        initScrollReveal();
-        initProgressBars();
-        initCoursProgressBars();
-        initResumeCardsAnimation();
-        initTableResponsive();
-        initStatCardHover();
-        initQuickActions();
-        initDateUpdate();
-        initBadgeAnimations();
-        initActionTooltips();
-        initTipCardEffects();
-        initEmptyStateActions();
-        initAvatarAnimation();
-        initThemeCardHover();
-        initCoursCardHover();
-    });
+// ============================================================
+// CONFIGURATION
+// ============================================================
+var DashboardConfig = {
+    animationDuree: 800,
+    compteurDuree: 1500,
+    actualiserDate: true
+};
 
-    /* ==========================================================
-     SECTION 2 : ANIMATION DES COMPTEURS DE STATISTIQUES
-     ========================================================== */
-    function initCounters() {
-        const statNumbers = document.querySelectorAll('.stat-card .stat-number');
-        if (statNumbers.length === 0) return;
+// ============================================================
+// DOCUMENT READY
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    initCompteursStatistiques();
+    initBarresProgression();
+    initCartesThemes();
+    initBannierePremium();
+    initGuidesAnimation();
+    initTipsAnimation();
+    initActualisationDate();
+    initHeaderWaveEffect();
+    console.log('✅ Dashboard - Page initialisée');
+});
 
-        let countersAnimated = false;
+// ============================================================
+// ANIMATION DES COMPTEURS STATISTIQUES
+// ============================================================
+function initCompteursStatistiques() {
+    var compteurs = document.querySelectorAll('.stat-number');
 
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px -50px 0px',
-            threshold: 0.2
-        };
+    compteurs.forEach(function(compteur) {
+        var texte = compteur.textContent.trim();
 
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting && !countersAnimated) {
-                    countersAnimated = true;
-                    animateAllCounters(statNumbers);
-                    observer.unobserve(entry.target);
+        // Ignorer les textes non numériques (ex: "Actif", "Gratuit")
+        if (texte === 'Actif' || texte === 'Gratuit' || texte === 'Premium') return;
+
+        // Extraire le nombre
+        var match = texte.match(/([\d.]+)/);
+        if (!match) return;
+
+        var valeurFinale = parseFloat(match[1]);
+        var suffixe = texte.replace(match[1], '');
+        var estEntier = !texte.includes('.');
+
+        // Observer pour déclencher l'animation
+        if ('IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function(entries) {
+                if (entries[0].isIntersecting) {
+                    animerCompteur(compteur, 0, valeurFinale, suffixe, estEntier);
+                    observer.disconnect();
                 }
-            });
-        }, observerOptions);
+            }, { threshold: 0.3 });
 
-        const statsSection = document.querySelector('.stats-section');
-        if (statsSection) {
-            observer.observe(statsSection);
+            observer.observe(compteur);
         } else {
-            // Fallback : animer après un court délai
+            animerCompteur(compteur, 0, valeurFinale, suffixe, estEntier);
+        }
+    });
+}
+
+function animerCompteur(element, debut, fin, suffixe, estEntier) {
+    var duree = DashboardConfig.compteurDuree;
+    var debutTimestamp = Date.now();
+
+    function step() {
+        var maintenant = Date.now();
+        var progression = Math.min((maintenant - debutTimestamp) / duree, 1);
+
+        // Fonction d'easing ease-out
+        var eased = 1 - Math.pow(1 - progression, 3);
+
+        var valeurActuelle;
+        if (estEntier) {
+            valeurActuelle = Math.floor(debut + (fin - debut) * eased);
+        } else {
+            valeurActuelle = (debut + (fin - debut) * eased).toFixed(1);
+        }
+
+        element.textContent = valeurActuelle + (suffixe || '');
+
+        if (progression < 1) {
+            requestAnimationFrame(step);
+        } else {
+            element.textContent = fin + (suffixe || '');
+        }
+    }
+
+    requestAnimationFrame(step);
+}
+
+// ============================================================
+// ANIMATION DES BARRES DE PROGRESSION
+// ============================================================
+function initBarresProgression() {
+    var barres = document.querySelectorAll(
+        '.cours-global-progress-fill, ' +
+        '.progress-fill, ' +
+        '.theme-progress-fill, ' +
+        '.progression-bar-inner, ' +
+        '.banner-progress-fill'
+    );
+
+    barres.forEach(function(barre) {
+        var largeurFinale = barre.style.width || '0%';
+
+        // Animer de 0
+        barre.style.width = '0%';
+        barre.style.transition = 'width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+        if ('IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function(entries) {
+                if (entries[0].isIntersecting) {
+                    setTimeout(function() {
+                        barre.style.width = largeurFinale;
+                    }, 300);
+                    observer.disconnect();
+                }
+            }, { threshold: 0.5 });
+
+            observer.observe(barre);
+        } else {
             setTimeout(function() {
-                animateAllCounters(statNumbers);
+                barre.style.width = largeurFinale;
             }, 500);
         }
+    });
+}
+
+// ============================================================
+// EFFET HOVER SUR LES CARTES THÈMES
+// ============================================================
+function initCartesThemes() {
+    var cartes = document.querySelectorAll('.theme-card-link');
+
+    cartes.forEach(function(carte) {
+        carte.addEventListener('mouseenter', function() {
+            var card = this.querySelector('.theme-card');
+            if (card) {
+                card.style.transform = 'translateY(-5px)';
+                card.style.boxShadow = '0 15px 45px rgba(0, 0, 0, 0.1)';
+            }
+        });
+
+        carte.addEventListener('mouseleave', function() {
+            var card = this.querySelector('.theme-card');
+            if (card) {
+                card.style.transform = '';
+                card.style.boxShadow = '';
+            }
+        });
+    });
+}
+
+// ============================================================
+// ANIMATION BANNIÈRE PREMIUM
+// ============================================================
+function initBannierePremium() {
+    var banniere = document.querySelector('.dashboard-premium-banner');
+    if (!banniere) return;
+
+    // Lueur tournante
+    var glow = banniere.querySelector('.premium-banner-glow');
+    if (glow) {
+        var angle = 0;
+        setInterval(function() {
+            angle = (angle + 0.5) % 360;
+            glow.style.transform = 'rotate(' + angle + 'deg)';
+        }, 50);
     }
 
-    /**
-     * Anime tous les compteurs de statistiques (Quiz + Cours)
-     */
-    function animateAllCounters(statNumbers) {
-        statNumbers.forEach(function(counter, index) {
-            const text = counter.textContent.trim();
-            
-            // Extraire la valeur numérique (gère "85%" → 85, "12" → 12, "3.5" → 3.5)
-            const match = text.match(/^([\d]+(\.[\d]+)?)/);
-            if (!match) return;
+    // Animation d'entrée
+    banniere.style.opacity = '0';
+    banniere.style.transform = 'translateY(20px)';
+    banniere.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
 
-            const targetValue = parseFloat(match[1]);
-            const suffix = text.replace(match[1], '');
-            const isDecimal = match[2] !== undefined;
-            const decimals = isDecimal ? match[2].length - 1 : 0;
-
-            const duration = 1800 + (index * 150);
-            const startTime = performance.now();
-            const startValue = 0;
-
-            function updateCounter(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-
-                // Easing easeOutCubic pour un ralentissement naturel
-                const easedProgress = 1 - Math.pow(1 - progress, 3);
-
-                const currentValue = startValue + (targetValue - startValue) * easedProgress;
-                
-                if (isDecimal) {
-                    counter.textContent = currentValue.toFixed(decimals) + suffix;
-                } else {
-                    counter.textContent = Math.floor(currentValue) + suffix;
-                }
-
-                if (progress < 1) {
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    counter.textContent = targetValue.toFixed(decimals) + suffix;
-
-                    // Animation de validation finale
-                    counter.style.transform = 'scale(1.08)';
-                    counter.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    
-                    setTimeout(function() {
-                        counter.style.transform = 'scale(1)';
-                    }, 300);
-                }
-            }
-
+    var observer = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
             setTimeout(function() {
-                requestAnimationFrame(updateCounter);
-            }, index * 100);
-        });
-    }
-
-    /* ==========================================================
-     SECTION 3 : RÉVÉLATION DES CARTES AU SCROLL
-     ========================================================== */
-    function initScrollReveal() {
-        const revealElements = document.querySelectorAll(
-            '.stat-card, .resume-card, .tip-card, .theme-card, .theme-cours-card'
-        );
-
-        if (revealElements.length === 0) return;
-
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px -40px 0px',
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0) scale(1)';
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        revealElements.forEach(function(el, index) {
-            // Vérifier si l'élément n'a pas déjà une animation CSS intégrée
-            const computedStyle = window.getComputedStyle(el);
-            if (!computedStyle.animationName || computedStyle.animationName === 'none') {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(30px) scale(0.97)';
-                el.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) ' + (index * 0.05) + 's';
-            }
-            observer.observe(el);
-        });
-    }
-
-    /* ==========================================================
-     SECTION 4 : ANIMATION DES BARRES DE PROGRESSION (QUIZ)
-     ========================================================== */
-    function initProgressBars() {
-        const progressBars = document.querySelectorAll('.mini-progress-fill, .theme-progress .progress-fill');
-        if (progressBars.length === 0) return;
-
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px -30px 0px',
-            threshold: 0.3
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting) {
-                    const targetWidth = entry.target.style.width;
-                    
-                    entry.target.style.width = '0%';
-                    entry.target.style.transition = 'width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    
-                    setTimeout(function() {
-                        entry.target.style.width = targetWidth;
-                    }, 100);
-
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        progressBars.forEach(function(bar) {
-            observer.observe(bar);
-        });
-    }
-
-    /* ==========================================================
-     SECTION 5 : ANIMATION DES BARRES DE PROGRESSION (COURS)
-     ========================================================== */
-    function initCoursProgressBars() {
-        // Barre de progression globale des cours
-        const coursGlobalFill = document.querySelector('.cours-global-progress-fill');
-        if (coursGlobalFill) {
-            const targetWidth = coursGlobalFill.style.width;
-            
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px 0px -30px 0px',
-                threshold: 0.3
-            };
-
-            const observer = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                        coursGlobalFill.style.width = '0%';
-                        coursGlobalFill.style.transition = 'width 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                        
-                        setTimeout(function() {
-                            coursGlobalFill.style.width = targetWidth;
-                        }, 150);
-
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-
-            observer.observe(coursGlobalFill);
+                banniere.style.opacity = '1';
+                banniere.style.transform = 'translateY(0)';
+            }, 200);
+            observer.disconnect();
         }
+    }, { threshold: 0.2 });
 
-        // Barres de progression des thèmes Cours
-        const coursThemeFills = document.querySelectorAll('.theme-cours-card .progress-fill');
-        if (coursThemeFills.length > 0) {
-            const observerOptions2 = {
-                root: null,
-                rootMargin: '0px 0px -30px 0px',
-                threshold: 0.3
-            };
+    observer.observe(banniere);
 
-            const observer2 = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                        const targetWidth = entry.target.style.width;
-                        
-                        entry.target.style.width = '0%';
-                        entry.target.style.transition = 'width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                        
-                        setTimeout(function() {
-                            entry.target.style.width = targetWidth;
-                        }, 80);
+    // Effet hover bouton
+    var btn = banniere.querySelector('.premium-banner-btn');
+    if (btn) {
+        btn.addEventListener('mouseenter', function() {
+            banniere.style.borderColor = '#e67e22';
+            banniere.style.boxShadow = '0 20px 60px rgba(243, 156, 18, 0.2)';
+        });
 
-                        observer2.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions2);
+        btn.addEventListener('mouseleave', function() {
+            banniere.style.borderColor = '#f39c12';
+            banniere.style.boxShadow = '';
+        });
+    }
+}
 
-            coursThemeFills.forEach(function(bar) {
-                observer2.observe(bar);
-            });
+// ============================================================
+// ANIMATION DES GUIDES
+// ============================================================
+function initGuidesAnimation() {
+    var guides = document.querySelectorAll('.guide-card');
+
+    guides.forEach(function(guide, index) {
+        guide.style.opacity = '0';
+        guide.style.transform = 'translateY(25px)';
+        guide.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+
+        var observer = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting) {
+                setTimeout(function() {
+                    guide.style.opacity = '1';
+                    guide.style.transform = 'translateY(0)';
+                }, 200 + (index * 150));
+                observer.disconnect();
+            }
+        }, { threshold: 0.2 });
+
+        observer.observe(guide);
+    });
+}
+
+// ============================================================
+// ANIMATION DES TIPS (CONSEILS)
+// ============================================================
+function initTipsAnimation() {
+    var tips = document.querySelectorAll('.tip-card');
+
+    tips.forEach(function(tip, index) {
+        tip.style.opacity = '0';
+        tip.style.transform = 'translateY(20px)';
+        tip.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+
+        var observer = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting) {
+                setTimeout(function() {
+                    tip.style.opacity = '1';
+                    tip.style.transform = 'translateY(0)';
+                }, 100 + (index * 120));
+                observer.disconnect();
+            }
+        }, { threshold: 0.2 });
+
+        observer.observe(tip);
+    });
+}
+
+// ============================================================
+// ACTUALISATION DE LA DATE EN TEMPS RÉEL
+// ============================================================
+function initActualisationDate() {
+    if (!DashboardConfig.actualiserDate) return;
+
+    var dateElement = document.querySelector('.welcome-date');
+    if (!dateElement) return;
+
+    // Mettre à jour chaque minute
+    setInterval(function() {
+        var maintenant = new Date();
+        var options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        var dateFormatee = maintenant.toLocaleDateString('fr-FR', options);
+
+        var icon = dateElement.querySelector('i');
+        if (icon) {
+            dateElement.innerHTML = '';
+            dateElement.appendChild(icon.cloneNode(true));
+            dateElement.appendChild(document.createTextNode(' ' + dateFormatee));
         }
-    }
+    }, 60000);
+}
 
-    /* ==========================================================
-     SECTION 6 : ANIMATION DES CARTES "REPRENDRE"
-     ========================================================== */
-    function initResumeCardsAnimation() {
-        const resumeCards = document.querySelectorAll('.resume-card');
-        if (resumeCards.length === 0) return;
+// ============================================================
+// EFFET VAGUE SUR LE HEADER
+// ============================================================
+function initHeaderWaveEffect() {
+    var header = document.querySelector('.welcome-header');
+    if (!header) return;
 
-        resumeCards.forEach(function(resumeCard) {
-            // Effet de survol avec suivi de la souris (desktop uniquement)
-            if (!isTouchDevice()) {
-                resumeCard.addEventListener('mousemove', function(e) {
-                    const rect = this.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    
-                    const moveX = (x - centerX) / centerX * 2;
-                    const moveY = (y - centerY) / centerY * 2;
-                    
-                    this.style.transform = 'translateY(-2px) translateX(' + moveX + 'px) translateY(' + moveY + 'px)';
-                    this.style.transition = 'transform 0.1s ease';
-                });
+    header.addEventListener('mousemove', function(e) {
+        var rect = header.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
 
-                resumeCard.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) translateX(0) translateY(0)';
-                    this.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                });
-            }
+        var pseudo = header.querySelector('::before');
+        if (pseudo) {
+            var centerX = rect.width / 2;
+            var centerY = rect.height / 2;
+            var moveX = (x - centerX) / centerX * 10;
+            var moveY = (y - centerY) / centerY * 10;
 
-            // Animation de l'icône pulse au survol
-            const resumeIcon = resumeCard.querySelector('.resume-icon');
-            if (resumeIcon) {
-                resumeCard.addEventListener('mouseenter', function() {
-                    if (resumeIcon) {
-                        resumeIcon.style.animationDuration = '1.2s';
-                    }
-                });
-
-                resumeCard.addEventListener('mouseleave', function() {
-                    if (resumeIcon) {
-                        resumeIcon.style.animationDuration = '2.5s';
-                    }
-                });
-            }
-        });
-    }
-
-    /* ==========================================================
-     SECTION 7 : GESTION DU TABLEAU RESPONSIVE
-     ========================================================== */
-    function initTableResponsive() {
-        const tableContainer = document.querySelector('.table-container');
-        if (!tableContainer) return;
-
-        function checkTableOverflow() {
-            const table = tableContainer.querySelector('table');
-            if (!table) return;
-
-            if (table.scrollWidth > tableContainer.clientWidth) {
-                tableContainer.classList.add('table-scrollable');
-                tableContainer.setAttribute('data-scroll-hint', 'Faites glisser pour voir plus →');
-            } else {
-                tableContainer.classList.remove('table-scrollable');
-                tableContainer.removeAttribute('data-scroll-hint');
-            }
-        }
-
-        checkTableOverflow();
-        
-        let resizeTimeout;
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(checkTableOverflow, 250);
-        });
-
-        // Ajouter le style pour l'indicateur de scroll
-        const style = document.createElement('style');
-        style.textContent = `
-            .table-scrollable {
-                position: relative;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .table-scrollable::after {
-                content: attr(data-scroll-hint);
-                position: absolute;
-                bottom: 8px;
-                right: 12px;
-                background: rgba(102, 126, 234, 0.9);
-                color: white;
-                padding: 5px 10px;
-                border-radius: 12px;
-                font-size: 11px;
-                font-weight: 500;
-                pointer-events: none;
-                animation: hintPulse 2s ease-in-out infinite;
-                z-index: 2;
-            }
-            
-            @keyframes hintPulse {
-                0%, 100% { opacity: 0.7; }
-                50% { opacity: 1; }
-            }
-            
-            .table-scrollable::-webkit-scrollbar {
-                height: 6px;
-            }
-            
-            .table-scrollable::-webkit-scrollbar-track {
-                background: #f1f1f1;
-                border-radius: 10px;
-            }
-            
-            .table-scrollable::-webkit-scrollbar-thumb {
-                background: #667eea;
-                border-radius: 10px;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-    /* ==========================================================
-     SECTION 8 : EFFETS DE SURVOL DES CARTES STATISTIQUES
-     ========================================================== */
-    function initStatCardHover() {
-        const statCards = document.querySelectorAll('.stat-card');
-        if (statCards.length === 0) return;
-
-        statCards.forEach(function(card) {
-            card.addEventListener('mouseenter', function() {
-                const iconWrapper = this.querySelector('.stat-icon-wrapper');
-                if (iconWrapper) {
-                    iconWrapper.style.transform = 'scale(1.1) rotate(-5deg)';
-                    iconWrapper.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                }
-            });
-
-            card.addEventListener('mouseleave', function() {
-                const iconWrapper = this.querySelector('.stat-icon-wrapper');
-                if (iconWrapper) {
-                    iconWrapper.style.transform = 'scale(1) rotate(0deg)';
-                }
-            });
-        });
-    }
-
-    /* ==========================================================
-     SECTION 9 : EFFETS DE SURVOL DES CARTES THÈMES QUIZ
-     ========================================================== */
-    function initThemeCardHover() {
-        const themeCards = document.querySelectorAll('.theme-card:not(.theme-cours-card)');
-        if (themeCards.length === 0) return;
-
-        themeCards.forEach(function(card) {
-            card.addEventListener('mouseenter', function() {
-                const icon = this.querySelector('.theme-card-icon');
-                if (icon) {
-                    icon.style.transform = 'scale(1.08) rotate(-3deg)';
-                    icon.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                }
-                
-                const btnVoir = this.querySelector('.btn-voir-parcours');
-                if (btnVoir) {
-                    btnVoir.style.gap = '10px';
-                    btnVoir.style.transition = 'all 0.3s ease';
-                }
-            });
-
-            card.addEventListener('mouseleave', function() {
-                const icon = this.querySelector('.theme-card-icon');
-                if (icon) {
-                    icon.style.transform = 'scale(1) rotate(0deg)';
-                }
-                
-                const btnVoir = this.querySelector('.btn-voir-parcours');
-                if (btnVoir) {
-                    btnVoir.style.gap = '5px';
-                }
-            });
-        });
-    }
-
-    /* ==========================================================
-     SECTION 10 : EFFETS DE SURVOL DES CARTES THÈMES COURS
-     ========================================================== */
-    function initCoursCardHover() {
-        const coursCards = document.querySelectorAll('.theme-cours-card');
-        if (coursCards.length === 0) return;
-
-        coursCards.forEach(function(card) {
-            card.addEventListener('mouseenter', function() {
-                const icon = this.querySelector('.theme-card-icon');
-                if (icon) {
-                    icon.style.transform = 'scale(1.08) rotate(-3deg)';
-                    icon.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                }
-
-                const badge = this.querySelector('.theme-badge-termine');
-                if (badge) {
-                    badge.style.transform = 'scale(1.1) rotate(10deg)';
-                    badge.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                }
-
-                const btnVoir = this.querySelector('.btn-voir-parcours');
-                if (btnVoir) {
-                    btnVoir.style.gap = '10px';
-                    btnVoir.style.color = '#f39c12';
-                    btnVoir.style.transition = 'all 0.3s ease';
-                }
-            });
-
-            card.addEventListener('mouseleave', function() {
-                const icon = this.querySelector('.theme-card-icon');
-                if (icon) {
-                    icon.style.transform = 'scale(1) rotate(0deg)';
-                }
-
-                const badge = this.querySelector('.theme-badge-termine');
-                if (badge) {
-                    badge.style.transform = 'scale(1) rotate(0deg)';
-                }
-
-                const btnVoir = this.querySelector('.btn-voir-parcours');
-                if (btnVoir) {
-                    btnVoir.style.gap = '5px';
-                    btnVoir.style.color = '#667eea';
-                }
-            });
-        });
-    }
-
-    /* ==========================================================
-     SECTION 11 : ACTIONS RAPIDES (RACCOURCIS CLAVIER)
-     ========================================================== */
-    function initQuickActions() {
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey || e.metaKey) {
-                switch (e.key.toLowerCase()) {
-                    case 'q':
-                        // Aller à la section Quiz
-                        e.preventDefault();
-                        const quizSection = document.getElementById('quiz-section');
-                        if (quizSection) {
-                            quizSection.scrollIntoView({ behavior: 'smooth' });
-                        }
-                        break;
-                    case 'c':
-                        // Aller à la section Cours
-                        e.preventDefault();
-                        const coursSection = document.getElementById('cours-section');
-                        if (coursSection) {
-                            coursSection.scrollIntoView({ behavior: 'smooth' });
-                        }
-                        break;
-                    case 'p':
-                        // Reprendre le parcours (première carte resume)
-                        e.preventDefault();
-                        const resumeBtn = document.querySelector('.resume-btn');
-                        if (resumeBtn) {
-                            const resumeLink = resumeBtn.closest('.resume-card');
-                            if (resumeLink) {
-                                window.location.href = resumeLink.getAttribute('href');
-                            }
-                        }
-                        break;
-                    case 'h':
-                        // Aller à l'historique
-                        e.preventDefault();
-                        const historiqueLink = document.querySelector('.btn-voir-tout');
-                        if (historiqueLink) {
-                            window.location.href = historiqueLink.getAttribute('href');
-                        }
-                        break;
-                    case 't':
-                        // Scroll vers les thèmes Quiz
-                        e.preventDefault();
-                        const themesSection = document.querySelector('#quiz-section');
-                        if (themesSection) {
-                            themesSection.scrollIntoView({ behavior: 'smooth' });
-                        }
-                        break;
-                }
-            }
-        });
-    }
-
-    /* ==========================================================
-     SECTION 12 : MISE À JOUR DE LA DATE
-     ========================================================== */
-    function initDateUpdate() {
-        const dateElement = document.querySelector('.welcome-date');
-        if (!dateElement) return;
-
-        function updateDateIfMidnight() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            
-            if (hours === 0 && minutes < 5) {
-                console.log('Minuit passé - la date affichée peut être mise à jour au prochain rechargement.');
-            }
-        }
-
-        setInterval(updateDateIfMidnight, 60000);
-    }
-
-    /* ==========================================================
-     SECTION 13 : ANIMATION DES BADGES DE SCORE
-     ========================================================== */
-    function initBadgeAnimations() {
-        const badges = document.querySelectorAll('.badge-score');
-        if (badges.length === 0) return;
-
-        badges.forEach(function(badge) {
-            badge.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.08)';
-                this.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            });
-
-            badge.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
-            });
-        });
-    }
-
-    /* ==========================================================
-     SECTION 14 : TOOLTIPS SUR LES BOUTONS D'ACTION
-     ========================================================== */
-    function initActionTooltips() {
-        const rejouerBtns = document.querySelectorAll('.btn-rejouer');
-        if (rejouerBtns.length === 0) return;
-
-        rejouerBtns.forEach(function(btn) {
-            btn.setAttribute('data-tooltip', 'Rejouer ce quiz');
-            
-            btn.addEventListener('mouseenter', function() {
-                this.style.transform = 'rotate(-15deg) scale(1.1)';
-            });
-
-            btn.addEventListener('mouseleave', function() {
-                this.style.transform = 'rotate(0deg) scale(1)';
-            });
-        });
-    }
-
-    /* ==========================================================
-     SECTION 15 : EFFET DE VAGUE SUR LES CARTES CONSEILS
-     ========================================================== */
-    function initTipCardEffects() {
-        const tipCards = document.querySelectorAll('.tip-card');
-        if (tipCards.length === 0) return;
-
-        tipCards.forEach(function(card) {
-            card.addEventListener('mouseenter', function() {
-                const icon = this.querySelector('.tip-icon');
-                if (icon) {
-                    icon.style.transform = 'scale(1.15) rotate(5deg)';
-                    icon.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                }
-            });
-
-            card.addEventListener('mouseleave', function() {
-                const icon = this.querySelector('.tip-icon');
-                if (icon) {
-                    icon.style.transform = 'scale(1) rotate(0deg)';
-                }
-            });
-        });
-    }
-
-    /* ==========================================================
-     SECTION 16 : GESTION DES ÉTATS VIDES
-     ========================================================== */
-    function initEmptyStateActions() {
-        const emptyStateBtns = document.querySelectorAll('.empty-state .btn-commencer');
-        if (emptyStateBtns.length === 0) return;
-
-        emptyStateBtns.forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                const themesSection = document.querySelector('.themes-section');
-                if (themesSection) {
-                    e.preventDefault();
-                    themesSection.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-    }
-
-    /* ==========================================================
-     SECTION 17 : ANIMATION DE L'AVATAR
-     ========================================================== */
-    function initAvatarAnimation() {
-        const avatar = document.querySelector('.welcome-avatar');
-        if (!avatar) return;
-
-        avatar.addEventListener('click', function() {
-            this.style.transform = 'scale(0.9)';
-            this.style.transition = 'transform 0.15s ease';
-            
-            setTimeout(() => {
-                this.style.transform = 'scale(1.08)';
-            }, 150);
-            
-            setTimeout(() => {
-                this.style.transform = 'scale(1)';
-            }, 300);
-        });
-
-        avatar.style.cursor = 'pointer';
-    }
-
-    /* ==========================================================
-     SECTION 18 : DÉTECTION APPAREIL TACTILE
-     ========================================================== */
-    function isTouchDevice() {
-        return ('ontouchstart' in window) || 
-               (navigator.maxTouchPoints > 0) || 
-               (navigator.msMaxTouchPoints > 0);
-    }
-
-    /* ==========================================================
-     SECTION 19 : ANIMATION DES BADGES DE THÈMES
-     ========================================================== */
-    function initThemeBadgeAnimations() {
-        const themeBadges = document.querySelectorAll('.badge-quiz, .badge-cours, .badge-neutral');
-        if (themeBadges.length === 0) return;
-
-        themeBadges.forEach(function(badge) {
-            badge.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.05)';
-                this.style.transition = 'all 0.2s ease';
-            });
-
-            badge.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
-            });
-        });
-    }
-
-    setTimeout(initThemeBadgeAnimations, 1500);
-
-    /* ==========================================================
-     SECTION 20 : PERFORMANCE - NETTOYAGE MÉMOIRE
-     ========================================================== */
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            document.body.classList.add('page-hidden');
-        } else {
-            document.body.classList.remove('page-hidden');
+            header.style.setProperty('--mouse-x', moveX + 'px');
+            header.style.setProperty('--mouse-y', moveY + 'px');
         }
     });
+}
 
-    const performanceStyle = document.createElement('style');
-    performanceStyle.textContent = `
-        .page-hidden .stat-card,
-        .page-hidden .tip-card,
-        .page-hidden .resume-card,
-        .page-hidden .theme-card,
-        .page-hidden .theme-cours-card {
-            animation: none !important;
-        }
-        
-        .page-hidden .resume-icon {
-            animation: none !important;
-        }
-        
-        .page-hidden .mini-progress-fill,
-        .page-hidden .progress-fill,
-        .page-hidden .cours-global-progress-fill {
-            transition: none !important;
-        }
-    `;
-    document.head.appendChild(performanceStyle);
+// ============================================================
+// ANIMATION DES CARTES STATISTIQUES
+// ============================================================
+(function initStatsCardsAnimation() {
+    var statsCards = document.querySelectorAll('.stat-card');
 
+    statsCards.forEach(function(card, index) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px) scale(0.95)';
+        card.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+        var observer = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting) {
+                setTimeout(function() {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0) scale(1)';
+                }, 50 + (index * 60));
+                observer.disconnect();
+            }
+        }, { threshold: 0.2 });
+
+        observer.observe(card);
+    });
 })();
+
+// ============================================================
+// ANIMATION DU TABLEAU D'ACTIVITÉS
+// ============================================================
+(function initTableauAnimation() {
+    var lignes = document.querySelectorAll('.table-historique tbody tr');
+
+    lignes.forEach(function(ligne, index) {
+        ligne.style.opacity = '0';
+        ligne.style.transform = 'translateX(-10px)';
+        ligne.style.transition = 'all 0.4s ease';
+
+        var observer = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting) {
+                setTimeout(function() {
+                    ligne.style.opacity = '1';
+                    ligne.style.transform = 'translateX(0)';
+                }, 100 + (index * 80));
+                observer.disconnect();
+            }
+        }, { threshold: 0.1 });
+
+        observer.observe(ligne);
+    });
+})();
+
+// ============================================================
+// BOUTON "VOIR PLUS" ANIMATION
+// ============================================================
+(function initVoirPlusAnimation() {
+    var voirPlusCards = document.querySelectorAll('.voir-plus-card');
+
+    voirPlusCards.forEach(function(card) {
+        card.addEventListener('mouseenter', function() {
+            var icon = this.querySelector('.voir-plus-icon');
+            if (icon) {
+                icon.style.transform = 'scale(1.15) rotate(10deg)';
+            }
+        });
+
+        card.addEventListener('mouseleave', function() {
+            var icon = this.querySelector('.voir-plus-icon');
+            if (icon) {
+                icon.style.transform = '';
+            }
+        });
+    });
+})();
+
+// ============================================================
+// MESSAGE DE BIENVENUE DYNAMIQUE
+// ============================================================
+(function messageBienvenueDynamique() {
+    var citationElement = document.querySelector('.welcome-quote span');
+    if (!citationElement) return;
+
+    var citations = [
+        'L\'apprentissage est un trésor qui suivra son propriétaire partout.',
+        'La connaissance s\'acquiert par l\'expérience, tout le reste n\'est que de l\'information.',
+        'Apprendre sans réfléchir est vain. Réfléchir sans apprendre est dangereux.',
+        'Le savoir est le seul bien qui augmente quand on le partage.',
+        'L\'éducation est l\'arme la plus puissante pour changer le monde.'
+    ];
+
+    var index = 0;
+    setInterval(function() {
+        index = (index + 1) % citations.length;
+
+        citationElement.style.opacity = '0';
+        citationElement.style.transition = 'opacity 0.4s ease';
+
+        setTimeout(function() {
+            citationElement.textContent = citations[index];
+            citationElement.style.opacity = '1';
+        }, 400);
+    }, 15000); // Changer toutes les 15 secondes
+})();
+
+// ============================================================
+// DÉTECTION DU PREMIER PASSAGE (MESSAGE D'ACCUEIL)
+// ============================================================
+(function messagePremierPassage() {
+    var dejaVisite = localStorage.getItem('amijayquiz_dashboard_visite');
+
+    if (!dejaVisite) {
+        localStorage.setItem('amijayquiz_dashboard_visite', 'true');
+
+        setTimeout(function() {
+            if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
+                AmijayQuiz.toast(
+                    '👋 Bienvenue sur votre tableau de bord ! Explorez les cours et quiz disponibles.',
+                    'info',
+                    6000
+                );
+            }
+        }, 2000);
+    }
+})();
+
+// ============================================================
+// RAFRAÎCHISSEMENT DOUX AU RETOUR SUR LA PAGE
+// ============================================================
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        // La page redevient visible
+        var dateElement = document.querySelector('.welcome-date');
+        if (dateElement && DashboardConfig.actualiserDate) {
+            var maintenant = new Date();
+            var options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            var dateFormatee = maintenant.toLocaleDateString('fr-FR', options);
+
+            var icon = dateElement.querySelector('i');
+            if (icon) {
+                dateElement.innerHTML = '';
+                dateElement.appendChild(icon.cloneNode(true));
+                dateElement.appendChild(document.createTextNode(' ' + dateFormatee));
+            }
+        }
+    }
+});

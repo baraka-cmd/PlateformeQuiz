@@ -1,54 +1,59 @@
 /* ============================================================
-   FICHIER : views/assets/css/components/niveau-card.css
-   RÔLE    : Styles du composant niveau-card
-             - Carte niveau (élémentaire/moyen/avancé)
-             - 3 états : terminé (vert), en cours (bleu), bloqué (gris)
-             - Badge de statut
-             - Icône du niveau avec fond coloré
+   FICHIER : views/assets/css/niveau-card.css
+   RÔLE    : Styles du composant niveau-card.jsp
+             Carte de niveau utilisée dans theme.jsp
+             - Carte avec dégradé de fond
+             - Badge de statut (débloqué / terminé / verrouillé)
+             - Icône du niveau avec animation
              - Barre de progression
-             - Bouton d'action contextuel
-             - Message pour niveau bloqué
-             - Animations fluides
-             - Responsive design
+             - Statistiques (parties réussies / total)
+             - Bouton d'accès contextuel
+             - Badge "Recommandé"
+             - Responsive design complet
    ============================================================ */
 
 /* ===== CSS VARIABLES ===== */
 :root {
+    --nc-primary: #667eea;
+    --nc-primary-dark: #5a6fd6;
+    --nc-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --nc-success: #27ae60;
     --nc-success-light: #e8f5e9;
-    --nc-primary: #667eea;
-    --nc-primary-light: #eef0ff;
-    --nc-secondary: #764ba2;
-    --nc-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --nc-success-dark: #155724;
+    --nc-warning: #f39c12;
+    --nc-warning-light: #fff8e1;
+    --nc-gold: #f39c12;
+    --nc-gold-dark: #e67e22;
+    --nc-gold-light: #fef3e2;
+    --nc-danger: #e74c3c;
+    --nc-info: #4a00e0;
+    --nc-info-light: #eef0ff;
     --nc-white: #ffffff;
-    --nc-bg: #fafafa;
+    --nc-bg: #f5f6fa;
+    --nc-bg-light: #fafbfe;
     --nc-text: #1a1a2e;
     --nc-text-light: #555555;
     --nc-text-muted: #8b8fa3;
-    --nc-border: #e0e3e8;
+    --nc-border: #e8eaef;
     --nc-radius-sm: 8px;
     --nc-radius: 14px;
     --nc-radius-lg: 18px;
+    --nc-radius-xl: 22px;
+    --nc-radius-2xl: 28px;
     --nc-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
     --nc-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     --nc-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --nc-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.1);
     --nc-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ==========================================================
-   LIEN ENGLOBANT
+   LIEN CARTE NIVEAU
    ========================================================== */
 .niveau-card-link {
     text-decoration: none;
-    display: block;
-    height: 100%;
     color: inherit;
-    outline: none;
-}
-
-.niveau-card-link:focus-visible {
-    border-radius: var(--nc-radius-lg);
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+    display: block;
 }
 
 /* ==========================================================
@@ -56,209 +61,242 @@
    ========================================================== */
 .niveau-card {
     background: var(--nc-white);
-    border-radius: var(--nc-radius-lg);
-    padding: 28px 22px 22px;
-    text-align: center;
+    border-radius: var(--nc-radius-2xl);
+    padding: 28px 24px 22px;
+    box-shadow: var(--nc-shadow);
     transition: var(--nc-transition);
-    border: 2px solid var(--nc-border);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
     position: relative;
     overflow: hidden;
-    animation: cardFadeIn 0.5s ease both;
+    border: 2px solid var(--nc-border);
+    animation: ncCardIn 0.6s ease both;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-@keyframes cardFadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Animation d'apparition décalée */
+.niveau-card:nth-child(1) { animation-delay: 0.1s; }
+.niveau-card:nth-child(2) { animation-delay: 0.2s; }
+.niveau-card:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes ncCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* ==========================================================
-   ÉTAT : TERMINÉ
-   ========================================================== */
-.niveau-card.niveau-termine {
+/* ===== ÉTAT DÉBLOQUÉ ===== */
+.niveau-card.debloque {
+    border-color: #d4d8ff;
+}
+
+.niveau-card.debloque:hover {
+    border-color: var(--nc-primary);
+    box-shadow: var(--nc-shadow-xl);
+    transform: translateY(-4px);
+}
+
+/* ===== ÉTAT TERMINÉ ===== */
+.niveau-card.termine {
     border-color: #c8f7c5;
-    background: linear-gradient(160deg, #fafff9 0%, #f0fff0 100%);
-    cursor: pointer;
+    background: linear-gradient(135deg, #f0fff4 0%, var(--nc-white) 50%);
 }
 
-.niveau-card.niveau-termine:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 15px 35px rgba(39, 174, 96, 0.12);
-    border-color: #a3e4b8;
+.niveau-card.termine::after {
+    content: '✓';
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 22px;
+    color: var(--nc-success);
+    font-weight: 700;
 }
 
-.niveau-card.niveau-termine::before {
+/* ===== ÉTAT BLOQUÉ ===== */
+.niveau-card.bloque {
+    border-color: var(--nc-border);
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.niveau-card.bloque::before {
     content: '';
     position: absolute;
-    top: -30px;
-    right: -30px;
-    width: 80px;
-    height: 80px;
+    inset: 0;
+    background: rgba(245, 246, 250, 0.4);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Motif décoratif */
+.niveau-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
-    background: rgba(39, 174, 96, 0.04);
+    background: var(--nc-gradient);
+    opacity: 0.03;
     pointer-events: none;
 }
 
 /* ==========================================================
-   ÉTAT : EN COURS (DÉBLOQUÉ)
+   BADGE RECOMMANDÉ
    ========================================================== */
-.niveau-card.niveau-debloque {
-    border-color: #d4d8f0;
-    cursor: pointer;
-    animation: glowPulse 3.5s ease-in-out infinite;
-}
-
-@keyframes glowPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
-    50% { box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.06); }
-}
-
-.niveau-card.niveau-debloque:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15);
-    border-color: var(--nc-primary);
-    animation: none;
-}
-
-/* ==========================================================
-   ÉTAT : BLOQUÉ
-   ========================================================== */
-.niveau-card.niveau-bloque {
-    opacity: 0.6;
-    background: var(--nc-bg);
-    cursor: not-allowed;
-    border-color: #e8e8e8;
-    filter: grayscale(30%);
-}
-
-.niveau-card.niveau-bloque:hover {
-    transform: none;
-}
-
-/* ==========================================================
-   BADGE DE STATUT (EN HAUT À DROITE)
-   ========================================================== */
-.niveau-statut-badge {
+.niveau-recommended-badge {
     position: absolute;
-    top: 12px;
+    top: 14px;
     right: 14px;
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    background: var(--nc-white);
-    box-shadow: var(--nc-shadow-sm);
-    transition: var(--nc-transition);
+    padding: 5px 12px;
+    background: var(--nc-warning-light);
+    color: var(--nc-warning);
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    z-index: 3;
+    box-shadow: 0 2px 6px rgba(243, 156, 18, 0.2);
+}
+
+.niveau-recommended-badge i {
+    font-size: 9px;
+}
+
+/* ==========================================================
+   EN-TÊTE DU NIVEAU
+   ========================================================== */
+.niveau-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
     z-index: 1;
 }
 
-.niveau-card.niveau-termine .niveau-statut-badge {
-    color: var(--nc-success);
-    background: var(--nc-success-light);
-}
-
-.niveau-card.niveau-debloque .niveau-statut-badge {
-    color: var(--nc-primary);
-    background: var(--nc-primary-light);
-}
-
-.niveau-card.niveau-bloque .niveau-statut-badge {
-    color: #aaa;
-    background: #f5f5f5;
-}
-
-/* ==========================================================
-   ICÔNE DU NIVEAU
-   ========================================================== */
-.niveau-icon-wrapper {
-    width: 70px;
-    height: 70px;
-    border-radius: 20px;
+.niveau-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--nc-radius);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 8px auto 16px;
-    font-size: 30px;
-    transition: var(--nc-transition);
-    position: relative;
-}
-
-.niveau-card:not(.niveau-bloque):hover .niveau-icon-wrapper {
-    transform: scale(1.08) rotate(-5deg);
-}
-
-.niveau-icon-wrapper i {
+    font-size: 26px;
+    flex-shrink: 0;
     transition: var(--nc-transition);
 }
 
-.niveau-card.niveau-debloque .niveau-icon-wrapper i {
-    animation: iconFloat 3s ease-in-out infinite;
+.niveau-card.debloque:hover .niveau-icon {
+    transform: scale(1.08);
 }
 
-@keyframes iconFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
+.niveau-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.niveau-info h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--nc-text);
+    margin: 0 0 4px 0;
+}
+
+.niveau-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--nc-text-muted);
+    flex-wrap: wrap;
+}
+
+.niveau-stats i {
+    font-size: 11px;
+    margin-right: 2px;
+}
+
+.niveau-stats .sep {
+    color: #ccc;
+}
+
+.niveau-status-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    transition: var(--nc-transition);
+}
+
+.niveau-card.debloque:hover .niveau-status-icon {
+    transform: translateX(3px);
 }
 
 /* ==========================================================
-   NOM DU NIVEAU
+   DESCRIPTION DU NIVEAU
    ========================================================== */
-.niveau-nom {
-    font-size: 18px;
-    font-weight: 700;
-    margin: 0 0 18px 0;
-    letter-spacing: -0.3px;
+.niveau-description {
+    font-size: 13px;
+    color: var(--nc-text-muted);
+    line-height: 1.6;
+    padding: 0 2px;
+    position: relative;
+    z-index: 1;
 }
 
 /* ==========================================================
    BARRE DE PROGRESSION
    ========================================================== */
 .niveau-progress {
-    flex: 1;
-    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
 }
 
-.progress-header {
+.niveau-progress-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    font-size: 12px;
 }
 
-.progress-label {
-    font-size: 11px;
+.niveau-progress-header span {
     color: var(--nc-text-muted);
-    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.progress-value {
-    font-size: 13px;
-    font-weight: 700;
+.niveau-progress-header span i {
+    font-size: 11px;
+}
+
+.niveau-progress-header strong {
     color: var(--nc-text);
+    font-size: 14px;
 }
 
-.progress-track {
+.niveau-progress-bar {
     height: 8px;
     background: #e8eaef;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 8px;
 }
 
-.progress-fill {
+.niveau-progress-fill {
     height: 100%;
-    border-radius: 10px;
-    transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border-radius: 8px;
+    transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
 }
 
-.progress-fill::after {
+.niveau-progress-fill::after {
     content: '';
     position: absolute;
     top: 1px;
@@ -266,168 +304,247 @@
     right: 4px;
     bottom: 1px;
     background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
-    border-radius: 8px;
-}
-
-.progress-detail {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--nc-text-muted);
-}
-
-.progress-detail i {
-    color: var(--nc-success);
-    font-size: 10px;
-}
-
-.progress-detail strong {
-    color: var(--nc-text);
-    font-weight: 600;
+    border-radius: 6px;
 }
 
 /* ==========================================================
-   BOUTON D'ACTION
+   PIED DE CARTE
    ========================================================== */
-.niveau-action {
-    margin-top: auto;
-}
-
-.btn-niveau {
+.niveau-card-footer {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border-radius: var(--nc-radius);
-    font-size: 13px;
+    justify-content: space-between;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+    padding-top: 8px;
+    border-top: 1px solid var(--nc-border);
+}
+
+.niveau-footer-text {
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.niveau-footer-text.termine {
+    color: var(--nc-success-dark);
+}
+
+.niveau-footer-text.termine i {
+    color: var(--nc-success);
+}
+
+.niveau-footer-text.en-cours {
+    color: var(--nc-primary);
+}
+
+.niveau-footer-text.en-cours i {
+    color: var(--nc-primary);
+}
+
+.niveau-footer-text.bloque {
+    color: var(--nc-text-muted);
+}
+
+.niveau-footer-text.bloque i {
+    color: #ccc;
+}
+
+.niveau-footer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--nc-radius-sm);
+    font-size: 12px;
     font-weight: 600;
+    font-family: 'Poppins', sans-serif;
     text-decoration: none;
     transition: var(--nc-transition);
-    font-family: 'Poppins', sans-serif;
-    border: none;
-    width: 100%;
-    cursor: pointer;
-    letter-spacing: 0.3px;
+    white-space: nowrap;
 }
 
-/* Bouton Continuer (en cours) */
-.btn-niveau.btn-continuer {
-    background: var(--nc-gradient);
+.niveau-footer-btn.voir {
+    color: var(--nc-primary);
+}
+
+.niveau-footer-btn.voir:hover {
+    background: rgba(102, 126, 234, 0.12);
+}
+
+.niveau-footer-btn.commencer {
     color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
 }
 
-.btn-niveau.btn-continuer:hover {
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+.niveau-footer-btn.commencer:hover {
     transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
-.btn-niveau.btn-continuer:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-}
-
-/* Bouton Réussi (terminé) */
-.btn-niveau.btn-reussi {
-    background: var(--nc-success-light);
-    color: var(--nc-success);
-    border: 1px solid #c8f7c5;
-}
-
-.btn-niveau.btn-reussi:hover {
-    background: #c8f7c5;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(39, 174, 96, 0.15);
-}
-
-/* Bouton Bloqué */
-.btn-niveau.btn-bloque {
-    background: #f0f0f5;
-    color: #bbb;
+.niveau-footer-btn.bloque {
+    background: #eee;
+    color: #aaa;
     cursor: not-allowed;
     pointer-events: none;
 }
 
 /* ==========================================================
-   MESSAGE POUR NIVEAU BLOQUÉ
+   OVERLAY VERROUILLÉ
    ========================================================== */
-.niveau-message-bloque {
-    font-size: 11px;
-    color: #bbb;
-    margin-top: 8px;
-    font-style: italic;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    line-height: 1.4;
+.niveau-card.bloque .niveau-card-header,
+.niveau-card.bloque .niveau-description,
+.niveau-card.bloque .niveau-progress,
+.niveau-card.bloque .niveau-card-footer {
+    filter: grayscale(0.3);
 }
 
-.niveau-message-bloque i {
-    font-size: 10px;
+/* Icône cadenas centrale */
+.niveau-lock-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.niveau-lock-overlay i {
+    font-size: 36px;
+    color: #ccc;
+}
+
+.niveau-lock-overlay span {
+    font-size: 11px;
+    color: var(--nc-text-muted);
+    font-weight: 600;
 }
 
 /* ==========================================================
    RESPONSIVE
    ========================================================== */
 
-/* Tablette */
-@media (max-width: 768px) {
+/* Tablette large */
+@media (max-width: 1100px) {
     .niveau-card {
-        padding: 22px 16px 18px;
+        padding: 22px 18px 18px;
+        border-radius: var(--nc-radius-xl);
     }
     
-    .niveau-icon-wrapper {
-        width: 60px;
-        height: 60px;
-        font-size: 26px;
-        border-radius: 16px;
-    }
-    
-    .niveau-nom {
+    .niveau-info h3 {
         font-size: 16px;
     }
     
-    .niveau-statut-badge {
-        font-size: 10px;
-        padding: 3px 8px;
-        top: 10px;
-        right: 10px;
+    .niveau-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+    }
+}
+
+/* Tablette */
+@media (max-width: 850px) {
+    .niveau-card {
+        padding: 20px 16px 16px;
+        gap: 14px;
+    }
+    
+    .niveau-card-header {
+        gap: 12px;
+    }
+    
+    .niveau-info h3 {
+        font-size: 15px;
+    }
+    
+    .niveau-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+        border-radius: var(--nc-radius-sm);
+    }
+    
+    .niveau-description {
+        font-size: 12px;
+    }
+    
+    .niveau-footer-btn {
+        padding: 7px 12px;
+        font-size: 11px;
     }
 }
 
 /* Mobile */
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .niveau-card {
-        padding: 20px 14px 16px;
-        border-radius: var(--nc-radius);
+        padding: 18px 14px 14px;
+        border-radius: var(--nc-radius-lg);
+        gap: 12px;
     }
     
-    .niveau-icon-wrapper {
-        width: 54px;
-        height: 54px;
-        font-size: 24px;
-        border-radius: 14px;
+    .niveau-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
     }
     
-    .niveau-nom {
-        font-size: 15px;
-        margin-bottom: 14px;
+    .niveau-info h3 {
+        font-size: 14px;
     }
     
-    .btn-niveau {
-        padding: 10px 16px;
-        font-size: 12px;
+    .niveau-stats {
+        font-size: 11px;
     }
     
-    .niveau-statut-badge {
+    .niveau-recommended-badge {
+        top: 10px;
+        right: 10px;
         font-size: 9px;
-        padding: 2px 7px;
-        top: 8px;
-        right: 8px;
+        padding: 4px 10px;
+    }
+    
+    .niveau-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .niveau-footer-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .niveau-card.termine::after {
+        top: 12px;
+        right: 14px;
+        font-size: 18px;
+    }
+}
+
+/* Très petit mobile */
+@media (max-width: 380px) {
+    .niveau-card {
+        padding: 16px 12px 12px;
+        gap: 10px;
+    }
+    
+    .niveau-info h3 {
+        font-size: 13px;
+    }
+    
+    .niveau-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .niveau-description {
+        font-size: 11px;
     }
 }
 
@@ -439,8 +556,12 @@
         break-inside: avoid;
     }
     
-    .niveau-card.niveau-bloque {
-        opacity: 1;
-        filter: none;
+    .niveau-card.bloque {
+        display: none;
+    }
+    
+    .niveau-footer-btn,
+    .niveau-recommended-badge {
+        display: none;
     }
 }

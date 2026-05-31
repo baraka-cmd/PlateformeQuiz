@@ -1,128 +1,168 @@
 /* ============================================================
-   FICHIER : views/assets/css/components/theme-card.css
-   RÔLE    : Styles du composant theme-card
-             - Carte thème sur le dashboard joueur
-             - Icône avec dégradé dynamique
-             - Barre de progression
-             - Mini-badges des 3 niveaux
-             - Badge trophée si thème terminé
-             - Pied avec niveau actif et bouton
-             - Animations fluides
-             - Responsive design
+   FICHIER : views/assets/css/theme-card.css
+   RÔLE    : Styles du composant theme-card.jsp
+             Carte de thème Quiz utilisée dans dashboard.jsp
+             - Carte cliquable avec animation
+             - Icône du thème avec dégradé
+             - Badge "Terminé"
+             - Barre de progression avec couleur du thème
+             - Niveaux visibles sur hover
+             - Responsive design complet
    ============================================================ */
 
 /* ===== CSS VARIABLES ===== */
 :root {
     --tc-primary: #667eea;
     --tc-primary-dark: #5a6fd6;
-    --tc-secondary: #764ba2;
     --tc-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --tc-success: #27ae60;
     --tc-success-light: #e8f5e9;
     --tc-warning: #f39c12;
+    --tc-warning-light: #fff8e1;
     --tc-white: #ffffff;
-    --tc-bg: #fafaff;
+    --tc-bg: #f5f6fa;
+    --tc-bg-light: #fafbfe;
     --tc-text: #1a1a2e;
     --tc-text-light: #555555;
     --tc-text-muted: #8b8fa3;
     --tc-border: #e8eaef;
     --tc-radius-sm: 8px;
-    --tc-radius: 12px;
-    --tc-radius-lg: 16px;
-    --tc-radius-xl: 20px;
+    --tc-radius: 14px;
+    --tc-radius-lg: 18px;
+    --tc-radius-xl: 22px;
     --tc-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
     --tc-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     --tc-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
-    --tc-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12);
+    --tc-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.1);
     --tc-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ==========================================================
-   LIEN ENGLOBANT
+   LIEN CARTE THÈME
    ========================================================== */
 .theme-card-link {
     text-decoration: none;
     color: inherit;
     display: block;
-    height: 100%;
-    outline: none;
-}
-
-.theme-card-link:focus-visible {
-    border-radius: var(--tc-radius-xl);
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
 }
 
 /* ==========================================================
-   CARTE THÈME (BASE)
+   CARTE THÈME
    ========================================================== */
 .theme-card {
     background: var(--tc-white);
     border-radius: var(--tc-radius-xl);
-    box-shadow: var(--tc-shadow-lg);
-    overflow: hidden;
+    padding: 24px 20px 20px;
+    box-shadow: var(--tc-shadow-sm);
     transition: var(--tc-transition);
-    cursor: pointer;
-    border: 2px solid transparent;
-    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid var(--tc-border);
     display: flex;
     flex-direction: column;
-    animation: themeCardFadeIn 0.5s ease both;
-    position: relative;
+    gap: 14px;
+    animation: tcCardIn 0.5s ease both;
 }
 
-@keyframes themeCardFadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+.theme-card:nth-child(1) { animation-delay: 0.05s; }
+.theme-card:nth-child(2) { animation-delay: 0.1s; }
+.theme-card:nth-child(3) { animation-delay: 0.15s; }
+.theme-card:nth-child(4) { animation-delay: 0.2s; }
+.theme-card:nth-child(5) { animation-delay: 0.25s; }
+.theme-card:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes tcCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.theme-card:hover {
-    transform: translateY(-5px);
+.theme-card-link:hover .theme-card {
+    border-color: var(--tc-primary);
     box-shadow: var(--tc-shadow-xl);
-    border-color: rgba(102, 126, 234, 0.2);
+    transform: translateY(-4px);
+}
+
+/* Motif décoratif */
+.theme-card::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    opacity: 0.04;
+    pointer-events: none;
+    transition: var(--tc-transition);
+}
+
+.theme-card-link:hover .theme-card::before {
+    transform: scale(1.5);
 }
 
 /* ==========================================================
-   EN-TÊTE
+   BADGE TERMINÉ
    ========================================================== */
-.theme-card-header {
-    padding: 25px 25px 15px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    position: relative;
-}
-
-/* Icône */
-.theme-card-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--tc-radius-lg);
+.theme-badge-termine {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--tc-success);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 24px;
+    font-size: 14px;
+    z-index: 1;
+    box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+}
+
+/* ==========================================================
+   EN-TÊTE DE LA CARTE
+   ========================================================== */
+.theme-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.theme-card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--tc-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
     flex-shrink: 0;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     transition: var(--tc-transition);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-.theme-card:hover .theme-card-icon {
-    transform: scale(1.08) rotate(-5deg);
+.theme-card-link:hover .theme-card-icon {
+    transform: scale(1.08);
 }
 
-/* Infos */
 .theme-card-info {
     flex: 1;
     min-width: 0;
 }
 
 .theme-card-nom {
-    font-size: 17px;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 600;
     color: var(--tc-text);
-    margin: 0 0 5px 0;
+    margin: 0 0 4px 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -131,8 +171,8 @@
 .theme-card-meta {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
+    gap: 8px;
+    font-size: 11px;
     color: var(--tc-text-muted);
     flex-wrap: wrap;
 }
@@ -140,150 +180,65 @@
 .meta-item {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
 }
 
 .meta-item i {
-    color: var(--tc-primary);
-    font-size: 11px;
-}
-
-.meta-item strong {
-    color: var(--tc-text);
-    font-weight: 600;
+    font-size: 10px;
 }
 
 .meta-separator {
-    color: #ddd;
-    font-size: 8px;
-}
-
-/* Badge trophée (thème terminé) */
-.theme-badge-termine {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ffd700, #ffaa00);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 18px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-    animation: tropheeGlow 2.5s ease-in-out infinite;
-}
-
-@keyframes tropheeGlow {
-    0%, 100% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); }
-    50% { box-shadow: 0 4px 28px rgba(255, 215, 0, 0.55); }
+    color: #ccc;
 }
 
 /* ==========================================================
-   CORPS
+   CORPS DE LA CARTE (PROGRESSION)
    ========================================================== */
 .theme-card-body {
-    padding: 0 25px 18px;
     flex: 1;
 }
 
-/* Barre de progression */
 .theme-progress {
-    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .progress-label {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 11px;
     color: var(--tc-text-muted);
-    margin-bottom: 5px;
-    font-weight: 500;
 }
 
 .progress-value {
     font-weight: 700;
-    color: var(--tc-text);
+    font-size: 12px;
 }
 
 .progress-track {
-    height: 8px;
+    height: 7px;
     background: #e8eaef;
-    border-radius: 10px;
+    border-radius: 7px;
     overflow: hidden;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .progress-fill {
     height: 100%;
-    border-radius: 10px;
-    transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative;
-}
-
-.progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 1px;
-    left: 4px;
-    right: 4px;
-    bottom: 1px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
-    border-radius: 8px;
-}
-
-/* Mini-badges des niveaux */
-.theme-niveaux-badges {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.mini-badge {
-    font-size: 10px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    letter-spacing: 0.2px;
-    transition: var(--tc-transition);
-}
-
-.mini-badge:hover {
-    transform: translateY(-1px);
-}
-
-.badge-termine {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c8f7c5;
-}
-
-.badge-encours {
-    background: #eef0ff;
-    color: var(--tc-primary);
-    border: 1px solid #d4d8ff;
-}
-
-.badge-bloque {
-    background: #f5f5f5;
-    color: #bbb;
-    border: 1px solid #e8e8e8;
+    border-radius: 7px;
+    transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* ==========================================================
-   PIED
+   PIED DE CARTE
    ========================================================== */
 .theme-card-footer {
-    padding: 14px 25px;
-    border-top: 1px solid var(--tc-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--tc-bg);
-    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--tc-border);
 }
 
 .footer-niveau-actif {
@@ -291,49 +246,121 @@
     align-items: center;
     gap: 6px;
     font-size: 12px;
-    color: var(--tc-text-muted);
+    font-weight: 500;
 }
 
 .footer-niveau-actif i {
-    font-size: 8px;
-    animation: dotPulse 2s ease-in-out infinite;
+    font-size: 13px;
 }
 
-@keyframes dotPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-}
-
-.footer-niveau-actif strong {
-    color: var(--tc-text);
-    font-weight: 600;
-}
-
-/* Bouton Voir le parcours */
 .btn-voir-parcours {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: var(--tc-bg);
+    border-radius: var(--tc-radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--tc-primary);
+    transition: var(--tc-transition);
+}
+
+.theme-card-link:hover .btn-voir-parcours {
+    background: var(--tc-primary);
+    color: white;
+}
+
+.btn-voir-parcours i {
+    font-size: 10px;
+}
+
+/* ==========================================================
+   VARIANTE CARTE COURS (dashboard)
+   ========================================================== */
+.theme-cours-card {
+    border-color: #e8eaef;
+}
+
+.theme-cours-card:hover {
+    border-color: #27ae60;
+}
+
+/* ==========================================================
+   CARTE "VOIR PLUS"
+   ========================================================== */
+.voir-plus-card {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tc-bg-light);
+    border-radius: var(--tc-radius-xl);
+    padding: 30px 20px;
+    border: 2px dashed var(--tc-border);
+    text-decoration: none;
+    transition: var(--tc-transition);
+    cursor: pointer;
+    min-height: 200px;
+}
+
+.voir-plus-card:hover {
+    border-color: var(--tc-primary);
+    background: var(--tc-white);
+    box-shadow: var(--tc-shadow);
+}
+
+.voir-plus-content {
+    text-align: center;
+}
+
+.voir-plus-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--tc-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 22px;
+    color: var(--tc-primary);
+    transition: var(--tc-transition);
+}
+
+.voir-plus-card:hover .voir-plus-icon {
+    background: var(--tc-primary);
+    color: white;
+    transform: scale(1.1);
+}
+
+.voir-plus-content h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--tc-text);
+    margin: 0 0 4px 0;
+}
+
+.voir-plus-content p {
+    font-size: 12px;
+    color: var(--tc-text-muted);
+    margin: 0 0 14px 0;
+}
+
+.voir-plus-btn {
+    display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 8px 18px;
     background: var(--tc-gradient);
     color: white;
-    border-radius: var(--tc-radius);
+    border-radius: var(--tc-radius-sm);
     font-size: 12px;
     font-weight: 600;
-    text-decoration: none;
     transition: var(--tc-transition);
-    white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
-.btn-voir-parcours:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(102, 126, 234, 0.35);
-}
-
-.btn-voir-parcours:active {
-    transform: translateY(0);
-    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.15);
+.voir-plus-card:hover .voir-plus-btn {
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.3);
 }
 
 /* ==========================================================
@@ -341,67 +368,47 @@
    ========================================================== */
 
 /* Tablette */
-@media (max-width: 768px) {
-    .theme-card-header {
-        padding: 20px 18px 12px;
+@media (max-width: 850px) {
+    .theme-card {
+        padding: 18px 15px 15px;
+        border-radius: var(--tc-radius-lg);
         gap: 12px;
     }
     
     .theme-card-icon {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        height: 44px;
         font-size: 20px;
-        border-radius: var(--tc-radius);
-    }
-    
-    .theme-card-nom {
-        font-size: 15px;
-    }
-    
-    .theme-card-body {
-        padding: 0 18px 14px;
-    }
-    
-    .theme-card-footer {
-        padding: 12px 18px;
-    }
-    
-    .theme-badge-termine {
-        width: 34px;
-        height: 34px;
-        font-size: 15px;
-    }
-}
-
-/* Mobile */
-@media (max-width: 500px) {
-    .theme-card-header {
-        padding: 16px 14px 10px;
-        gap: 10px;
-    }
-    
-    .theme-card-icon {
-        width: 42px;
-        height: 42px;
-        font-size: 18px;
-        border-radius: var(--tc-radius-sm);
     }
     
     .theme-card-nom {
         font-size: 14px;
     }
     
-    .theme-card-meta {
-        font-size: 11px;
-        gap: 4px;
+    .voir-plus-card {
+        padding: 25px 15px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .theme-card {
+        padding: 16px 12px 12px;
+        gap: 10px;
     }
     
-    .theme-card-body {
-        padding: 0 14px 12px;
+    .theme-card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        border-radius: var(--tc-radius-sm);
+    }
+    
+    .theme-card-nom {
+        font-size: 13px;
     }
     
     .theme-card-footer {
-        padding: 10px 14px;
         flex-direction: column;
         gap: 8px;
         align-items: flex-start;
@@ -412,15 +419,40 @@
         justify-content: center;
     }
     
-    .theme-badge-termine {
-        width: 30px;
-        height: 30px;
-        font-size: 13px;
+    .voir-plus-card {
+        padding: 20px 12px;
     }
     
-    .mini-badge {
-        font-size: 9px;
-        padding: 3px 8px;
+    .voir-plus-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+    
+    .voir-plus-content h3 {
+        font-size: 14px;
+    }
+}
+
+/* Très petit mobile */
+@media (max-width: 380px) {
+    .theme-card {
+        padding: 14px 10px 10px;
+        gap: 8px;
+    }
+    
+    .theme-card-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .theme-card-nom {
+        font-size: 12px;
+    }
+    
+    .meta-item {
+        font-size: 10px;
     }
 }
 
@@ -432,7 +464,7 @@
         break-inside: avoid;
     }
     
-    .btn-voir-parcours {
+    .voir-plus-card {
         display: none;
     }
 }
