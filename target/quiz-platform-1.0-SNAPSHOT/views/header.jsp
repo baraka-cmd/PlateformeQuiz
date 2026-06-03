@@ -119,13 +119,7 @@
                     <span>Paiements</span>
                 </a>
             </li>
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/questions"
-                   class="<%= uri.contains("/admin/questions") ? "active" : "" %>">
-                    <i class="fas fa-question-circle"></i>
-                    <span>Questions</span>
-                </a>
-            </li>
+        
             <li>
                 <a href="${pageContext.request.contextPath}/admin/quiz"
                    class="<%= uri.contains("/admin/quiz") ? "active" : "" %>">

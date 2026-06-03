@@ -1,4 +1,5 @@
 com\amijayquiz\models\Utilisateur.class
+com\amijayquiz\controllers\AdminQuizModifierPageServlet.class
 com\amijayquiz\controllers\GoogleCallbackServlet.class
 com\amijayquiz\filters\AutoLoginFilter.class
 com\amijayquiz\controllers\CertificatServlet.class
@@ -32,6 +33,8 @@ com\amijayquiz\controllers\ChangerMotDePasseServlet.class
 com\amijayquiz\controllers\NiveauCoursServlet.class
 com\amijayquiz\controllers\PaiementManuelServlet.class
 com\amijayquiz\controllers\PaiementsAdminServlet.class
+com\amijayquiz\controllers\AdminQuizModifierQuestionServlet.class
+com\amijayquiz\controllers\AdminQuizQuestionsServlet.class
 com\amijayquiz\dao\QuestionDAO.class
 com\amijayquiz\controllers\CorrectionServlet.class
 com\amijayquiz\controllers\HistoriqueServlet.class
@@ -45,16 +48,19 @@ com\amijayquiz\controllers\CoursServlet.class
 com\amijayquiz\dao\CoursDAO.class
 com\amijayquiz\controllers\NiveauServlet.class
 com\amijayquiz\dao\ProgressionJoueurDAO.class
+com\amijayquiz\controllers\AdminQuizCreerServlet.class
 com\amijayquiz\utils\ReferenceGenerator.class
 com\amijayquiz\controllers\StatutPaiementServlet.class
 com\amijayquiz\models\ExamenModule.class
 com\amijayquiz\dao\ProgressionCoursDAO.class
 com\amijayquiz\dao\RessourceDAO.class
+com\amijayquiz\controllers\AdminQuizAjouterServlet.class
 com\amijayquiz\dao\PaiementManuelDAO.class
 com\amijayquiz\controllers\DeconnexionServlet.class
 com\amijayquiz\dao\PaiementDAO.class
 com\amijayquiz\utils\EmailUtil$1.class
 com\amijayquiz\models\Certificat.class
+com\amijayquiz\controllers\AdminQuizSupprimerServlet.class
 com\amijayquiz\utils\PawaPayUtil.class
 com\amijayquiz\models\Ressource.class
 com\amijayquiz\dao\LeconDAO.class
@@ -68,6 +74,7 @@ com\amijayquiz\config\PawaPayConfig.class
 com\amijayquiz\controllers\ThemeServlet.class
 com\amijayquiz\utils\HttpUtils.class
 com\amijayquiz\controllers\MotDePasseOublieServlet.class
+com\amijayquiz\controllers\AdminQuizCreerQuestionServlet.class
 com\amijayquiz\controllers\DemarrerQuizServlet.class
 com\amijayquiz\controllers\ExamenModuleServlet.class
 com\amijayquiz\dao\QuestionExamenDAO.class

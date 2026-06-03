@@ -6,6 +6,7 @@ C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayqu
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PaiementSuccesServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\MotDePasseOublieServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\CoursDAO.java
+C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\AdminQuizServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\LeconDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\Chapitre.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\Lecon.java
@@ -17,6 +18,7 @@ C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayqu
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\utils\HttpUtils.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PaiementServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\PaiementDAO.java
+C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\AdminQuizSupprimerServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PaiementManuelServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\Cours.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\ChangerMotDePasseServlet.java
@@ -24,9 +26,11 @@ C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayqu
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\UtilisateurDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\ExamenModuleDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\Utilisateur.java
+C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\AdminQuestionsServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\RessourceDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\filters\AutoLoginFilter.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\Quiz.java
+C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\AdminQuizModifierQuestionServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\filters\AccesPayantFilter.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\CertificatServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\DashboardJoueurServlet.java
@@ -35,6 +39,7 @@ C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayqu
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\LeconCoursServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\ExamenModule.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\utils\TestConnexion.java
+C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\AdminQuizQuestionsServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\QuizDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\GoogleLoginServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\CourseAccessDAO.java
@@ -44,6 +49,7 @@ C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayqu
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\ConnexionServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\ChapitreDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\utils\HashUtil.java
+C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\AdminQuizCreerServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\QuizQuestionDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\QuestionExamenDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\CorrectionServlet.java
@@ -51,10 +57,12 @@ C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayqu
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\QuestionDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\CoursServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\ProgressionModuleDAO.java
+C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\AdminQuizAjouterServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\ExamenModuleServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\utils\SecuriteUtil.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\config\PawaPayConfig.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\utils\ConnexionDB.java
+C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\AdminDashboardServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\ProgressionJoueur.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\dao\ProgressionCoursDAO.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\Paiement.java
@@ -70,6 +78,7 @@ C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayqu
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PaiementAttenteServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\models\QuestionExamen.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\HistoriqueServlet.java
+C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\AdminQuizModifierPageServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\PasserQuizServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\controllers\DeconnexionServlet.java
 C:\Users\barak\Documents\NetBeansProjects\amijayQuizz\src\main\java\com\amijayquiz\utils\ReferenceGenerator.java

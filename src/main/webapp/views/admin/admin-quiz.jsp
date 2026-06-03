@@ -1,29 +1,46 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="com.amijayquiz.models.Quiz" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-quiz.jsp
      RÔLE    : Page d'administration des quiz
-              - Tableau de tous les quiz
-              - Formulaire d'ajout/modification
-              - Filtre par niveau
-              - Recherche par titre
-              - Suppression avec confirmation
+              - Tableau paginé des quiz
+              - Filtres avancés (thème, niveau, recherche)
+              - Statistiques globales
+              - Liens vers création et modification
+              - Menu d'actions par quiz
      ============================================================ --%>
 
 <%
-    List<Quiz> quizList = (List<Quiz>) request.getAttribute("quizList");
+    List<Quiz> quizPage = (List<Quiz>) request.getAttribute("quizPage");
     Integer totalQuiz = (Integer) request.getAttribute("totalQuiz");
+    Integer totalQuizGlobal = (Integer) request.getAttribute("totalQuizGlobal");
+    Integer pageActuelle = (Integer) request.getAttribute("page");
+    Integer totalPages = (Integer) request.getAttribute("totalPages");
     String recherche = (String) request.getAttribute("recherche");
     String filtreNiveau = (String) request.getAttribute("filtreNiveau");
+    String filtreTheme = (String) request.getAttribute("filtreTheme");
+    String tri = (String) request.getAttribute("tri");
+    List<String> tousLesThemes = (List<String>) request.getAttribute("tousLesThemes");
+    Map<String, Integer> stats = (Map<String, Integer>) request.getAttribute("stats");
+    String urlPagination = (String) request.getAttribute("urlPagination");
     String messageSucces = (String) request.getAttribute("messageSucces");
     String messageErreur = (String) request.getAttribute("messageErreur");
 
-    if (quizList == null) quizList = new java.util.ArrayList<Quiz>();
+    if (quizPage == null) quizPage = new java.util.ArrayList<Quiz>();
     if (totalQuiz == null) totalQuiz = 0;
+    if (totalQuizGlobal == null) totalQuizGlobal = 0;
+    if (pageActuelle == null) pageActuelle = 1;
+    if (totalPages == null) totalPages = 1;
     if (recherche == null) recherche = "";
     if (filtreNiveau == null) filtreNiveau = "tous";
+    if (filtreTheme == null) filtreTheme = "tous";
+    if (tri == null) tri = "id";
+    if (tousLesThemes == null) tousLesThemes = new java.util.ArrayList<String>();
+    if (stats == null) stats = new java.util.LinkedHashMap<String, Integer>();
+    if (urlPagination == null) urlPagination = "/admin/quiz?";
 
     request.setAttribute("pageTitle", "Gestion des quiz - Administration - AmijayQuiz");
 %>
@@ -37,9 +54,7 @@
 
 <div class="admin-quiz-container">
 
-    <%-- ============================================================
-         BREADCRUMB
-         ============================================================ --%>
+    <%-- ===== BREADCRUMB ===== --%>
     <nav class="breadcrumb" aria-label="Fil d'Ariane">
         <a href="${pageContext.request.contextPath}/admin/dashboard" class="breadcrumb-link">
             <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
@@ -50,28 +65,7 @@
         </span>
     </nav>
 
-    <%-- ============================================================
-         EN-TETE
-         ============================================================ --%>
-    <div class="admin-quiz-header">
-        <div class="admin-header-left">
-            <div class="admin-header-icon">
-                <i class="fas fa-list-check"></i>
-            </div>
-            <div class="admin-header-text">
-                <h1>Gestion des quiz</h1>
-                <p><%= totalQuiz %> quiz disponible<%= totalQuiz > 1 ? "s" : "" %></p>
-            </div>
-        </div>
-        <button type="button" class="btn-ajouter-quiz" onclick="ouvrirModalAjout()">
-            <i class="fas fa-plus-circle"></i>
-            <span>Creer un quiz</span>
-        </button>
-    </div>
-
-    <%-- ============================================================
-         MESSAGES FLASH
-         ============================================================ --%>
+    <%-- ===== MESSAGES FLASH ===== --%>
     <% if (messageSucces != null) { %>
         <div class="message-alerte message-succes">
             <i class="fas fa-check-circle"></i>
@@ -85,30 +79,83 @@
         </div>
     <% } %>
 
-    <%-- ============================================================
-         BARRE DE FILTRES ET RECHERCHE
-         ============================================================ --%>
+    <%-- ===== EN-TETE ===== --%>
+    <div class="admin-quiz-header">
+        <div class="admin-header-left">
+            <div class="admin-header-icon">
+                <i class="fas fa-list-check"></i>
+            </div>
+            <div class="admin-header-text">
+                <h1>Gestion des Quiz</h1>
+                <p><%= totalQuizGlobal %> quiz au total</p>
+            </div>
+        </div>
+        <a href="${pageContext.request.contextPath}/admin/quiz/creer" class="btn-ajouter-quiz">
+            <i class="fas fa-plus-circle"></i>
+            <span>Creer un quiz</span>
+        </a>
+    </div>
+
+    <%-- ===== BARRE DE STATISTIQUES ===== --%>
+    <div class="admin-stats-bar">
+        <div class="stats-item">
+            <i class="fas fa-layer-group"></i>
+            <strong><%= stats.getOrDefault("themes", 0) %></strong> themes
+        </div>
+        <div class="stats-separator"></div>
+        <div class="stats-item">
+            <i class="fas fa-list-check"></i>
+            <strong><%= stats.getOrDefault("total", 0) %></strong> quiz
+        </div>
+        <div class="stats-separator"></div>
+        <div class="stats-item stats-elementaire">
+            <i class="fas fa-seedling"></i>
+            <strong><%= stats.getOrDefault("elementaire", 0) %></strong> elementaires
+        </div>
+        <div class="stats-separator"></div>
+        <div class="stats-item stats-moyen">
+            <i class="fas fa-fire"></i>
+            <strong><%= stats.getOrDefault("moyen", 0) %></strong> moyens
+        </div>
+        <div class="stats-separator"></div>
+        <div class="stats-item stats-avance">
+            <i class="fas fa-star"></i>
+            <strong><%= stats.getOrDefault("avance", 0) %></strong> avances
+        </div>
+    </div>
+
+    <%-- ===== BARRE DE FILTRES ===== --%>
     <div class="admin-filtres-bar">
-        <form action="${pageContext.request.contextPath}/admin/quiz" method="GET" class="form-filtres">
+        <form action="${pageContext.request.contextPath}/admin/quiz" method="GET" class="form-filtres" id="formFiltres">
             <div class="recherche-input-wrapper">
                 <i class="fas fa-search"></i>
                 <input type="text" name="recherche" value="<%= recherche %>" 
                        placeholder="Rechercher par titre ou description..." 
-                       class="recherche-input">
+                       class="recherche-input" id="rechercheInput">
             </div>
 
-            <select name="niveau" class="filtre-select" onchange="this.form.submit()">
+            <select name="theme" class="filtre-select" onchange="document.getElementById('formFiltres').submit()">
+                <option value="tous" <%= "tous".equals(filtreTheme) ? "selected" : "" %>>Tous les themes</option>
+                <% for (String theme : tousLesThemes) { %>
+                    <option value="<%= theme %>" <%= theme.equals(filtreTheme) ? "selected" : "" %>><%= theme %></option>
+                <% } %>
+            </select>
+
+            <select name="niveau" class="filtre-select" onchange="document.getElementById('formFiltres').submit()">
                 <option value="tous" <%= "tous".equals(filtreNiveau) ? "selected" : "" %>>Tous les niveaux</option>
                 <option value="elementaire" <%= "elementaire".equals(filtreNiveau) ? "selected" : "" %>>Elementaire</option>
                 <option value="moyen" <%= "moyen".equals(filtreNiveau) ? "selected" : "" %>>Moyen</option>
                 <option value="avance" <%= "avance".equals(filtreNiveau) ? "selected" : "" %>>Avance</option>
             </select>
 
-            <button type="submit" class="btn-rechercher">
-                <i class="fas fa-search"></i> Filtrer
-            </button>
+            <select name="tri" class="filtre-select" onchange="document.getElementById('formFiltres').submit()">
+                <option value="id" <%= "id".equals(tri) ? "selected" : "" %>>Tri : ID</option>
+                <option value="titre" <%= "titre".equals(tri) ? "selected" : "" %>>Tri : Titre</option>
+                <option value="niveau" <%= "niveau".equals(tri) ? "selected" : "" %>>Tri : Niveau</option>
+                <option value="questions" <%= "questions".equals(tri) ? "selected" : "" %>>Tri : Questions</option>
+            </select>
 
-            <% if ((recherche != null && !recherche.isEmpty()) || !"tous".equals(filtreNiveau)) { %>
+            <% if ((recherche != null && !recherche.isEmpty()) || !"tous".equals(filtreNiveau) || !"tous".equals(filtreTheme)) { %>
                 <a href="${pageContext.request.contextPath}/admin/quiz" class="btn-reset-filtres">
                     <i class="fas fa-times"></i> Reinitialiser
                 </a>
@@ -116,45 +163,41 @@
         </form>
     </div>
 
-    <%-- ============================================================
-         TABLEAU DES QUIZ
-         ============================================================ --%>
+    <%-- ===== TABLEAU DES QUIZ ===== --%>
     <div class="admin-tableau-section">
-        <% if (quizList != null && !quizList.isEmpty()) { %>
+        <% if (quizPage != null && !quizPage.isEmpty()) { %>
             <div class="table-responsive">
                 <table class="admin-table">
                     <thead>
                         <tr>
                             <th class="th-id">ID</th>
                             <th>Titre</th>
-                            <th>Description</th>
                             <th class="th-center">Niveau</th>
-                            <th class="th-center">Duree</th>
                             <th class="th-center">Partie</th>
+                            <th class="th-center">Duree</th>
                             <th class="th-center">Questions</th>
                             <th class="th-action">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <%
-                            for (Quiz q : quizList) {
+                            for (Quiz q : quizPage) {
                                 String titre = q.getTitre();
-                                String description = q.getDescription();
                                 if (titre == null) titre = "";
-                                if (description == null) description = "";
-                                if (titre.length() > 50) titre = titre.substring(0, 50) + "...";
-                                if (description.length() > 60) description = description.substring(0, 60) + "...";
+                                if (titre.length() > 55) titre = titre.substring(0, 55) + "...";
+                                
+                                // Extraire le thème pour le lien de modification
+                                String themeQuiz = "";
+                                int indexPartie = titre.lastIndexOf(" - Partie");
+                                if (indexPartie > 0) {
+                                    themeQuiz = titre.substring(0, indexPartie);
+                                }
                         %>
                             <tr>
                                 <td class="td-id">#<%= q.getId() %></td>
                                 <td>
                                     <span class="cell-titre" title="<%= q.getTitre() != null ? q.getTitre().replace("\"", "&quot;") : "" %>">
                                         <%= titre %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="cell-description">
-                                        <%= description.isEmpty() ? "-" : description %>
                                     </span>
                                 </td>
                                 <td class="td-center">
@@ -164,29 +207,40 @@
                                     </span>
                                 </td>
                                 <td class="td-center">
+                                    <span class="cell-partie">Partie <%= q.getOrdrePartie() %></span>
+                                </td>
+                                <td class="td-center">
                                     <span class="cell-duree">
                                         <i class="far fa-clock"></i> <%= q.getDureeMaxMinutes() %> min
                                     </span>
                                 </td>
                                 <td class="td-center">
-                                    <span class="cell-partie">Partie <%= q.getOrdrePartie() %></span>
-                                </td>
-                                <td class="td-center">
                                     <span class="badge-questions"><%= q.getNombreQuestions() %></span>
                                 </td>
                                 <td class="td-actions">
-                                    <button type="button" class="btn-action-icon btn-modifier" 
-                                            title="Modifier ce quiz"
-                                            onclick="ouvrirModalModification('<%= q.getId() %>', '<%= q.getTitre() != null ? q.getTitre().replace("'", "\\'").replace("\"", "&quot;") : "" %>', '<%= q.getDescription() != null ? q.getDescription().replace("'", "\\'") : "" %>', '<%= q.getDureeMaxMinutes() %>', '<%= q.getNiveau() %>', '<%= q.getOrdrePartie() %>')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <form action="${pageContext.request.contextPath}/admin/quiz" method="POST" class="form-action" onsubmit="return confirm('Supprimer ce quiz ? Toutes les questions associees seront dissociees.')">
-                                        <input type="hidden" name="action" value="supprimer">
-                                        <input type="hidden" name="id" value="<%= q.getId() %>">
-                                        <button type="submit" class="btn-action-icon btn-supprimer" title="Supprimer ce quiz">
-                                            <i class="fas fa-trash-alt"></i>
+                                    <div class="dropdown-actions">
+                                        <button type="button" class="btn-action-icon btn-menu" 
+                                                title="Actions" onclick="toggleDropdown(this)">
+                                            <i class="fas fa-ellipsis-v"></i>
                                         </button>
-                                    </form>
+                                        <div class="dropdown-menu" style="display: none;">
+                                            <a href="${pageContext.request.contextPath}/admin/quiz/questions?quizId=<%= q.getId() %>" 
+                                               class="dropdown-item">
+                                                <i class="fas fa-eye"></i> Voir les questions
+                                            </a>
+                                            <a href="${pageContext.request.contextPath}/admin/quiz/modifier?quizId=<%= q.getId() %>" 
+                                               class="dropdown-item">
+                                                <i class="fas fa-edit"></i> Modifier
+                                            </a>
+                                            <form action="${pageContext.request.contextPath}/admin/quiz/supprimer" method="POST" class="dropdown-item-form">
+                                                <input type="hidden" name="id" value="<%= q.getId() %>">
+                                                <button type="submit" class="dropdown-item dropdown-item-danger" 
+                                                        onclick="return confirmSuppression('<%= titre.replace("'", "\\'") %>')">
+                                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         <%
@@ -195,6 +249,65 @@
                     </tbody>
                 </table>
             </div>
+
+            <%-- ===== PAGINATION ===== --%>
+            <% if (totalPages > 1) { %>
+                <div class="pagination-bar">
+                    <% if (pageActuelle > 1) { %>
+                        <a href="${pageContext.request.contextPath}<%= urlPagination %>page=<%= pageActuelle - 1 %>" 
+                           class="page-link" title="Page precedente">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    <% } else { %>
+                        <span class="page-link disabled">
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                    <% } %>
+
+                    <%
+                        int debutPage = Math.max(1, pageActuelle - 2);
+                        int finPage = Math.min(totalPages, pageActuelle + 2);
+
+                        if (debutPage > 1) {
+                    %>
+                        <a href="${pageContext.request.contextPath}<%= urlPagination %>page=1" class="page-link">1</a>
+                        <% if (debutPage > 2) { %>
+                            <span class="page-ellipsis">...</span>
+                        <% } %>
+                    <% } %>
+
+                    <% for (int i = debutPage; i <= finPage; i++) { %>
+                        <a href="${pageContext.request.contextPath}<%= urlPagination %>page=<%= i %>" 
+                           class="page-link <%= i == pageActuelle ? "active" : "" %>">
+                            <%= i %>
+                        </a>
+                    <% } %>
+
+                    <% if (finPage < totalPages) { %>
+                        <% if (finPage < totalPages - 1) { %>
+                            <span class="page-ellipsis">...</span>
+                        <% } %>
+                        <a href="${pageContext.request.contextPath}<%= urlPagination %>page=<%= totalPages %>" 
+                           class="page-link"><%= totalPages %></a>
+                    <% } %>
+
+                    <% if (pageActuelle < totalPages) { %>
+                        <a href="${pageContext.request.contextPath}<%= urlPagination %>page=<%= pageActuelle + 1 %>" 
+                           class="page-link" title="Page suivante">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    <% } else { %>
+                        <span class="page-link disabled">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                    <% } %>
+
+                    <span class="page-info">
+                        <%= totalQuiz %> resultat<%= totalQuiz > 1 ? "s" : "" %> - Page <%= pageActuelle %>/<%= totalPages %>
+                    </span>
+                </div>
+            <% } %>
+
         <% } else { %>
             <div class="empty-state">
                 <div class="empty-icon">
@@ -202,19 +315,17 @@
                 </div>
                 <h3>Aucun quiz trouve</h3>
                 <p>
-                    <% if ((recherche != null && !recherche.isEmpty()) || !"tous".equals(filtreNiveau)) { %>
-                        Aucun resultat avec ces filtres.
+                    <% if ((recherche != null && !recherche.isEmpty()) || !"tous".equals(filtreNiveau) || !"tous".equals(filtreTheme)) { %>
+                        Aucun resultat avec ces filtres. Essayez de les modifier.
                     <% } else { %>
-                        La base de donnees ne contient pas encore de quiz.
+                        Aucun quiz n'a encore ete cree. Cliquez sur "Creer un quiz" pour commencer.
                     <% } %>
                 </p>
             </div>
         <% } %>
     </div>
 
-    <%-- ============================================================
-         BOUTON RETOUR
-         ============================================================ --%>
+    <%-- ===== BOUTON RETOUR ===== --%>
     <div class="admin-back">
         <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn-retour">
             <i class="fas fa-arrow-left"></i> Retour au dashboard admin
@@ -223,119 +334,28 @@
 
 </div>
 
-<%-- ============================================================
-     MODALE AJOUT / MODIFICATION
-     ============================================================ --%>
-<div class="modal-overlay" id="modalQuiz" style="display: none;">
-    <div class="modal-container modal-quiz">
-        <div class="modal-header">
-            <div class="modal-header-left">
-                <div class="modal-header-icon">
-                    <i class="fas fa-list-check"></i>
-                </div>
-                <div class="modal-header-text">
-                    <h2 id="modalTitre">Creer un quiz</h2>
-                </div>
-            </div>
-            <button type="button" class="modal-close-btn" onclick="fermerModalQuiz()" title="Fermer">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form id="formQuiz" action="${pageContext.request.contextPath}/admin/quiz" method="POST">
-                <input type="hidden" name="action" id="formAction" value="ajouter">
-                <input type="hidden" name="id" id="formId" value="">
-
-                <div class="form-group">
-                    <label for="titre">Titre du quiz <span class="required">*</span></label>
-                    <input type="text" id="titre" name="titre" 
-                           placeholder="Ex: Informatique Generale - Partie 1" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" rows="3" 
-                              placeholder="Description du quiz..."></textarea>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group form-half">
-                        <label for="dureeMaxMinutes">Duree (minutes) <span class="required">*</span></label>
-                        <input type="number" id="dureeMaxMinutes" name="dureeMaxMinutes" 
-                               value="10" min="1" max="60" required>
-                    </div>
-
-                    <div class="form-group form-half">
-                        <label for="ordrePartie">Numero de partie</label>
-                        <input type="number" id="ordrePartie" name="ordrePartie" 
-                               value="1" min="1" max="20">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="niveau">Niveau <span class="required">*</span></label>
-                    <select id="niveau" name="niveau" required>
-                        <option value="">-- Choisissez le niveau --</option>
-                        <option value="elementaire">Elementaire</option>
-                        <option value="moyen">Moyen</option>
-                        <option value="avance">Avance</option>
-                    </select>
-                </div>
-
-                <div class="modal-buttons">
-                    <button type="button" class="btn-modal btn-modal-annuler" onclick="fermerModalQuiz()">
-                        <i class="fas fa-times"></i> Annuler
-                    </button>
-                    <button type="submit" class="btn-modal btn-modal-confirmer">
-                        <i class="fas fa-save"></i> Enregistrer
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<%-- ============================================================
-     SCRIPT
-     ============================================================ --%>
 <script>
-    function ouvrirModalAjout() {
-        document.getElementById('modalTitre').textContent = 'Creer un quiz';
-        document.getElementById('formAction').value = 'ajouter';
-        document.getElementById('formId').value = '';
-        document.getElementById('titre').value = '';
-        document.getElementById('description').value = '';
-        document.getElementById('dureeMaxMinutes').value = '10';
-        document.getElementById('ordrePartie').value = '1';
-        document.getElementById('niveau').value = '';
-        document.getElementById('modalQuiz').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+    function confirmSuppression(titre) {
+        return confirm('Supprimer definitivement le quiz "' + titre + '" ?\n\nLes questions seront dissociees mais conservees.\nL\'historique des parties reste intact.\nCette action est irreversible.');
     }
 
-    function ouvrirModalModification(id, titre, description, duree, niveau, ordre) {
-        document.getElementById('modalTitre').textContent = 'Modifier le quiz #' + id;
-        document.getElementById('formAction').value = 'modifier';
-        document.getElementById('formId').value = id;
-        document.getElementById('titre').value = titre.replace(/&quot;/g, '"').replace(/\\'/g, "'");
-        document.getElementById('description').value = description.replace(/\\'/g, "'");
-        document.getElementById('dureeMaxMinutes').value = duree;
-        document.getElementById('ordrePartie').value = ordre;
-        document.getElementById('niveau').value = niveau;
-        document.getElementById('modalQuiz').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+    function toggleDropdown(btn) {
+        var dropdown = btn.parentElement.querySelector('.dropdown-menu');
+        var isVisible = dropdown.style.display === 'block';
+        
+        document.querySelectorAll('.dropdown-menu').forEach(function(d) {
+            d.style.display = 'none';
+        });
+        
+        dropdown.style.display = isVisible ? 'none' : 'block';
     }
 
-    function fermerModalQuiz() {
-        document.getElementById('modalQuiz').style.display = 'none';
-        document.body.style.overflow = '';
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') fermerModalQuiz();
-    });
-
-    document.getElementById('modalQuiz').addEventListener('click', function(e) {
-        if (e.target === this) fermerModalQuiz();
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown-actions')) {
+            document.querySelectorAll('.dropdown-menu').forEach(function(d) {
+                d.style.display = 'none';
+            });
+        }
     });
 </script>
 
