@@ -255,4 +255,4 @@
     request.setAttribute("extraScripts", attenteJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

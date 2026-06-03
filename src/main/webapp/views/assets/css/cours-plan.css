@@ -1300,3 +1300,50 @@
         display: block !important;
     }
 }
+
+
+
+
+
+
+
+
+
+/* ==========================================================
+   MODALE CONFIRMATION EXAMEN
+   ========================================================== */
+.modal-confirmation-examen {
+    max-width: 480px;
+}
+
+.modal-examen-infos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+    padding: 16px 18px;
+    background: #fafbfe;
+    border-radius: 10px;
+    border: 1px solid #e8eaef;
+    text-align: left;
+}
+
+.modal-examen-infos .examen-info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #555555;
+}
+
+.modal-examen-infos .examen-info-item i {
+    color: #667eea;
+    font-size: 14px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.modal-examen-infos .examen-info-item strong {
+    color: #1a1a2e;
+}

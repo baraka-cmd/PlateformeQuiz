@@ -372,4 +372,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

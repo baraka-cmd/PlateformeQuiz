@@ -204,4 +204,4 @@
     request.setAttribute("extraScripts", echecJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

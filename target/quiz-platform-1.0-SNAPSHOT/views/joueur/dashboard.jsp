@@ -605,4 +605,4 @@
     request.setAttribute("extraScripts", dashboardJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

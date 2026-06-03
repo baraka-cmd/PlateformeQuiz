@@ -334,4 +334,4 @@
     request.setAttribute("extraScripts", niveauJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

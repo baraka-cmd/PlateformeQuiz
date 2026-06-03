@@ -2,12 +2,11 @@
 <%@ page import="com.amijayquiz.models.Utilisateur" %>
 
 <%-- ============================================================
-     Fichier : paiement.jsp
-     Rôle    : Page de paiement pour débloquer les niveaux premium
-              - Affiche le montant (4$ / 10 000 FC)
-              - Liste les avantages premium
-              - Formulaire de numéro de téléphone Mobile Money
-              - Protection CSRF
+     FICHIER : views/joueur/paiement.jsp
+     RÔLE    : Page de paiement AmijayQuiz
+              - Système PawaPay (désactivé temporairement)
+              - Système manuel (actif)
+              - Instructions claires pour le client
      ============================================================ --%>
 
 <%
@@ -15,6 +14,14 @@
     Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
     if (utilisateur == null) {
         response.sendRedirect(request.getContextPath() + "/connexion");
+        return;
+    }
+
+    // Vérifier si déjà premium
+    com.amijayquiz.dao.AccessPremiumDAO premiumDAOCheck = new com.amijayquiz.dao.AccessPremiumDAO();
+    if (premiumDAOCheck.estPremium(utilisateur.getId())) {
+        session.setAttribute("messageSucces", "Vous etes deja Premium ! Tous les niveaux sont debloques.");
+        response.sendRedirect(request.getContextPath() + "/joueur/dashboard");
         return;
     }
 
@@ -27,6 +34,10 @@
     if (montantUSD == null) montantUSD = 4.00;
     if (montantFC == null) montantFC = 10000;
     if (tokenCSRF == null) tokenCSRF = "";
+
+    // ===== CONFIGURATION : Mettre à false pour désactiver PawaPay =====
+    boolean pawapayActif = false;
+    // =================================================================
 
     request.setAttribute("pageTitle", "Débloquer tous les niveaux - AmijayQuiz");
 %>
@@ -59,7 +70,21 @@
         </div>
     <% } %>
 
-    <%-- ===== CARTE PRINCIPALE ===== --%>
+    <%-- ===== MESSAGE DE SUCCÈS (après soumission manuelle) ===== --%>
+    <%
+        String messageSucces = (String) session.getAttribute("messageSucces");
+        if (messageSucces != null) {
+            session.removeAttribute("messageSucces");
+    %>
+        <div class="message-alerte message-succes">
+            <i class="fas fa-check-circle"></i>
+            <span><%= messageSucces %></span>
+        </div>
+    <% } %>
+
+    <%-- ============================================================
+         CARTE PRINCIPALE
+         ============================================================ --%>
     <div class="paiement-card">
 
         <%-- ===== EN-TÊTE ===== --%>
@@ -97,7 +122,7 @@
                     <i class="fas fa-book-open"></i>
                 </div>
                 <div class="avantage-texte">
-                    <strong>Tous les cours Moyen & Avancé</strong>
+                    <strong>Tous les cours Moyen et Avancé</strong>
                     <span>12 thèmes × 3 niveaux = des dizaines de cours complets</span>
                 </div>
             </div>
@@ -133,72 +158,168 @@
             </div>
         </div>
 
-        <%-- ===== FORMULAIRE DE PAIEMENT ===== --%>
-        <div class="paiement-form-section">
-            <h3><i class="fas fa-mobile-alt"></i> Paiement par Mobile Money</h3>
-            <p class="form-description">
-                Entrez votre numéro de téléphone Mobile Money pour procéder au paiement.
-                Vous recevrez une notification sur votre téléphone pour confirmer.
+        <%-- ============================================================
+             SECTION PAWAPAY (DÉSACTIVÉE TEMPORAIREMENT)
+             ============================================================ --%>
+        <% if (pawapayActif) { %>
+            <div class="paiement-form-section">
+                <h3><i class="fas fa-mobile-alt"></i> Paiement automatique par Mobile Money</h3>
+                <p class="form-description">
+                    Entrez votre numéro de téléphone Mobile Money pour procéder au paiement.
+                    Vous recevrez une notification sur votre téléphone pour confirmer.
+                </p>
+
+                <form action="${pageContext.request.contextPath}/paiement" method="POST" id="formPaiement" novalidate>
+                    <input type="hidden" name="csrf_token" value="<%= tokenCSRF %>">
+
+                    <div class="form-group">
+                        <label for="telephone">
+                            <i class="fas fa-phone"></i>
+                            <span>Numéro Mobile Money</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">CD</span>
+                            <input type="tel" id="telephone" name="telephone"
+                                   placeholder="+243XXXXXXXXX ou 0XXXXXXXXX"
+                                   pattern="^(\+243|0)[0-9]{9}$" maxlength="14"
+                                   required autocomplete="tel" autofocus>
+                        </div>
+                        <span class="form-hint">
+                            <i class="fas fa-info-circle"></i>
+                            Formats acceptés : +243XXXXXXXXX ou 0XXXXXXXXX (Airtel, Orange, Vodacom)
+                        </span>
+                        <span class="form-error" id="telephoneError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="operateur">
+                            <i class="fas fa-wallet"></i>
+                            <span>Opérateur Mobile Money</span>
+                        </label>
+                        <select id="operateur" name="operateur" class="filtre-select" required>
+                            <option value="">-- Choisissez votre opérateur --</option>
+                            <option value="AIRTEL_COD">Airtel Money</option>
+                            <option value="ORANGE_COD">Orange Money</option>
+                            <option value="VODACOM_MPESA_COD">M-Pesa (Vodacom)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-paiement" id="btnPayer">
+                        <i class="fas fa-lock"></i>
+                        <span>Payer <%= String.format("%.0f", montantUSD) %> $ maintenant</span>
+                        <span class="btn-loader" id="btnLoader" style="display:none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </form>
+
+                <div class="paiement-securite">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Paiement sécurisé par <strong>PawaPay</strong></span>
+                </div>
+            </div>
+        <% } else { %>
+            <%-- Message PawaPay indisponible --%>
+            <div class="paiement-form-section" style="opacity: 0.5; pointer-events: none; filter: grayscale(0.8);">
+                <div class="paiement-indisponible-banner" style="background: #f5f5fa; border: 2px dashed #ccc; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; text-align: center;">
+                    <i class="fas fa-tools" style="font-size: 24px; color: #f39c12;"></i>
+                    <p style="margin: 8px 0 0; font-size: 13px; color: #8b8fa3;">
+                        Paiement automatique momentanément indisponible.<br>
+                        Veuillez utiliser le <strong>paiement manuel</strong> ci-dessous.
+                    </p>
+                </div>
+            </div>
+        <% } %>
+
+        <%-- ============================================================
+             SECTION PAIEMENT MANUEL (TOUJOURS ACTIVE)
+             ============================================================ --%>
+        <div class="paiement-manuel-section" style="background: #fafbfe; border: 2px solid #667eea; border-radius: 16px; padding: 28px 24px; margin-top: 20px;">
+            <h3 style="font-size: 17px; font-weight: 700; color: #1a1a2e; margin: 0 0 6px 0; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-hand-holding-usd" style="color: #667eea;"></i> Paiement Manuel
+            </h3>
+            <p style="font-size: 13px; color: #555; margin: 0 0 20px 0; line-height: 1.6;">
+                Envoyez <strong style="color: #1a1a2e;">4$ (10 000 FC)</strong> sur le numéro ci-dessous, 
+                puis remplissez le formulaire avec l'ID de transaction reçu par SMS.
+                Votre compte sera activé <strong>sous 24 heures</strong> après vérification.
             </p>
 
-            <form action="${pageContext.request.contextPath}/paiement" method="POST" id="formPaiement" novalidate>
-                <input type="hidden" name="csrf_token" value="<%= tokenCSRF %>">
+            <%-- Numéro de paiement --%>
+            <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 14px; padding: 20px 24px; text-align: center; margin-bottom: 22px;">
+                <i class="fas fa-mobile-alt" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
+                <span style="font-size: 12px; opacity: 0.9;">Envoyez à ce numéro :</span>
+                <strong style="display: block; font-size: 22px; margin: 4px 0;">+243 984 270 438</strong>
+                <span style="font-size: 11px; opacity: 0.8;">Airtel Money / Orange Money</span>
+            </div>
+
+            <%-- Étapes à suivre --%>
+            <div style="background: #fff; border-radius: 12px; padding: 16px 18px; margin-bottom: 22px; border: 1px solid #e8eaef;">
+                <h4 style="font-size: 14px; font-weight: 600; color: #1a1a2e; margin: 0 0 12px 0;">
+                    <i class="fas fa-list-ol" style="color: #667eea;"></i> Étapes à suivre :
+                </h4>
+                <ol style="padding-left: 20px; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+                    <li style="font-size: 13px; color: #555;">Envoyez <strong>10 000 FC</strong> au numéro ci-dessus via Airtel Money ou Orange Money</li>
+                    <li style="font-size: 13px; color: #555;">Notez l'<strong>ID de transaction</strong> reçu par SMS (ex: TID: MP240603.1234.A12345)</li>
+                    <li style="font-size: 13px; color: #555;">Remplissez le formulaire ci-dessous avec cet ID</li>
+                    <li style="font-size: 13px; color: #555;">Votre compte sera activé après vérification (max 24h)</li>
+                </ol>
+            </div>
+
+            <%-- Formulaire manuel --%>
+            <form action="${pageContext.request.contextPath}/paiement-manuel" method="POST" id="formPaiementManuel">
+                <div class="form-group">
+                    <label for="idTransaction" style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px;">
+                        <i class="fas fa-receipt" style="color: #667eea;"></i>
+                        ID de la transaction
+                    </label>
+                    <input type="text" id="idTransaction" name="idTransaction"
+                           placeholder="Ex: MP240603.1234.A12345 (le numéro après TID: dans le SMS)"
+                           style="width: 100%; padding: 14px 16px; border: 2px solid #e8eaef; border-radius: 10px; font-size: 14px; font-family: 'Poppins', sans-serif; box-sizing: border-box;"
+                           required>
+                </div>
 
                 <div class="form-group">
-                    <label for="telephone">
-                        <i class="fas fa-phone"></i>
-                        <span>Numéro Mobile Money</span>
+                    <label for="operateurManuel" style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px;">
+                        <i class="fas fa-wallet" style="color: #667eea;"></i>
+                        Opérateur utilisé
                     </label>
-                    <div class="input-wrapper">
-                        <span class="input-prefix">🇨🇩</span>
-                        <input
-                            type="tel"
-                            id="telephone"
-                            name="telephone"
-                            placeholder="+243XXXXXXXXX ou 0XXXXXXXXX"
-                            pattern="^(\+243|0)[0-9]{9}$"
-                            maxlength="14"
-                            required
-                            autocomplete="tel"
-                            autofocus
-                        >
-                    </div>
-                    <span class="form-hint">
+                    <select id="operateurManuel" name="operateur"
+                            style="width: 100%; padding: 14px 16px; border: 2px solid #e8eaef; border-radius: 10px; font-size: 14px; font-family: 'Poppins', sans-serif; box-sizing: border-box; background: white;"
+                            required>
+                        <option value="">-- Choisissez votre opérateur --</option>
+                        <option value="AIRTEL">Airtel Money</option>
+                        <option value="ORANGE">Orange Money</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="telephoneManuel" style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px;">
+                        <i class="fas fa-phone" style="color: #667eea;"></i>
+                        Votre numéro de téléphone
+                    </label>
+                    <input type="tel" id="telephoneManuel" name="telephone"
+                           placeholder="Ex: 243984270438"
+                           style="width: 100%; padding: 14px 16px; border: 2px solid #e8eaef; border-radius: 10px; font-size: 14px; font-family: 'Poppins', sans-serif; box-sizing: border-box;"
+                           required>
+                    <span style="display: flex; align-items: center; gap: 5px; font-size: 11px; color: #8b8fa3; margin-top: 6px;">
                         <i class="fas fa-info-circle"></i>
-                        Formats acceptés : +243XXXXXXXXX ou 0XXXXXXXXX (Airtel, Orange, Vodacom)
-                    </span>
-                    <span class="form-error" id="telephoneError"></span>
-                </div>
-
-                <div class="paiement-operateurs">
-                    <span class="operateur-badge">
-                        <i class="fas fa-wifi"></i> Airtel Money
-                    </span>
-                    <span class="operateur-badge">
-                        <i class="fas fa-wifi"></i> Orange Money
-                    </span>
-                    <span class="operateur-badge">
-                        <i class="fas fa-wifi"></i> M-Pesa
+                        Le numéro qui a envoyé l'argent
                     </span>
                 </div>
 
-                <button type="submit" class="btn-paiement" id="btnPayer">
-                    <i class="fas fa-lock"></i>
-                    <span>Payer <%= String.format("%.0f", montantUSD) %> $ maintenant</span>
-                    <span class="btn-loader" id="btnLoader" style="display:none;">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </span>
+                <button type="submit" style="width: 100%; padding: 16px 24px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.25); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i class="fas fa-check-circle"></i>
+                    <span>J'ai payé - Activer mon compte</span>
                 </button>
             </form>
 
-            <div class="paiement-securite">
-                <i class="fas fa-shield-alt"></i>
-                <span>Paiement sécurisé par <strong>PawaPay</strong></span>
-            </div>
+            <p style="text-align: center; font-size: 12px; color: #8b8fa3; margin-top: 14px;">
+                <i class="fas fa-clock"></i> Délai d'activation : 1 à 24 heures après vérification.
+            </p>
         </div>
 
         <%-- ===== GARANTIES ===== --%>
-        <div class="paiement-garanties">
+        <div class="paiement-garanties" style="margin-top: 24px;">
             <div class="garantie-item">
                 <i class="fas fa-shield-alt"></i>
                 <span>Paiement 100% sécurisé</span>
@@ -224,12 +345,16 @@
             <p>L'accès est <strong>à vie</strong>. Un seul paiement, aucun abonnement mensuel.</p>
         </div>
         <div class="faq-item">
-            <h4>Quels modes de paiement sont acceptés ?</h4>
-            <p>Airtel Money, Orange Money et M-Pesa via PawaPay.</p>
+            <h4>Comment trouver l'ID de transaction ?</h4>
+            <p>Après avoir envoyé l'argent, vous recevez un SMS contenant l'ID (ex: TID: MP240603.1234.A12345). Copiez ce numéro dans le formulaire.</p>
         </div>
         <div class="faq-item">
-            <h4>Le paiement est-il sécurisé ?</h4>
-            <p>Oui, le paiement est traité par <strong>PawaPay</strong>, une plateforme certifiée PCI-DSS.</p>
+            <h4>Combien de temps pour l'activation ?</h4>
+            <p>Votre compte est activé <strong>sous 1 à 24 heures</strong> après vérification du paiement.</p>
+        </div>
+        <div class="faq-item">
+            <h4>Que faire si mon compte n'est pas activé après 24h ?</h4>
+            <p>Contactez-nous à <strong>barakantwali06@gmail.com</strong> ou au <strong>+243 984 270 438</strong> avec votre ID de transaction.</p>
         </div>
     </div>
 
@@ -242,28 +367,9 @@
 
 </div>
 
-<script>
-document.getElementById('formPaiement').addEventListener('submit', function(e) {
-    var telephone = document.getElementById('telephone').value.trim();
-    var regex = /^(\+243|0)[0-9]{9}$/;
-
-    if (!regex.test(telephone)) {
-        e.preventDefault();
-        document.getElementById('telephoneError').innerText = 'Format invalide. Exemple : +243984270438';
-        document.getElementById('telephoneError').style.display = 'block';
-        return false;
-    }
-
-    document.getElementById('btnPayer').querySelector('span').innerText = 'Paiement en cours...';
-    document.getElementById('btnLoader').style.display = 'inline-block';
-    document.getElementById('btnPayer').disabled = true;
-    return true;
-});
-</script>
-
 <%
     String paiementJS = "<script src=\"" + request.getContextPath() + "/views/assets/js/paiement.js\"></script>";
     request.setAttribute("extraScripts", paiementJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

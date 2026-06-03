@@ -63,13 +63,7 @@ public final class SecuriteUtil {
      * @return Référence unique (max 100 caractères)
      */
     public static String genererReference(int userId) {
-        long timestamp = System.currentTimeMillis() / 1000; // Secondes UNIX
-        String randomPart = genererChaineAleatoire(LONGUEUR_RANDOM_REF);
-
-        return PawaPayConfig.PREFIXE_REFERENCE 
-            + "-" + userId 
-            + "-" + timestamp 
-            + "-" + randomPart;
+        return java.util.UUID.randomUUID().toString();
     }
 
     /**
@@ -126,13 +120,12 @@ public final class SecuriteUtil {
      * @return Numéro au format +243XXXXXXXXX, ou null si invalide
      */
     public static String normaliserTelephone(String telephone) {
-        if (!estTelephoneValide(telephone)) return null;
-
+        if (telephone == null) return null;
         telephone = telephone.trim();
 
-        // Convertir 0XXXXXXXXX en +243XXXXXXXXX
-        if (telephone.startsWith("0")) {
-            telephone = "+243" + telephone.substring(1);
+        // Enlever le +
+        if (telephone.startsWith("+")) {
+            telephone = telephone.substring(1);
         }
 
         return telephone;

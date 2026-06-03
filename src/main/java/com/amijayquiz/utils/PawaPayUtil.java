@@ -16,7 +16,6 @@ import com.google.gson.JsonParser;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -40,7 +39,7 @@ import java.util.Map;
  * Utilise HttpURLConnection (sans dépendance externe supplémentaire).
  * 
  * @author AmijayQuiz
- * @version 1.0
+ * @version 1.2
  */
 public final class PawaPayUtil {
 
@@ -65,16 +64,17 @@ public final class PawaPayUtil {
     /**
      * Crée un dépôt de paiement via l'API PawaPay
      * 
-     * @param reference  Référence unique de la transaction (ex: PAW-1-1620000000-a3f2)
+     * @param reference  Référence unique de la transaction (UUID v4)
      * @param montant    Montant en USD (ex: 4.00)
      * @param telephone  Numéro de téléphone au format international (ex: +243XXXXXXXXX)
+     * @param provider   Code du fournisseur Mobile Money (ex: AIRTEL_CDI, ORANGE_CDI)
      * @return Map contenant :
      *         - "success" (Boolean) : true si la requête a abouti
      *         - "transactionId" (String) : ID PawaPay si succès, null sinon
      *         - "message" (String) : message descriptif
      *         - "erreur" (String) : message d'erreur si échec
      */
-    public static Map<String, Object> creerPaiement(String reference, double montant, String telephone) {
+    public static Map<String, Object> creerPaiement(String reference, double montant, String telephone, String provider) {
         Map<String, Object> resultat = new HashMap<>();
 
         // 1. Validation des paramètres
@@ -96,22 +96,31 @@ public final class PawaPayUtil {
             return resultat;
         }
 
+        if (provider == null || provider.trim().isEmpty()) {
+            resultat.put("success", false);
+            resultat.put("erreur", "L'opérateur Mobile Money est obligatoire.");
+            return resultat;
+        }
+
         HttpURLConnection connexion = null;
 
         try {
-            // 2. Construction du corps de la requête
+            // 2. Construction du corps de la requête selon la documentation PawaPay v2
             JsonObject body = new JsonObject();
-            body.addProperty("amount", String.valueOf(montant));
+            body.addProperty("depositId", reference);
+            body.addProperty("amount", String.valueOf((int) montant));
             body.addProperty("currency", PawaPayConfig.DEVISE);
-            body.addProperty("reference", reference);
 
-            // Données client
-            JsonObject customer = new JsonObject();
-            customer.addProperty("phone", telephone);
-            body.add("customer", customer);
+            // Payer (obligatoire - format v2)
+            JsonObject payer = new JsonObject();
+            payer.addProperty("type", "MMO");
 
-            // URL de callback
-            body.addProperty("callbackUrl", PawaPayConfig.CALLBACK_URL);
+            JsonObject accountDetails = new JsonObject();
+            accountDetails.addProperty("phoneNumber", telephone);
+            accountDetails.addProperty("provider", provider);
+            payer.add("accountDetails", accountDetails);
+
+            body.add("payer", payer);
 
             // 3. Envoi de la requête HTTP POST
             URL url = new URL(PawaPayConfig.DEPOSIT_URL);
@@ -125,6 +134,11 @@ public final class PawaPayUtil {
 
             // Écriture du corps JSON
             String jsonBody = GSON.toJson(body);
+
+            // Log du JSON envoyé pour debug
+            System.out.println("📤 [PawaPay] JSON envoyé à PawaPay :");
+            System.out.println("   " + jsonBody);
+
             try (OutputStream os = connexion.getOutputStream()) {
                 byte[] input = jsonBody.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
@@ -157,8 +171,15 @@ public final class PawaPayUtil {
 
                 System.out.println("✅ [PawaPay] Paiement créé - Transaction ID: " + transactionId);
 
+            } else if (codeReponse == 400) {
+                // Essayer d'extraire le message d'erreur détaillé de PawaPay
+                String messageErreur = extraireMessageErreurPawaPay(reponseJson);
+                resultat.put("success", false);
+                resultat.put("erreur", messageErreur);
+
+                System.err.println("❌ [PawaPay] Erreur création paiement: " + messageErreur);
             } else {
-                // Erreur API
+                // Autre erreur API
                 String messageErreur = extraireMessageErreur(reponseJson, codeReponse);
                 resultat.put("success", false);
                 resultat.put("erreur", messageErreur);
@@ -187,10 +208,10 @@ public final class PawaPayUtil {
     /**
      * Vérifie le statut d'un paiement auprès de PawaPay
      * 
-     * @param transactionId L'ID de transaction PawaPay
+     * @param transactionId L'ID de transaction PawaPay (depositId)
      * @return Map contenant :
      *         - "success" (Boolean)
-     *         - "statut" (String) : SUCCESS, PENDING, FAILED...
+     *         - "statut" (String) : ACCEPTED, COMPLETED, REJECTED, FAILED...
      *         - "message" (String)
      */
     public static Map<String, Object> verifierStatutPaiement(String transactionId) {
@@ -262,7 +283,6 @@ public final class PawaPayUtil {
      * @return true si la signature est valide ou si le secret est vide (sandbox)
      */
     public static boolean verifierSignatureWebhook(String payload, String signature) {
-        // En sandbox, le secret est vide : on accepte tout
         if (PawaPayConfig.WEBHOOK_SECRET == null || PawaPayConfig.WEBHOOK_SECRET.isEmpty()) {
             System.out.println("⚠️ [PawaPay] Vérification signature désactivée (sandbox)");
             return true;
@@ -337,7 +357,6 @@ public final class PawaPayUtil {
         StringBuilder reponse = new StringBuilder();
 
         try {
-            // Essayer de lire le flux normal (code 2xx)
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(connexion.getInputStream(), StandardCharsets.UTF_8))) {
                 String ligne;
@@ -346,7 +365,6 @@ public final class PawaPayUtil {
                 }
             }
         } catch (IOException e) {
-            // Si erreur, lire le flux d'erreur (code 4xx, 5xx)
             if (connexion.getErrorStream() != null) {
                 try (BufferedReader reader = new BufferedReader(
                         new InputStreamReader(connexion.getErrorStream(), StandardCharsets.UTF_8))) {
@@ -362,6 +380,47 @@ public final class PawaPayUtil {
     }
 
     /**
+     * Extrait un message d'erreur lisible depuis la réponse PawaPay (format v2)
+     * 
+     * @param reponseJson Corps JSON de la réponse
+     * @return Message d'erreur formaté
+     */
+    private static String extraireMessageErreurPawaPay(String reponseJson) {
+        if (reponseJson == null || reponseJson.isEmpty()) {
+            return "Erreur API PawaPay - Réponse vide";
+        }
+
+        try {
+            JsonObject reponse = JsonParser.parseString(reponseJson).getAsJsonObject();
+
+            // Format v2 : "failureReason": {"failureCode": "...", "failureMessage": "..."}
+            if (reponse.has("failureReason")) {
+                JsonObject failureReason = reponse.getAsJsonObject("failureReason");
+                if (failureReason.has("failureMessage")) {
+                    String failureCode = failureReason.has("failureCode") ? 
+                        failureReason.get("failureCode").getAsString() + " - " : "";
+                    return failureCode + failureReason.get("failureMessage").getAsString();
+                }
+            }
+
+            // Format v1 : "errorMessage"
+            if (reponse.has("errorMessage")) {
+                return reponse.get("errorMessage").getAsString();
+            }
+
+            // Format générique : "message"
+            if (reponse.has("message")) {
+                return reponse.get("message").getAsString();
+            }
+
+        } catch (Exception e) {
+            // JSON invalide, retourner le brut
+        }
+
+        return "Erreur API PawaPay : " + reponseJson;
+    }
+
+    /**
      * Extrait un message d'erreur lisible depuis la réponse PawaPay
      * 
      * @param reponseJson Corps JSON de la réponse
@@ -371,6 +430,12 @@ public final class PawaPayUtil {
     private static String extraireMessageErreur(String reponseJson, int codeHttp) {
         if (reponseJson == null || reponseJson.isEmpty()) {
             return "Erreur API PawaPay (HTTP " + codeHttp + ") - Réponse vide";
+        }
+
+        // Essayer d'abord le format v2
+        String messageV2 = extraireMessageErreurPawaPay(reponseJson);
+        if (!messageV2.startsWith("Erreur API PawaPay :")) {
+            return messageV2;
         }
 
         try {

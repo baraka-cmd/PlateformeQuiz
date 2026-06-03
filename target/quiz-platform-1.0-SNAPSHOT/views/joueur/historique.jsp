@@ -455,4 +455,4 @@
     request.setAttribute("extraScripts", historiqueJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

@@ -8,6 +8,7 @@
 //           - Effet hover sur les chapitres
 //           - Tooltip sur les modules verrouillés
 //           - Smooth scroll vers l'examen final
+//           - Modale de confirmation avant examen
 // ============================================================
 
 'use strict';
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initTooltipsVerrouilles();
     initBannierePremium();
     initExamenFinalAnimation();
-    console.log('✅ Plan Cours - Page initialisée');
+    console.log('Plan Cours - Page initialisee');
 });
 
 // ============================================================
@@ -47,9 +48,8 @@ function initModuleToggle() {
             var moduleCard = this.closest('.module-card');
             if (!moduleCard) return;
 
-            // Ne pas toggle si le module est bloqué premium
+            // Ne pas toggle si le module est bloque premium
             if (moduleCard.classList.contains('bloque-premium')) {
-                // Rediriger vers la page de paiement
                 var contexte = window.location.pathname.split('/')[1] || '';
                 window.location.href = '/' + contexte + '/paiement';
                 return;
@@ -59,7 +59,7 @@ function initModuleToggle() {
             toggleModule(numero, moduleCard);
         });
 
-        // Accessibilité : touche Enter/Space
+        // Accessibilite : touche Enter/Space
         header.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -86,21 +86,19 @@ function toggleModule(numero, moduleCard) {
     var isOpen = content.style.display !== 'none';
 
     if (isOpen) {
-        // Fermer le module
         fermerModule(content, icon, header);
     } else {
-        // Fermer le module précédemment ouvert (accordéon)
+        // Fermer le module precedemment ouvert (accordeon)
         if (PlanConfig.moduleOuvert && PlanConfig.moduleOuvert !== numero) {
             var prevContent = document.getElementById('moduleContent' + PlanConfig.moduleOuvert);
             var prevIcon = document.getElementById('moduleToggleIcon' + PlanConfig.moduleOuvert);
             var prevHeader = document.querySelector('.module-card[data-module="' + PlanConfig.moduleOuvert + '"] .module-card-header');
-            
+
             if (prevContent && prevIcon) {
                 fermerModule(prevContent, prevIcon, prevHeader);
             }
         }
 
-        // Ouvrir ce module
         ouvrirModule(content, icon, header);
         PlanConfig.moduleOuvert = numero;
     }
@@ -133,27 +131,24 @@ function fermerModule(content, icon, header) {
 }
 
 function extraireNumeroModule(moduleCard) {
-    // Essayer de trouver le numéro dans le texte
     var titre = moduleCard.querySelector('.module-card-info h3');
     if (titre) {
         var match = titre.textContent.match(/Module\s+(\d+)/i);
-        if (match) return parseInt(match[1]);
+        if (match) return parseInt(match[1], 10);
     }
 
-    // Essayer avec le numéro affiché
     var numeroElem = moduleCard.querySelector('.module-card-number span');
     if (numeroElem) {
-        return parseInt(numeroElem.textContent);
+        return parseInt(numeroElem.textContent, 10);
     }
 
     return 0;
 }
 
 // ============================================================
-// ACCORDÉON : UN SEUL MODULE OUVERT À LA FOIS
+// ACCORDEON : UN SEUL MODULE OUVERT A LA FOIS
 // ============================================================
 function initAccordeonModule() {
-    // Trouver le module actif (débloqué et non réussi) et l'ouvrir par défaut
     var moduleDebloque = document.querySelector('.module-card.debloque:not(.reussi)');
     if (moduleDebloque) {
         var numero = extraireNumeroModule(moduleDebloque);
@@ -179,11 +174,9 @@ function initProgressionBar() {
     barres.forEach(function(barre) {
         var largeurFinale = barre.style.width || barre.getAttribute('data-width') || '0%';
 
-        // Animer de 0 à la valeur finale
         barre.style.width = '0%';
         barre.style.transition = 'width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 
-        // Observer pour déclencher l'animation quand visible
         if ('IntersectionObserver' in window) {
             var observer = new IntersectionObserver(function(entries) {
                 if (entries[0].isIntersecting) {
@@ -209,10 +202,8 @@ function initProgressionBar() {
 function initScrollToModuleActif() {
     if (!PlanConfig.scrollToActif) return;
 
-    // Trouver le premier module débloqué non réussi
     var moduleCible = document.querySelector('.module-card.debloque:not(.reussi)');
 
-    // Si aucun, trouver le premier module réussi
     if (!moduleCible) {
         moduleCible = document.querySelector('.module-card.reussi:last-of-type');
     }
@@ -220,10 +211,10 @@ function initScrollToModuleActif() {
     if (!moduleCible) return;
 
     setTimeout(function() {
-        var headerHeight = document.querySelector('.navbar') ? 
+        var headerHeight = document.querySelector('.navbar') ?
             document.querySelector('.navbar').offsetHeight : 65;
 
-        var position = moduleCible.getBoundingClientRect().top + 
+        var position = moduleCible.getBoundingClientRect().top +
             window.pageYOffset - headerHeight - 60;
 
         window.scrollTo({
@@ -231,7 +222,6 @@ function initScrollToModuleActif() {
             behavior: 'smooth'
         });
 
-        // Surbrillance temporaire
         moduleCible.style.boxShadow = '0 0 0 6px rgba(102, 126, 234, 0.2)';
         moduleCible.style.transition = 'box-shadow 0.5s ease';
         setTimeout(function() {
@@ -263,7 +253,7 @@ function initChapitreHover() {
 }
 
 // ============================================================
-// TOOLTIPS SUR MODULES VERROUILLÉS
+// TOOLTIPS SUR MODULES VERROUILLES
 // ============================================================
 function initTooltipsVerrouilles() {
     var modulesVerrouilles = document.querySelectorAll('.module-card.verrouille, .module-card.bloque-premium');
@@ -274,9 +264,9 @@ function initTooltipsVerrouilles() {
 
         var message = '';
         if (module.classList.contains('bloque-premium')) {
-            message = 'Ce module nécessite un compte Premium. Cliquez pour débloquer.';
+            message = 'Ce module necessite un compte Premium. Cliquez pour debloquer.';
         } else {
-            message = 'Réussissez le module précédent pour débloquer celui-ci.';
+            message = 'Reussissez le module precedent pour debloquer celui-ci.';
         }
 
         header.setAttribute('data-tooltip', message);
@@ -284,13 +274,12 @@ function initTooltipsVerrouilles() {
 }
 
 // ============================================================
-// ANIMATION BANNIÈRE PREMIUM
+// ANIMATION BANNIERE PREMIUM
 // ============================================================
 function initBannierePremium() {
     var banniere = document.querySelector('.premium-banner');
     if (!banniere) return;
 
-    // Observer pour déclencher l'animation
     if ('IntersectionObserver' in window) {
         var observer = new IntersectionObserver(function(entries) {
             if (entries[0].isIntersecting) {
@@ -310,7 +299,6 @@ function initBannierePremium() {
         observer.observe(banniere);
     }
 
-    // Animation de la lueur
     var glow = banniere.querySelector('.premium-banner-glow');
     if (glow) {
         var angle = 0;
@@ -320,7 +308,6 @@ function initBannierePremium() {
         }, 50);
     }
 
-    // Effet hover sur le bouton
     var btn = banniere.querySelector('.premium-btn');
     if (btn) {
         btn.addEventListener('mouseenter', function() {
@@ -342,9 +329,8 @@ function initExamenFinalAnimation() {
     var examenCard = document.querySelector('.examen-final-card');
     if (!examenCard) return;
 
-    // Effet de pulsation si accessible
     if (examenCard.classList.contains('accessible')) {
-        var pulseInterval = setInterval(function() {
+        setInterval(function() {
             examenCard.style.boxShadow = '0 0 30px rgba(102, 126, 234, 0.3)';
             setTimeout(function() {
                 examenCard.style.boxShadow = '';
@@ -352,7 +338,6 @@ function initExamenFinalAnimation() {
         }, 2500);
     }
 
-    // Animation d'entrée
     examenCard.style.opacity = '0';
     examenCard.style.transform = 'translateY(20px)';
     examenCard.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -371,14 +356,14 @@ function initExamenFinalAnimation() {
 }
 
 // ============================================================
-// COMPTEUR DE LEÇONS (ANIMATION)
+// COMPTEUR DE LECONS (ANIMATION)
 // ============================================================
 (function initCompteurLecons() {
     var compteurElements = document.querySelectorAll('.plan-header-statut .stat-number, .cours-progress-detail strong');
 
     compteurElements.forEach(function(element) {
         var texte = element.textContent;
-        var valeurFinale = parseInt(texte.replace(/[^0-9]/g, '')) || 0;
+        var valeurFinale = parseInt(texte.replace(/[^0-9]/g, ''), 10) || 0;
         if (valeurFinale === 0) return;
 
         var observer = new IntersectionObserver(function(entries) {
@@ -414,17 +399,52 @@ function initExamenFinalAnimation() {
 })();
 
 // ============================================================
-// CONFIRMATION AVANT DE QUITTER L'EXAMEN
+// CONFIRMATION AVANT DE LANCER UN EXAMEN (MODALE)
 // ============================================================
-(function confirmationQuitter() {
-    var liensExamen = document.querySelectorAll('a[href*="examen-module"], a[href*="examen?"]');
+(function confirmationExamen() {
+    var liensExamen = document.querySelectorAll(
+        'a[href*="examen-module"]:not(.btn-repasser), a[href*="examen?"]:not(.btn-repasser)'
+    );
+    var modal = document.getElementById('modalConfirmationExamen');
+    var btnConfirmer = document.getElementById('btnConfirmerExamen');
+    var lienActuel = null;
+
+    if (!modal || !btnConfirmer) return;
 
     liensExamen.forEach(function(lien) {
         lien.addEventListener('click', function(e) {
-            var message = 'Vous allez être redirigé vers l\'examen. Continuer ?';
-            if (!confirm(message)) {
-                e.preventDefault();
+            // Si c'est le bouton Repasser, ne pas afficher la modale
+            if (this.classList.contains('btn-repasser')) {
+                return;
             }
+
+            e.preventDefault();
+            lienActuel = this.href;
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            btnConfirmer.href = lienActuel;
         });
+    });
+
+    // Fermer la modale
+    window.fermerModalConfirmationExamen = function() {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        lienActuel = null;
+    };
+
+    // Fermer avec Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            fermerModalConfirmationExamen();
+        }
+    });
+
+    // Fermer en cliquant sur l'overlay
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            fermerModalConfirmationExamen();
+        }
     });
 })();

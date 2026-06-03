@@ -545,4 +545,4 @@
     var CHAPITRE_ID = <%= chapitre.getId() %>;
 </script>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

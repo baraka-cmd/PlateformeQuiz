@@ -187,14 +187,32 @@ public class ThemeCoursServlet extends HttpServlet {
             niveauData.put("cours", coursAvecProgression);
 
             // ===== 🆕 DÉTERMINER SI LE NIVEAU EST DÉBLOQUÉ =====
+           // ===== DÉTERMINER SI LE NIVEAU EST DÉBLOQUÉ =====
             boolean debloque;
 
             if (NIVEAUX[0].equals(niveauStr)) {
                 // Niveau élémentaire : toujours débloqué (gratuit)
                 debloque = true;
             } else {
-                // Niveaux moyen et avancé : débloqué seulement si premium
-                debloque = estPremium;
+                // Niveaux moyen et avancé : débloqué seulement si premium ET niveau précédent terminé
+                if (!estPremium) {
+                    debloque = false;
+                } else {
+                    // Vérifier que le niveau précédent est terminé
+                    String niveauPrecedent = NIVEAUX[1].equals(niveauStr) ? NIVEAUX[0] : NIVEAUX[1];
+                    List<Cours> coursNiveauPrecedent = coursDAO.listerParThemeEtNiveau(theme, niveauPrecedent);
+                    boolean niveauPrecedentTermine = true;
+
+                    if (coursNiveauPrecedent != null && !coursNiveauPrecedent.isEmpty()) {
+                        for (Cours coursPrec : coursNiveauPrecedent) {
+                            if (!progressionDAO.estCoursTermine(utilisateurId, coursPrec.getId())) {
+                                niveauPrecedentTermine = false;
+                                break;
+                            }
+                        }
+                    }
+                    debloque = niveauPrecedentTermine;
+                }
             }
 
             boolean termine = (nbCours > 0 && nbCoursTermines >= nbCours) && debloque;

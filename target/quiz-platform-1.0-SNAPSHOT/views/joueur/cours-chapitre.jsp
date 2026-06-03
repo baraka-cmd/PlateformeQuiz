@@ -197,4 +197,4 @@
     request.setAttribute("extraScripts", coursChapitreJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

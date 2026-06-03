@@ -36,11 +36,12 @@ public final class PawaPayConfig {
      * Durée de validité : long terme (sandbox)
      */
     public static final String API_TOKEN = 
-        "eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ." +
-        "eyJ0dCI6IkFBVCIsInN1YiI6IjIxOTUwIiwibWF2IjoiMSIsImV4cCI6MjA5NTM0Nzg2MywiaWF0IjoxNzc5NzI" +
-        "4NjYzLCJwbSI6IkRBRixQQUYiLCJqdGkiOiI5OGNhM2NlZi1hMjFlLTQ0MTQtYTZjZi04ZTlhYzk3YzY5MjYifQ." +
-        "z_yAgeH6jADRDor7q2JIuFD2409xrPzuPBez1vnEYLimSWPGuSKfTH3QtjA08cBhPbrnbi61_F00kW_qThxDSg";
+    "eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ." +
+    "eyJ0dCI6IkFBVCIsInN1YiI6IjIxOTUwIiwibWF2IjoiMSIsImV4cCI6MjA5NjEwMDgzMCwiaWF0IjoxNzgwNDgx" +
+    "NjMwLCJwbSI6IkRBRixQQUYiLCJqdGkiOiI0M2M5YjcwMC02ZjM4LTQ1MWItOTNhOC1mN2FlNmJiODNiNTMifQ." +
+    "eGGkuvdOgZLQXy5RBNqp6gRZ1m6Z2s9DO5czUpHh2DOlYT-OqqZGuoOmOJ1nNeXmFT5p3pbTf29pNbzlm5MVAQ";
 
+    
     // ============================================================
     // URLS DE L'API
     // ============================================================
@@ -49,7 +50,7 @@ public final class PawaPayConfig {
     public static final String BASE_URL = "https://api.sandbox.pawapay.io";
     
     /** Endpoint pour créer un paiement */
-    public static final String DEPOSIT_URL = BASE_URL + "/deposits";
+    public static final String DEPOSIT_URL = BASE_URL + "/v2/deposits";
     
     /** Endpoint pour vérifier le statut d'un paiement par son ID */
     public static final String DEPOSIT_STATUS_URL = BASE_URL + "/deposits/"; // + transactionId

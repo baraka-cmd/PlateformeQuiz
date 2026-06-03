@@ -70,6 +70,7 @@
     padding: 0 20px;
 }
 
+/* ===== REMPLACER .hero-bg-image et .hero-overlay ===== */
 .hero-bg-image {
     position: absolute;
     inset: 0;
@@ -77,26 +78,28 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.35;
+    opacity: 1;
     z-index: 0;
 }
 
-/* Fallback si l'image n'existe pas */
 .hero-bg-image::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: 
-        radial-gradient(ellipse at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(118, 75, 162, 0.3) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 80%, rgba(243, 156, 18, 0.15) 0%, transparent 50%);
+    background: linear-gradient(180deg, 
+        rgba(15, 15, 35, 0.65) 0%, 
+        rgba(15, 15, 35, 0.45) 50%, 
+        rgba(15, 15, 35, 0.7) 100%);
     z-index: 1;
 }
 
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10, 10, 26, 0.85) 0%, rgba(10, 10, 26, 0.7) 50%, rgba(10, 10, 26, 0.9) 100%);
+    background: 
+        radial-gradient(ellipse at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(118, 75, 162, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 70%, rgba(243, 156, 18, 0.08) 0%, transparent 50%);
     z-index: 1;
 }
 

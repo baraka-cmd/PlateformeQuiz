@@ -315,10 +315,10 @@
                                 <div class="module-examen-reussi">
                                     <i class="fas fa-trophy"></i>
                                     <span>Module réussi — <%= progression.getPourcentageFormate() %></span>
-                                    <a href="${pageContext.request.contextPath}/joueur/cours/examen-module?coursId=<%= cours.getId() %>&module=<%= numero %>" 
-                                       class="btn-examen-module btn-repasser">
-                                        <i class="fas fa-redo"></i> Repasser
-                                    </a>
+                                    <a href="${pageContext.request.contextPath}/joueur/cours/examen-module?coursId=<%= cours.getId() %>&module=<%= numero %>&repasser=true" 
+                                        class="btn-examen-module btn-repasser">
+                                         <i class="fas fa-redo"></i> Repasser
+                                     </a>
                                 </div>
                             <% } else if (debloque && examen != null) { %>
                                 <a href="${pageContext.request.contextPath}/joueur/cours/examen-module?coursId=<%= cours.getId() %>&module=<%= numero %>" 
@@ -408,6 +408,44 @@
             <i class="fas fa-arrow-left"></i> Retour au niveau <%= cours.getNiveauFormate() %>
         </a>
     </div>
+        
+        
+        
+        
+        <%-- ===== MODALE DE CONFIRMATION EXAMEN ===== --%>
+   <div class="modal-overlay" id="modalConfirmationExamen" style="display: none;">
+       <div class="modal-card modal-confirmation-examen">
+           <div class="modal-icon">
+               <i class="fas fa-clipboard-check"></i>
+           </div>
+           <h3>Lancer l'examen ?</h3>
+           <p>Vous allez etre redirige vers l'examen de ce module.</p>
+
+           <div class="modal-examen-infos">
+               <div class="examen-info-item">
+                   <i class="fas fa-question-circle"></i>
+                   <span><strong>20 questions</strong> a choix multiples</span>
+               </div>
+               <div class="examen-info-item">
+                   <i class="fas fa-flag-checkered"></i>
+                   <span>Score minimum : <strong>75% (15/20)</strong></span>
+               </div>
+               <div class="examen-info-item">
+                   <i class="fas fa-redo"></i>
+                   <span>Vous pourrez <strong>repasser</strong> l'examen si necessaire</span>
+               </div>
+           </div>
+
+           <div class="modal-buttons">
+               <button type="button" class="btn-modal btn-modal-annuler" onclick="fermerModalConfirmationExamen()">
+                   <i class="fas fa-times"></i> Annuler
+               </button>
+               <a href="#" id="btnConfirmerExamen" class="btn-modal btn-modal-confirmer">
+                   <i class="fas fa-play-circle"></i> Lancer l'examen
+               </a>
+           </div>
+       </div>
+   </div>
 
 </div>
 
@@ -435,4 +473,4 @@
     request.setAttribute("extraScripts", coursPlanJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

@@ -1,7 +1,7 @@
 // ============================================================
 // FICHIER : views/assets/js/paiement.js
 // RÔLE    : Script de la page de paiement AmijayQuiz
-//           - Validation du numéro de téléphone en temps réel
+//           - Validation du numero de telephone en temps reel
 //           - Formatage automatique (+243 ou 0)
 //           - Gestion du formulaire de paiement
 //           - Animation du bouton pendant le traitement
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initTelephoneInput();
     initPrixCards();
     initFaqToggle();
-    console.log('✅ Paiement - Page initialisée');
+    console.log('Paiement - Page initialisee');
 });
 
 // ============================================================
@@ -41,21 +41,19 @@ function initPaiementForm() {
     if (!form) return;
 
     form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Empêcher le double-clic
-        var btnPayer = document.getElementById('btnPayer');
-        if (btnPayer && btnPayer.disabled) return;
-
-        // Valider le téléphone
+        // Valider le telephone
         var telephoneInput = document.getElementById('telephone');
         var telephone = telephoneInput ? telephoneInput.value.trim() : '';
         var telephoneError = document.getElementById('telephoneError');
 
+        // Si telephone invalide, bloquer la soumission
         if (!validerTelephone(telephone)) {
+            e.preventDefault();
             if (telephoneError) {
                 telephoneError.textContent = 'Format invalide. Exemple : +243984270438 ou 0984270438';
                 telephoneError.style.display = 'block';
+            }
+            if (telephoneInput) {
                 telephoneInput.focus();
                 telephoneInput.classList.add('input-error');
                 telephoneInput.style.borderColor = '#e74c3c';
@@ -64,19 +62,22 @@ function initPaiementForm() {
             return false;
         }
 
-        // Normaliser le téléphone
+        // Telephone valide : normaliser
         telephone = normaliserTelephone(telephone);
-        telephoneInput.value = telephone;
+        if (telephoneInput) {
+            telephoneInput.value = telephone;
+            telephoneInput.classList.remove('input-error');
+            telephoneInput.classList.add('input-valid');
+            telephoneInput.style.borderColor = '#27ae60';
+            telephoneInput.style.animation = '';
+        }
 
-        // Masquer l'erreur
         if (telephoneError) {
             telephoneError.style.display = 'none';
         }
-        telephoneInput.classList.remove('input-error');
-        telephoneInput.style.borderColor = '#e8eaef';
-        telephoneInput.style.animation = '';
 
-        // Désactiver le bouton et afficher le loader
+        // Desactiver le bouton et afficher le loader
+        var btnPayer = document.getElementById('btnPayer');
         if (btnPayer) {
             btnPayer.disabled = true;
             var btnText = btnPayer.querySelector('span');
@@ -84,38 +85,28 @@ function initPaiementForm() {
 
             if (btnText) btnText.textContent = 'Paiement en cours...';
             if (btnLoader) btnLoader.style.display = 'inline-block';
-
             btnPayer.style.opacity = '0.8';
             btnPayer.style.cursor = 'wait';
         }
 
-        // Afficher un toast
-        if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-            AmijayQuiz.toast('Initialisation du paiement...', 'info', 3000);
-        }
-
-        // Soumettre le formulaire après un court délai (feedback visuel)
-        setTimeout(function() {
-            form.submit();
-        }, 800);
-
+        // Laisser le formulaire se soumettre normalement
+        // Ne pas appeler e.preventDefault() ici
         return true;
     });
 }
 
 // ============================================================
-// INITIALISATION DU CHAMP TÉLÉPHONE
+// INITIALISATION DU CHAMP TELEPHONE
 // ============================================================
 function initTelephoneInput() {
     var telephoneInput = document.getElementById('telephone');
     if (!telephoneInput) return;
 
     // Formatage automatique pendant la saisie
-    telephoneInput.addEventListener('input', function(e) {
+    telephoneInput.addEventListener('input', function() {
         var valeur = this.value;
-        var positionCurseur = this.selectionStart;
 
-        // Supprimer les caractères non autorisés
+        // Supprimer les caracteres non autorises
         var nettoye = valeur.replace(PaiementConfig.regexChiffres, '');
 
         // Limiter la longueur
@@ -123,14 +114,9 @@ function initTelephoneInput() {
             nettoye = nettoye.substring(0, PaiementConfig.longueurMax);
         }
 
-        // Si l'utilisateur tape "0" au début, suggérer +243
-        if (nettoye.length === 1 && nettoye === '0') {
-            // Laisser l'utilisateur taper 0, c'est valide
-        }
-
         this.value = nettoye;
 
-        // Valider en temps réel
+        // Valider en temps reel
         var erreur = document.getElementById('telephoneError');
         var estValide = PaiementConfig.regexTelephone.test(nettoye);
 
@@ -157,7 +143,7 @@ function initTelephoneInput() {
     telephoneInput.addEventListener('blur', function() {
         this.parentElement.style.boxShadow = 'none';
 
-        // Valider à la perte de focus
+        // Valider a la perte de focus
         var valeur = this.value.trim();
         if (valeur.length > 0) {
             var estValide = PaiementConfig.regexTelephone.test(valeur);
@@ -173,43 +159,46 @@ function initTelephoneInput() {
         }
     });
 
-    // Empêcher les caractères non numériques au clavier
+    // Empecher les caracteres non numeriques au clavier
     telephoneInput.addEventListener('keypress', function(e) {
         var char = String.fromCharCode(e.which || e.keyCode);
-        // Autoriser : chiffres, +, backspace, delete, flèches, tab
-        if (!/[0-9+]/.test(char) && 
-            e.keyCode !== 8 && e.keyCode !== 46 && 
+        // Autoriser : chiffres, +, backspace, delete, fleches, tab
+        if (!/[0-9+]/.test(char) &&
+            e.keyCode !== 8 && e.keyCode !== 46 &&
             e.keyCode !== 37 && e.keyCode !== 39 &&
             e.keyCode !== 9) {
             e.preventDefault();
         }
 
-        // Empêcher + après le premier caractère
+        // Empecher + apres le premier caractere
         if (char === '+' && this.value.indexOf('+') !== -1) {
             e.preventDefault();
         }
 
-        // Empêcher + si pas au début
+        // Empecher + si pas au debut
         if (char === '+' && this.selectionStart > 0) {
             e.preventDefault();
         }
     });
 
     // Ajouter le style pour l'animation shake
-    var shakeStyle = document.createElement('style');
-    shakeStyle.textContent = 
-        '@keyframes shake {' +
-        '  0%, 100% { transform: translateX(0); }' +
-        '  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }' +
-        '  20%, 40%, 60%, 80% { transform: translateX(5px); }' +
-        '}' +
-        '.input-valid { border-color: #27ae60 !important; background: #f0fff4 !important; }' +
-        '.input-error { border-color: #e74c3c !important; background: #fff5f5 !important; }';
-    document.head.appendChild(shakeStyle);
+    if (!document.getElementById('paiement-shake-style')) {
+        var shakeStyle = document.createElement('style');
+        shakeStyle.id = 'paiement-shake-style';
+        shakeStyle.textContent =
+            '@keyframes shake {' +
+            '  0%, 100% { transform: translateX(0); }' +
+            '  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }' +
+            '  20%, 40%, 60%, 80% { transform: translateX(5px); }' +
+            '}' +
+            '.input-valid { border-color: #27ae60 !important; background: #f0fff4 !important; }' +
+            '.input-error { border-color: #e74c3c !important; background: #fff5f5 !important; }';
+        document.head.appendChild(shakeStyle);
+    }
 }
 
 // ============================================================
-// VALIDATION TÉLÉPHONE
+// VALIDATION TELEPHONE
 // ============================================================
 function validerTelephone(telephone) {
     if (!telephone || telephone.trim() === '') return false;
@@ -217,9 +206,9 @@ function validerTelephone(telephone) {
 }
 
 /**
- * Normalise un numéro de téléphone au format international
- * @param {string} telephone - Numéro brut
- * @returns {string} Numéro au format +243XXXXXXXXX
+ * Normalise un numero de telephone au format international
+ * @param {string} telephone - Numero brut
+ * @returns {string} Numero au format +243XXXXXXXXX
  */
 function normaliserTelephone(telephone) {
     telephone = telephone.trim();
@@ -239,7 +228,7 @@ function initPrixCards() {
     var prixCards = document.querySelectorAll('.prix-card');
 
     prixCards.forEach(function(card, index) {
-        // Animation d'apparition décalée
+        // Animation d'apparition decalee
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
         card.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -261,7 +250,7 @@ function initPrixCards() {
         });
     });
 
-    // Animation du séparateur "OU"
+    // Animation du separateur "OU"
     var prixOu = document.querySelector('.prix-ou');
     if (prixOu) {
         prixOu.style.opacity = '0';
@@ -307,16 +296,20 @@ function initFaqToggle() {
                 answer.style.maxHeight = '0';
                 answer.style.opacity = '0';
                 answer.style.marginTop = '0';
-                this.querySelector('i') && (this.querySelector('i').style.transform = 'rotate(0deg)');
+                if (this.querySelector('i')) {
+                    this.querySelector('i').style.transform = 'rotate(0deg)';
+                }
             } else {
                 answer.style.maxHeight = answer.scrollHeight + 'px';
                 answer.style.opacity = '1';
                 answer.style.marginTop = '8px';
-                this.querySelector('i') && (this.querySelector('i').style.transform = 'rotate(180deg)');
+                if (this.querySelector('i')) {
+                    this.querySelector('i').style.transform = 'rotate(180deg)';
+                }
             }
         });
 
-        // Styles initiaux pour les réponses
+        // Styles initiaux pour les reponses
         var answer = question.parentElement.querySelector('p');
         if (answer) {
             answer.style.transition = 'all 0.3s ease';
@@ -346,7 +339,7 @@ function initFaqToggle() {
 })();
 
 // ============================================================
-// COMPTEUR DE CARACTÈRES (OPTIONNEL)
+// COMPTEUR DE CARACTERES (OPTIONNEL)
 // ============================================================
 (function initCharCounter() {
     var telephoneInput = document.getElementById('telephone');

@@ -251,4 +251,4 @@
     request.setAttribute("extraScripts", demarrerJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

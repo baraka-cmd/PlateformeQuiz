@@ -2,6 +2,8 @@
 // FICHIER : src/main/java/com/amijayquiz/controllers/ExamenModuleServlet.java
 // RÔLE    : Contrôleur de l'examen d'un module
 //           MODIFIÉ : Bloque examens des modules 2+ si non premium
+//           MODIFIÉ : Autorise le repassage avec parametre ?repasser=true
+//           MODIFIÉ : Suppression des messages d'alerte session
 // ============================================================
 
 package com.amijayquiz.controllers;
@@ -36,11 +38,14 @@ import java.util.List;
  * 
  * 🔒 MODIFIÉ : Module 1 accessible gratuitement.
  *              Modules 2+ nécessitent un compte premium.
+ * 🔄 MODIFIÉ : Autorise le repassage avec le parametre ?repasser=true
+ * 🧹 MODIFIÉ : Suppression des messages d'alerte session pour le repassage
  * 
  * URL : /joueur/cours/examen-module?coursId=1&module=1
+ * URL repassage : /joueur/cours/examen-module?coursId=1&module=1&repasser=true
  * 
  * @author AmijayQuiz
- * @version 1.1
+ * @version 1.3
  */
 @WebServlet(name = "ExamenModuleServlet", urlPatterns = {"/joueur/cours/examen-module"})
 public class ExamenModuleServlet extends HttpServlet {
@@ -72,6 +77,7 @@ public class ExamenModuleServlet extends HttpServlet {
         // 2. Récupération et validation des paramètres
         String coursIdParam = request.getParameter("coursId");
         String moduleParam = request.getParameter("module");
+        String repasserParam = request.getParameter("repasser");
 
         if (coursIdParam == null || coursIdParam.trim().isEmpty() ||
             moduleParam == null || moduleParam.trim().isEmpty()) {
@@ -94,7 +100,10 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // ===== 🆕 3. VÉRIFICATION PREMIUM POUR MODULES 2+ =====
+        // Savoir si l'utilisateur veut repasser l'examen
+        boolean estRepassage = "true".equals(repasserParam);
+
+        // ===== 3. VÉRIFICATION PREMIUM POUR MODULES 2+ =====
         AccessPremiumDAO premiumDAO = new AccessPremiumDAO();
         boolean estPremium = premiumDAO.estPremium(utilisateurId);
 
@@ -148,10 +157,9 @@ public class ExamenModuleServlet extends HttpServlet {
 
         // 9. Vérifier si l'utilisateur a déjà réussi ce module
         ProgressionModule progressionExistante = progressionDAO.getProgression(utilisateurId, coursId, moduleNumero);
-        if (progressionExistante != null && progressionExistante.isReussi()) {
-            session.setAttribute("messageSucces", 
-                "Vous avez déjà réussi le Module " + moduleNumero + " avec un score de " + 
-                progressionExistante.getPourcentageFormate() + " !");
+        
+        // Si le module est déjà réussi ET que ce n'est PAS un repassage, rediriger vers le plan
+        if (progressionExistante != null && progressionExistante.isReussi() && !estRepassage) {
             response.sendRedirect(request.getContextPath() + "/joueur/cours/plan?coursId=" + coursId);
             return;
         }
@@ -166,6 +174,7 @@ public class ExamenModuleServlet extends HttpServlet {
         request.setAttribute("scoreMinimum", examen.getScoreMinimum());
         request.setAttribute("progressionExistante", progressionExistante);
         request.setAttribute("estPremium", estPremium);
+        request.setAttribute("estRepassage", estRepassage);
 
         // 11. Affichage de la page d'examen
         request.getRequestDispatcher("/views/joueur/cours-examen-module.jsp").forward(request, response);
@@ -206,7 +215,7 @@ public class ExamenModuleServlet extends HttpServlet {
             return;
         }
 
-        // ===== 🆕 3. VÉRIFICATION PREMIUM POUR MODULES 2+ (POST aussi) =====
+        // ===== 3. VÉRIFICATION PREMIUM POUR MODULES 2+ (POST aussi) =====
         AccessPremiumDAO premiumDAO = new AccessPremiumDAO();
         boolean estPremium = premiumDAO.estPremium(utilisateurId);
 

@@ -1,8 +1,6 @@
 // ============================================================
 // FICHIER : src/main/java/com/amijayquiz/dao/AccessPremiumDAO.java
-// RÔLE    : Accès aux données de la table "acces_premium"
-//           Gestion du statut premium des utilisateurs
-//           Activation, désactivation, vérification
+// RÔLE    : Correction du nom de colonne transaction_reference
 // ============================================================
 
 package com.amijayquiz.dao;
@@ -33,10 +31,10 @@ public class AccessPremiumDAO {
 
     // ===== CONSTANTES DE REQUÊTES SQL =====
     private static final String INSERT_OU_UPDATE = 
-        "INSERT INTO acces_premium (utilisateur_id, premium_actif, date_activation, reference_paiement, montant_paye, devise) " +
+        "INSERT INTO acces_premium (utilisateur_id, premium_actif, date_activation, transaction_reference, montant_paye, devise) " +
         "VALUES (?, TRUE, NOW(), ?, ?, ?) " +
         "ON DUPLICATE KEY UPDATE premium_actif = TRUE, date_activation = NOW(), " +
-        "reference_paiement = VALUES(reference_paiement), montant_paye = VALUES(montant_paye), " +
+        "transaction_reference = VALUES(transaction_reference), montant_paye = VALUES(montant_paye), " +
         "devise = VALUES(devise), updated_at = NOW()";
 
     private static final String SELECT_PAR_UTILISATEUR = 
@@ -233,7 +231,7 @@ public class AccessPremiumDAO {
                 infos.put("dateActivation", resultSet.getTimestamp("date_activation"));
                 infos.put("montantPaye", resultSet.getDouble("montant_paye"));
                 infos.put("devise", resultSet.getString("devise"));
-                infos.put("referencePaiement", resultSet.getString("reference_paiement"));
+                infos.put("referencePaiement", resultSet.getString("transaction_reference"));
                 return infos;
             }
 

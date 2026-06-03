@@ -45,14 +45,10 @@
     <meta name="theme-color" content="#667eea">
 
     <%-- Font Awesome 6 --%>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
-          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/fontawesome/fontawesome-free-7.2.0-web/css/all.min.css">
     
     <%-- Google Fonts : Poppins --%>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/fonts.css">
     
     <%-- Styles globaux --%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/style.css">
@@ -105,6 +101,7 @@
             
         <%-- ============================================================
              MENU ADMINISTRATEUR
+             Dashboard | Paiements | Questions | Quiz | Résultats | Admin
              ============================================================ --%>
         <% } else if ("admin".equals(role)) { %>
             
@@ -113,6 +110,13 @@
                    class="<%= uri.contains("/admin/dashboard") ? "active" : "" %>">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="${pageContext.request.contextPath}/admin/paiements"
+                   class="<%= uri.contains("/admin/paiements") ? "active" : "" %>">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Paiements</span>
                 </a>
             </li>
             <li>
@@ -133,11 +137,11 @@
                 <a href="${pageContext.request.contextPath}/admin/resultats"
                    class="<%= uri.contains("/admin/resultats") ? "active" : "" %>">
                     <i class="fas fa-chart-bar"></i>
-                    <span>Résultats</span>
+                    <span>Resultats</span>
                 </a>
             </li>
             
-            <%-- Menu admin --%>
+            <%-- Menu utilisateur admin --%>
             <li class="user-menu-container">
                 <button class="user-menu-trigger" id="userMenuTrigger" aria-expanded="false" aria-haspopup="true" title="Menu utilisateur">
                     <span class="user-avatar-mini">
@@ -147,7 +151,7 @@
                     <i class="fas fa-shield-haltered admin-badge" title="Administrateur"></i>
                     <i class="fas fa-chevron-down menu-arrow"></i>
                 </button>
-                <div class="user-menu-dropdown" id="userMenuDropdown" role="menu">
+                <div class="user-menu-dropdown" id="userMenuDropdown" role="menu" aria-label="Menu utilisateur">
                     <div class="user-menu-header">
                         <div class="user-menu-avatar">
                             <i class="fas fa-user-circle"></i>
@@ -158,6 +162,10 @@
                         </div>
                     </div>
                     <div class="user-menu-divider"></div>
+                    <a href="${pageContext.request.contextPath}/admin/dashboard" class="user-menu-item" role="menuitem">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard Admin</span>
+                    </a>
                     <a href="${pageContext.request.contextPath}/changer-mot-de-passe" class="user-menu-item" role="menuitem">
                         <i class="fas fa-key"></i>
                         <span>Changer mon mot de passe</span>
@@ -165,7 +173,7 @@
                     <div class="user-menu-divider"></div>
                     <a href="${pageContext.request.contextPath}/deconnexion" class="user-menu-item user-menu-danger" role="menuitem">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>Déconnexion</span>
+                        <span>Deconnexion</span>
                     </a>
                 </div>
             </li>
@@ -198,7 +206,7 @@
                 </a>
             </li>
             
-            <%-- 🆕 BOUTON PREMIUM DANS LA NAVBAR --%>
+            <%-- BOUTON PREMIUM DANS LA NAVBAR --%>
             <% if (!estPremiumHeader) { %>
                 <li>
                     <a href="${pageContext.request.contextPath}/paiement" class="nav-premium-btn">
@@ -215,7 +223,7 @@
                         <i class="fas fa-user-circle"></i>
                     </span>
                     <span class="user-name"><%= utilisateurConnecte.getPseudo() %></span>
-                    <%-- 🆕 COURONNE PREMIUM --%>
+                    <%-- COURONNE PREMIUM --%>
                     <% if (estPremiumHeader) { %>
                         <i class="fas fa-crown premium-crown-icon" title="Premium actif"></i>
                     <% } %>
@@ -242,7 +250,7 @@
                     </div>
                     <div class="user-menu-divider"></div>
                     
-                    <%-- 🆕 LIEN PREMIUM SI NON PREMIUM --%>
+                    <%-- LIEN PREMIUM SI NON PREMIUM --%>
                     <% if (!estPremiumHeader) { %>
                         <a href="${pageContext.request.contextPath}/paiement" class="user-menu-item user-menu-premium" role="menuitem">
                             <i class="fas fa-crown"></i>
@@ -258,7 +266,7 @@
                     <div class="user-menu-divider"></div>
                     <a href="${pageContext.request.contextPath}/deconnexion" class="user-menu-item user-menu-danger" role="menuitem">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>Déconnexion</span>
+                        <span>Deconnexion</span>
                     </a>
                 </div>
             </li>

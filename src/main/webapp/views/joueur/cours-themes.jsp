@@ -231,4 +231,4 @@
     request.setAttribute("extraScripts", coursThemesJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

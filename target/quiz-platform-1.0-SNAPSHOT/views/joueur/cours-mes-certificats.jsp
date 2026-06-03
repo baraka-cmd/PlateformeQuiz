@@ -205,4 +205,4 @@
     request.setAttribute("extraScripts", mesCertificatsJS);
 %>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer-connecte.jsp" %>

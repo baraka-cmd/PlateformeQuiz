@@ -4,6 +4,7 @@
 //           Affiche la liste des cours disponibles pour un
 //           thème et un niveau donnés (élémentaire, moyen, avancé)
 //           MODIFIÉ : Vérification premium pour niveaux moyen/avancé
+//           MODIFIÉ : Vérification progression niveau précédent
 // ============================================================
 
 package com.amijayquiz.controllers;
@@ -36,11 +37,12 @@ import java.util.Map;
  * avec sa progression et un bouton pour voir son plan détaillé.
  * 
  * 🔒 MODIFIÉ : Bloque l'accès aux niveaux moyen/avancé si non premium.
+ * 🔒 MODIFIÉ : Vérifie que le niveau précédent est terminé avant d'accéder.
  * 
  * URL : /joueur/cours/niveau?theme=Développement+Web&niveau=elementaire
  * 
  * @author AmijayQuiz
- * @version 1.1
+ * @version 1.2
  */
 @WebServlet(name = "NiveauCoursServlet", urlPatterns = {"/joueur/cours/niveau"})
 public class NiveauCoursServlet extends HttpServlet {
@@ -90,15 +92,15 @@ public class NiveauCoursServlet extends HttpServlet {
             return;
         }
 
-        // ===== 🆕 4. VÉRIFICATION PREMIUM POUR NIVEAUX MOYEN/AVANCÉ =====
+        // ===== 4. VÉRIFICATION PREMIUM POUR NIVEAUX MOYEN/AVANCÉ =====
         AccessPremiumDAO premiumDAO = new AccessPremiumDAO();
         boolean estPremium = premiumDAO.estPremium(utilisateurId);
 
         // Si niveau non élémentaire et utilisateur non premium → rediriger vers paiement
         if (!NIVEAU_ELEMENTAIRE.equals(niveau) && !estPremium) {
             session.setAttribute("messageErreur",
-                "🔒 Le niveau <strong>" + getNomFormateNiveau(niveau) + "</strong> nécessite un compte Premium. " +
-                "Débloquez tous les niveaux pour seulement 4$ !");
+                "Le niveau " + getNomFormateNiveau(niveau) + " necessite un compte Premium. " +
+                "Debloquez tous les niveaux pour seulement 4$ !");
             session.setAttribute("urlRedirectionApresPaiement", 
                 request.getContextPath() + "/joueur/cours/niveau?theme=" + 
                 java.net.URLEncoder.encode(theme, "UTF-8") + "&niveau=" + niveau);
@@ -106,21 +108,32 @@ public class NiveauCoursServlet extends HttpServlet {
             return;
         }
 
-        // 5. Vérifier que le niveau est débloqué (progression quiz)
-        // Le niveau élémentaire est toujours débloqué
-        // Pour les autres, vérifier via ProgressionJoueurDAO
+        // ===== 5. VÉRIFIER QUE LE NIVEAU PRÉCÉDENT EST TERMINÉ =====
         if (!NIVEAU_ELEMENTAIRE.equals(niveau)) {
-            com.amijayquiz.dao.ProgressionJoueurDAO progressionQuizDAO = 
-                new com.amijayquiz.dao.ProgressionJoueurDAO();
-            
-            boolean debloque = progressionQuizDAO.estNiveauDebloque(utilisateurId, theme, niveau);
-            
-            if (!debloque) {
-                session.setAttribute("messageErreur", 
-                    "Ce niveau n'est pas encore débloqué. Terminez d'abord le niveau précédent.");
-                response.sendRedirect(request.getContextPath() + 
-                    "/joueur/cours/theme?theme=" + java.net.URLEncoder.encode(theme, "UTF-8"));
-                return;
+            CoursDAO coursDAOVerif = new CoursDAO();
+            ProgressionCoursDAO progressionDAOVerif = new ProgressionCoursDAO();
+
+            String niveauPrecedent = NIVEAU_AVANCE.equals(niveau) ? NIVEAU_MOYEN : NIVEAU_ELEMENTAIRE;
+
+            List<Cours> coursNiveauPrecedent = coursDAOVerif.listerParThemeEtNiveau(theme, niveauPrecedent);
+            boolean niveauPrecedentTermine = true;
+
+            if (coursNiveauPrecedent != null && !coursNiveauPrecedent.isEmpty()) {
+                for (Cours coursPrec : coursNiveauPrecedent) {
+                    if (!progressionDAOVerif.estCoursTermine(utilisateurId, coursPrec.getId())) {
+                        niveauPrecedentTermine = false;
+                        break;
+                    }
+                }
+
+                if (!niveauPrecedentTermine) {
+                    session.setAttribute("messageErreur",
+                        "Vous devez terminer le niveau " + getNomFormateNiveau(niveauPrecedent) +
+                        " avant d'acceder au niveau " + getNomFormateNiveau(niveau) + ".");
+                    response.sendRedirect(request.getContextPath() +
+                        "/joueur/cours/theme?theme=" + java.net.URLEncoder.encode(theme, "UTF-8"));
+                    return;
+                }
             }
         }
 
@@ -198,7 +211,7 @@ public class NiveauCoursServlet extends HttpServlet {
             String iconeStatutCours;
             String couleurStatutCours;
             if (estTermine) {
-                statutCours = "Terminé";
+                statutCours = "Termine";
                 iconeStatutCours = "fas fa-check-circle";
                 couleurStatutCours = "#27ae60";
             } else if (pourcentage > 0) {
@@ -206,7 +219,7 @@ public class NiveauCoursServlet extends HttpServlet {
                 iconeStatutCours = "fas fa-spinner";
                 couleurStatutCours = "#667eea";
             } else {
-                statutCours = "À commencer";
+                statutCours = "A commencer";
                 iconeStatutCours = "fas fa-play-circle";
                 couleurStatutCours = "#f39c12";
             }
@@ -245,7 +258,7 @@ public class NiveauCoursServlet extends HttpServlet {
         request.setAttribute("pourcentageNiveau", pourcentageNiveau);
         request.setAttribute("niveauTermine", niveauTermine);
 
-        // ===== 🆕 ATTRIBUTS PREMIUM =====
+        // ===== ATTRIBUTS PREMIUM =====
         request.setAttribute("estPremium", estPremium);
 
         // 13. Affichage de la page
@@ -258,11 +271,11 @@ public class NiveauCoursServlet extends HttpServlet {
     private String[] getInfosNiveau(String niveau) {
         switch (niveau) {
             case NIVEAU_ELEMENTAIRE:
-                return new String[]{"Élémentaire", "fas fa-seedling", "#27ae60"};
+                return new String[]{"Elementaire", "fas fa-seedling", "#27ae60"};
             case NIVEAU_MOYEN:
                 return new String[]{"Moyen", "fas fa-fire", "#f39c12"};
             case NIVEAU_AVANCE:
-                return new String[]{"Avancé", "fas fa-star", "#e74c3c"};
+                return new String[]{"Avance", "fas fa-star", "#e74c3c"};
             default:
                 return new String[]{"Niveau", "fas fa-circle", "#888888"};
         }
@@ -273,9 +286,9 @@ public class NiveauCoursServlet extends HttpServlet {
      */
     private String getNomFormateNiveau(String niveau) {
         switch (niveau) {
-            case NIVEAU_ELEMENTAIRE: return "Élémentaire";
+            case NIVEAU_ELEMENTAIRE: return "Elementaire";
             case NIVEAU_MOYEN:       return "Moyen";
-            case NIVEAU_AVANCE:      return "Avancé";
+            case NIVEAU_AVANCE:      return "Avance";
             default:                 return niveau;
         }
     }

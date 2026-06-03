@@ -5,16 +5,20 @@ com\amijayquiz\controllers\CertificatServlet.class
 com\amijayquiz\utils\TestConnexion.class
 com\amijayquiz\models\Partie.class
 com\amijayquiz\dao\QuizDAO.class
+com\amijayquiz\controllers\AdminQuestionsServlet.class
 com\amijayquiz\dao\AccessPremiumDAO.class
+com\amijayquiz\controllers\AdminDashboardServlet.class
 com\amijayquiz\dao\UtilisateurDAO.class
 com\amijayquiz\models\ProgressionCours.class
 com\amijayquiz\utils\ConnexionDB.class
 com\amijayquiz\models\Chapitre.class
 com\amijayquiz\models\QuestionExamen.class
+com\amijayquiz\controllers\PaiementAttenteServlet.class
 com\amijayquiz\controllers\ConnexionServlet.class
 com\amijayquiz\models\ProgressionModule.class
 com\amijayquiz\models\Paiement.class
 com\amijayquiz\utils\SecuriteUtil.class
+com\amijayquiz\controllers\PaiementSuccesServlet.class
 com\amijayquiz\filters\AccesPayantFilter.class
 com\amijayquiz\controllers\ValiderLeconServlet.class
 com\amijayquiz\utils\EmailUtil.class
@@ -26,6 +30,8 @@ com\amijayquiz\dao\QuizQuestionDAO.class
 com\amijayquiz\dao\ExamenModuleDAO.class
 com\amijayquiz\controllers\ChangerMotDePasseServlet.class
 com\amijayquiz\controllers\NiveauCoursServlet.class
+com\amijayquiz\controllers\PaiementManuelServlet.class
+com\amijayquiz\controllers\PaiementsAdminServlet.class
 com\amijayquiz\dao\QuestionDAO.class
 com\amijayquiz\controllers\CorrectionServlet.class
 com\amijayquiz\controllers\HistoriqueServlet.class
@@ -40,9 +46,11 @@ com\amijayquiz\dao\CoursDAO.class
 com\amijayquiz\controllers\NiveauServlet.class
 com\amijayquiz\dao\ProgressionJoueurDAO.class
 com\amijayquiz\utils\ReferenceGenerator.class
+com\amijayquiz\controllers\StatutPaiementServlet.class
 com\amijayquiz\models\ExamenModule.class
 com\amijayquiz\dao\ProgressionCoursDAO.class
 com\amijayquiz\dao\RessourceDAO.class
+com\amijayquiz\dao\PaiementManuelDAO.class
 com\amijayquiz\controllers\DeconnexionServlet.class
 com\amijayquiz\dao\PaiementDAO.class
 com\amijayquiz\utils\EmailUtil$1.class
@@ -54,6 +62,7 @@ com\amijayquiz\controllers\DashboardJoueurServlet.class
 com\amijayquiz\controllers\ThemeCoursServlet.class
 com\amijayquiz\controllers\InscriptionServlet.class
 com\amijayquiz\controllers\ChapitreCoursServlet.class
+com\amijayquiz\controllers\AdminQuizServlet.class
 com\amijayquiz\dao\ChapitreDAO.class
 com\amijayquiz\config\PawaPayConfig.class
 com\amijayquiz\controllers\ThemeServlet.class
@@ -69,3 +78,4 @@ com\amijayquiz\controllers\GoogleLoginServlet.class
 com\amijayquiz\dao\PartieDAO.class
 com\amijayquiz\controllers\ExamenCoursServlet.class
 com\amijayquiz\models\Question.class
+com\amijayquiz\controllers\PaiementEchecServlet.class

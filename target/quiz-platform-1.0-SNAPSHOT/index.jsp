@@ -617,4 +617,4 @@
     </div>
 </section>
 
-<%@ include file="views/footer.jsp" %>
+<%@ include file="views/footer-index.jsp" %>
