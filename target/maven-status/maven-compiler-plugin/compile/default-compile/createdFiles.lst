@@ -2,11 +2,12 @@ com\amijayquiz\models\Utilisateur.class
 com\amijayquiz\controllers\AdminQuizModifierPageServlet.class
 com\amijayquiz\controllers\GoogleCallbackServlet.class
 com\amijayquiz\filters\AutoLoginFilter.class
+com\amijayquiz\controllers\AdminResultatsQuizServlet.class
 com\amijayquiz\controllers\CertificatServlet.class
 com\amijayquiz\utils\TestConnexion.class
 com\amijayquiz\models\Partie.class
 com\amijayquiz\dao\QuizDAO.class
-com\amijayquiz\controllers\AdminQuestionsServlet.class
+com\amijayquiz\controllers\AdminResultatsServlet.class
 com\amijayquiz\dao\AccessPremiumDAO.class
 com\amijayquiz\controllers\AdminDashboardServlet.class
 com\amijayquiz\dao\UtilisateurDAO.class
@@ -64,6 +65,7 @@ com\amijayquiz\controllers\AdminQuizSupprimerServlet.class
 com\amijayquiz\utils\PawaPayUtil.class
 com\amijayquiz\models\Ressource.class
 com\amijayquiz\dao\LeconDAO.class
+com\amijayquiz\controllers\AdminResultatsJoueurServlet.class
 com\amijayquiz\controllers\DashboardJoueurServlet.class
 com\amijayquiz\controllers\ThemeCoursServlet.class
 com\amijayquiz\controllers\InscriptionServlet.class
