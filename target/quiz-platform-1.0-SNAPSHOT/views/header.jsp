@@ -2,22 +2,23 @@
 <%@ page import="com.amijayquiz.models.Utilisateur" %>
 
 <%-- ============================================================
-     Fichier : header.jsp
-     Rôle    : En-tête commun à toutes les pages de la plateforme
+     FICHIER : views/header.jsp
+     RÔLE    : En-tête commun à toutes les pages de la plateforme
               - Déclare le DOCTYPE, <head>, Google Fonts, Font Awesome
               - Charge les feuilles de style globales
               - Affiche la barre de navigation adaptative
               - Badge Premium dans la navbar et le menu déroulant
               - Ouvre le conteneur principal
+              - Menu admin complet : Dashboard | Cours | Quiz | Questions | Thèmes | Certificats | Résultats | Paiements
      ============================================================ --%>
 
 <%
     Utilisateur utilisateurConnecte = null;
-    String role = null;
+    String roleHeader = null;
     
     if (session != null && session.getAttribute("utilisateur") != null) {
         utilisateurConnecte = (Utilisateur) session.getAttribute("utilisateur");
-        role = utilisateurConnecte.getRole();
+        roleHeader = utilisateurConnecte.getRole();
     }
 
     String uri = request.getRequestURI();
@@ -25,7 +26,7 @@
 
     // Vérification premium pour le header
     boolean estPremiumHeader = false;
-    if (utilisateurConnecte != null && "joueur".equals(role)) {
+    if (utilisateurConnecte != null && "joueur".equals(roleHeader)) {
         com.amijayquiz.dao.AccessPremiumDAO premiumDAOH = new com.amijayquiz.dao.AccessPremiumDAO();
         estPremiumHeader = premiumDAOH.estPremium(utilisateurConnecte.getId());
     }
@@ -101,9 +102,9 @@
             
         <%-- ============================================================
              MENU ADMINISTRATEUR
-             Dashboard | Paiements | Questions | Quiz | Résultats | Admin
+             Dashboard | Cours | Quiz | Questions | Thèmes | Certificats | Résultats | Paiements | Admin
              ============================================================ --%>
-        <% } else if ("admin".equals(role)) { %>
+        <% } else if ("admin".equals(roleHeader)) { %>
             
             <li>
                 <a href="${pageContext.request.contextPath}/admin/dashboard"
@@ -112,26 +113,52 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+            
+            <li>
+                <a href="${pageContext.request.contextPath}/admin/cours"
+                   class="<%= uri.contains("/admin/cours") || uri.contains("/admin/certificats") ? "active" : "" %>">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Cours</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="${pageContext.request.contextPath}/admin/quiz"
+                   class="<%= uri.contains("/admin/quiz") && !uri.contains("/admin/questions") ? "active" : "" %>">
+                    <i class="fas fa-list-check"></i>
+                    <span>Quiz</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="${pageContext.request.contextPath}/admin/utilisateurs"
+                   class="<%= uri.contains("/admin/utilisateurs") ? "active" : "" %>">
+                    <i class="fas fa-users"></i>
+                    <span>Utilisateurs</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="${pageContext.request.contextPath}/admin/themes"
+                   class="<%= uri.contains("/admin/themes") ? "active" : "" %>">
+                    <i class="fas fa-tags"></i>
+                    <span>Thèmes</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="${pageContext.request.contextPath}/admin/resultats"
+                   class="<%= uri.contains("/admin/resultats") ? "active" : "" %>">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Résultats</span>
+                </a>
+            </li>
+            
             <li>
                 <a href="${pageContext.request.contextPath}/admin/paiements"
                    class="<%= uri.contains("/admin/paiements") ? "active" : "" %>">
                     <i class="fas fa-money-bill-wave"></i>
                     <span>Paiements</span>
-                </a>
-            </li>
-        
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/quiz"
-                   class="<%= uri.contains("/admin/quiz") ? "active" : "" %>">
-                    <i class="fas fa-list-check"></i>
-                    <span>Quiz</span>
-                </a>
-            </li>
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/resultats"
-                   class="<%= uri.contains("/admin/resultats") ? "active" : "" %>">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Resultats</span>
                 </a>
             </li>
             
@@ -142,7 +169,7 @@
                         <i class="fas fa-user-circle"></i>
                     </span>
                     <span class="user-name"><%= utilisateurConnecte.getPseudo() %></span>
-                    <i class="fas fa-shield-haltered admin-badge" title="Administrateur"></i>
+                    <i class="fas fa-shield-alt admin-badge" title="Administrateur"></i>
                     <i class="fas fa-chevron-down menu-arrow"></i>
                 </button>
                 <div class="user-menu-dropdown" id="userMenuDropdown" role="menu" aria-label="Menu utilisateur">
@@ -152,13 +179,27 @@
                         </div>
                         <div class="user-menu-info">
                             <strong><%= utilisateurConnecte.getPseudo() %></strong>
-                            <span>Administrateur</span>
+                            <span class="menu-admin-badge">
+                                <i class="fas fa-shield-alt"></i> Administrateur
+                            </span>
                         </div>
                     </div>
                     <div class="user-menu-divider"></div>
                     <a href="${pageContext.request.contextPath}/admin/dashboard" class="user-menu-item" role="menuitem">
                         <i class="fas fa-tachometer-alt"></i>
-                        <span>Dashboard Admin</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/admin/cours" class="user-menu-item" role="menuitem">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Gérer les cours</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/admin/certificats" class="user-menu-item" role="menuitem">
+                        <i class="fas fa-certificate"></i>
+                        <span>Certificats</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/admin/themes" class="user-menu-item" role="menuitem">
+                        <i class="fas fa-tags"></i>
+                        <span>Thèmes</span>
                     </a>
                     <a href="${pageContext.request.contextPath}/changer-mot-de-passe" class="user-menu-item" role="menuitem">
                         <i class="fas fa-key"></i>
@@ -167,7 +208,7 @@
                     <div class="user-menu-divider"></div>
                     <a href="${pageContext.request.contextPath}/deconnexion" class="user-menu-item user-menu-danger" role="menuitem">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>Deconnexion</span>
+                        <span>Déconnexion</span>
                     </a>
                 </div>
             </li>
@@ -253,6 +294,18 @@
                         <div class="user-menu-divider"></div>
                     <% } %>
                     
+                    <a href="${pageContext.request.contextPath}/joueur/dashboard" class="user-menu-item" role="menuitem">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Mon Dashboard</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/joueur/cours" class="user-menu-item" role="menuitem">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Mes Cours</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/joueur/historique" class="user-menu-item" role="menuitem">
+                        <i class="fas fa-history"></i>
+                        <span>Mon Historique</span>
+                    </a>
                     <a href="${pageContext.request.contextPath}/changer-mot-de-passe" class="user-menu-item" role="menuitem">
                         <i class="fas fa-key"></i>
                         <span>Changer mon mot de passe</span>
@@ -260,7 +313,7 @@
                     <div class="user-menu-divider"></div>
                     <a href="${pageContext.request.contextPath}/deconnexion" class="user-menu-item user-menu-danger" role="menuitem">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>Deconnexion</span>
+                        <span>Déconnexion</span>
                     </a>
                 </div>
             </li>

@@ -76,7 +76,7 @@
                     <i class="fas fa-sign-in-alt"></i>
                     <span>J'ai deja un compte</span>
                 </a>
-            <% } else if ("admin".equals(role)) { %>
+            <% } else if ("admin".equals(roleHeader)) { %>
                 <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn-hero btn-hero-primary">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard Administration</span>
@@ -93,7 +93,7 @@
             <% } %>
         </div>
 
-        <% if (utilisateurConnecte != null && "joueur".equals(role)) { %>
+        <% if (utilisateurConnecte != null && "joueur".equals(roleHeader)) { %>
             <div class="hero-welcome">
                 <div class="welcome-avatar-sm">
                     <i class="fas fa-user"></i>
@@ -241,7 +241,7 @@
             <div class="step-icon"><i class="fas fa-layer-group"></i></div>
             <h3>Choisissez votre mode</h3>
             <p><strong>Quiz</strong> pour tester vos connaissances ou <strong>Cours</strong> pour apprendre en profondeur avec des lecons detaillees.</p>
-            <% if (utilisateurConnecte != null && "joueur".equals(role)) { %>
+            <% if (utilisateurConnecte != null && "joueur".equals(roleHeader)) { %>
                 <a href="${pageContext.request.contextPath}/joueur/dashboard" class="step-link">Voir les quiz <i class="fas fa-arrow-right"></i></a>
             <% } %>
         </div>
@@ -251,7 +251,7 @@
             <div class="step-icon"><i class="fas fa-certificate"></i></div>
             <h3>Progressez et certifiez</h3>
             <p>Debloquez des niveaux, reussissez des examens et obtenez des <strong>certificats verifiables</strong> a vie.</p>
-            <% if (utilisateurConnecte != null && "joueur".equals(role)) { %>
+            <% if (utilisateurConnecte != null && "joueur".equals(roleHeader)) { %>
                 <a href="${pageContext.request.contextPath}/joueur/cours" class="step-link">Voir les cours <i class="fas fa-arrow-right"></i></a>
             <% } %>
         </div>
@@ -416,7 +416,7 @@
         </div>
     </div>
 
-    <% if (utilisateurConnecte != null && "joueur".equals(role)) { %>
+    <% if (utilisateurConnecte != null && "joueur".equals(roleHeader)) { %>
         <div class="themes-cta">
             <a href="${pageContext.request.contextPath}/joueur/cours" class="btn-hero btn-hero-primary">
                 <i class="fas fa-graduation-cap"></i>
@@ -602,7 +602,7 @@
                 </a>
                 <p class="cta-note"><i class="fas fa-lock"></i> Inscription rapide et securisee. Aucun paiement requis pour commencer.</p>
             </div>
-        <% } else if ("joueur".equals(role)) { %>
+        <% } else if ("joueur".equals(roleHeader)) { %>
             <div class="cta-buttons">
                 <a href="${pageContext.request.contextPath}/joueur/dashboard" class="btn-hero btn-hero-primary">
                     <i class="fas fa-play"></i>

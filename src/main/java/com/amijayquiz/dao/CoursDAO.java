@@ -604,6 +604,53 @@ public class CoursDAO {
         cours.setDateMaj(resultSet.getTimestamp("date_maj"));
         return cours;
     }
+    
+    
+    /**
+ * Compte le nombre d'apprenants distincts pour un cours
+ */
+public int compterApprenants(int coursId) {
+    Connection connexion = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    try {
+        connexion = ConnexionDB.getConnexion();
+        if (connexion == null) return 0;
+        ps = connexion.prepareStatement(
+            "SELECT COUNT(DISTINCT utilisateur_id) FROM progression_cours WHERE cours_id = ?");
+        ps.setInt(1, coursId);
+        rs = ps.executeQuery();
+        if (rs.next()) return rs.getInt(1);
+    } catch (SQLException e) {
+        System.err.println("❌ Erreur compterApprenants : " + e.getMessage());
+    } finally {
+        // fermer les ressources
+    }
+    return 0;
+}
+
+/**
+ * Compte le nombre de certificats délivrés pour un cours
+ */
+public int compterCertificats(int coursId) {
+    Connection connexion = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    try {
+        connexion = ConnexionDB.getConnexion();
+        if (connexion == null) return 0;
+        ps = connexion.prepareStatement(
+            "SELECT COUNT(*) FROM certificats WHERE cours_id = ? AND est_valide = TRUE");
+        ps.setInt(1, coursId);
+        rs = ps.executeQuery();
+        if (rs.next()) return rs.getInt(1);
+    } catch (SQLException e) {
+        System.err.println("❌ Erreur compterCertificats : " + e.getMessage());
+    } finally {
+        // fermer les ressources
+    }
+    return 0;
+}
 
     /**
      * Ferme les ressources JDBC

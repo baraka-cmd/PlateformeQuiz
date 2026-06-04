@@ -1,0 +1,558 @@
+/* ============================================================
+   FICHIER : views/assets/css/admin-cours-creer.css
+   RÔLE    : Styles du formulaire création/modification cours
+             - Layout 2 colonnes (formulaire + sidebar)
+             - Aperçu en temps réel
+             - Guide de bonnes pratiques
+             - Hiérarchie visuelle
+             - Validation et messages d'erreur
+             - Responsive design complet
+   ============================================================ */
+
+/* ==========================================================
+   1. VARIABLES CSS
+   ========================================================== */
+:root {
+    --acc-primary: #667eea;
+    --acc-primary-dark: #5a6fd6;
+    --acc-primary-light: #eef0ff;
+    --acc-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --acc-success: #27ae60;
+    --acc-success-light: #e8f5e9;
+    --acc-warning: #f39c12;
+    --acc-warning-light: #fff8e1;
+    --acc-danger: #e74c3c;
+    --acc-danger-light: #fdecea;
+    --acc-white: #ffffff;
+    --acc-bg: #f5f6fa;
+    --acc-bg-light: #fafbfe;
+    --acc-bg-hover: #f0f1f7;
+    --acc-text: #1a1a2e;
+    --acc-text-light: #555555;
+    --acc-text-muted: #8b8fa3;
+    --acc-text-placeholder: #b0b3c0;
+    --acc-border: #e8eaef;
+    --acc-border-light: #f0f1f5;
+    --acc-border-focus: #667eea;
+    --acc-radius-xs: 6px;
+    --acc-radius-sm: 10px;
+    --acc-radius: 14px;
+    --acc-radius-lg: 18px;
+    --acc-radius-xl: 22px;
+    --acc-radius-full: 50%;
+    --acc-shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.04);
+    --acc-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --acc-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --acc-shadow-lg: 0 10px 35px rgba(0, 0, 0, 0.08);
+    --acc-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12);
+    --acc-transition-fast: all 0.15s ease;
+    --acc-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --acc-font: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* ==========================================================
+   2. CONTENEUR PRINCIPAL
+   ========================================================== */
+.acc-container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    font-family: var(--acc-font);
+    animation: accFadeIn 0.5s ease;
+}
+
+@keyframes accFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================
+   3. BREADCRUMB
+   ========================================================== */
+.acc-container .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--acc-text-muted);
+    flex-wrap: wrap;
+    padding: 8px 0;
+}
+
+.acc-container .breadcrumb-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--acc-text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: var(--acc-radius-xs);
+    transition: var(--acc-transition-fast);
+}
+
+.acc-container .breadcrumb-link:hover {
+    color: var(--acc-primary);
+    background: var(--acc-primary-light);
+}
+
+.acc-container .breadcrumb-link i { font-size: 12px; color: var(--acc-primary); }
+.acc-container .breadcrumb-separator { font-size: 10px; color: var(--acc-text-placeholder); }
+
+.acc-container .breadcrumb-current {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 600;
+    color: var(--acc-text);
+    padding: 5px 12px;
+    background: rgba(102, 126, 234, 0.06);
+    border-radius: var(--acc-radius-sm);
+}
+
+.acc-container .breadcrumb-current i { color: var(--acc-primary); font-size: 13px; }
+
+/* ==========================================================
+   4. MESSAGE D'ERREUR
+   ========================================================== */
+.acc-container .message-alerte {
+    border-radius: var(--acc-radius);
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    animation: accSlideDown 0.4s ease;
+    position: relative;
+    padding-right: 50px;
+}
+
+@keyframes accSlideDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-erreur {
+    background: var(--acc-danger-light);
+    color: #7b1f1f;
+    border: 1px solid #f5c6cb;
+    border-left: 4px solid var(--acc-danger);
+}
+
+.message-erreur i { font-size: 20px; flex-shrink: 0; color: var(--acc-danger); }
+
+/* ==========================================================
+   5. LAYOUT 2 COLONNES
+   ========================================================== */
+.acc-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+}
+
+.acc-col-form { min-width: 0; }
+
+.acc-col-sidebar {
+    position: sticky;
+    top: 85px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ==========================================================
+   6. CARTES
+   ========================================================== */
+.acc-card {
+    background: var(--acc-white);
+    border-radius: var(--acc-radius-lg);
+    box-shadow: var(--acc-shadow);
+    border: 1px solid var(--acc-border);
+    overflow: hidden;
+    margin-bottom: 20px;
+    animation: accFadeIn 0.5s ease both;
+}
+
+.acc-card:nth-child(1) { animation-delay: 0.05s; }
+.acc-card:nth-child(2) { animation-delay: 0.1s; }
+
+.acc-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    background: var(--acc-bg-light);
+    border-bottom: 1px solid var(--acc-border);
+}
+
+.acc-card-header-sm { padding: 14px 18px; }
+
+.acc-card-header-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--acc-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.acc-card-header-text h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--acc-text);
+    margin: 0 0 2px 0;
+}
+
+.acc-card-header-text p {
+    font-size: 12px;
+    color: var(--acc-text-muted);
+    margin: 0;
+}
+
+.acc-card-body { padding: 22px; }
+
+/* ==========================================================
+   7. FORMULAIRES
+   ========================================================== */
+.acc-form-group { margin-bottom: 22px; }
+.acc-form-group:last-child { margin-bottom: 0; }
+
+.acc-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--acc-text);
+    margin-bottom: 8px;
+}
+
+.acc-label i { color: var(--acc-primary); font-size: 14px; width: 16px; text-align: center; }
+
+.acc-required { color: var(--acc-danger); font-weight: 700; font-size: 14px; margin-left: -2px; }
+.acc-optional { font-size: 11px; color: var(--acc-text-muted); font-weight: 400; font-style: italic; margin-left: 4px; }
+
+.acc-input,
+.acc-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--acc-border);
+    border-radius: var(--acc-radius-sm);
+    font-size: 14px;
+    font-family: var(--acc-font);
+    color: var(--acc-text);
+    background: var(--acc-white);
+    transition: var(--acc-transition);
+    box-sizing: border-box;
+}
+
+.acc-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8.5L1.5 4h9z' fill='%238b8fa3'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+.acc-input:focus,
+.acc-select:focus {
+    outline: none;
+    border-color: var(--acc-border-focus);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: var(--acc-white);
+}
+
+.acc-input::placeholder,
+.acc-select::placeholder { color: var(--acc-text-placeholder); }
+
+.acc-input-error { border-color: var(--acc-danger) !important; box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1) !important; }
+
+.acc-input-wrapper { position: relative; }
+
+.acc-input-counter {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--acc-text-muted);
+    font-weight: 500;
+    pointer-events: none;
+}
+
+.acc-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--acc-border);
+    border-radius: var(--acc-radius-sm);
+    font-size: 14px;
+    font-family: var(--acc-font);
+    color: var(--acc-text);
+    background: var(--acc-white);
+    transition: var(--acc-transition);
+    resize: vertical;
+    min-height: 80px;
+    box-sizing: border-box;
+}
+
+.acc-textarea:focus {
+    outline: none;
+    border-color: var(--acc-border-focus);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.acc-textarea::placeholder { color: var(--acc-text-placeholder); }
+
+.acc-textarea-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+}
+
+.acc-hint {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--acc-text-muted);
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+.acc-hint i { font-size: 12px; flex-shrink: 0; }
+
+.acc-error {
+    display: block;
+    font-size: 11px;
+    color: var(--acc-danger);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.acc-form-row { display: grid; gap: 20px; }
+.acc-form-row-2col { grid-template-columns: 1fr 1fr; }
+
+/* ==========================================================
+   8. BOUTONS D'ACTION
+   ========================================================== */
+.acc-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 20px 0;
+}
+
+.acc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 26px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--acc-font);
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--acc-transition);
+    border: none;
+    line-height: 1;
+}
+
+.acc-btn-primary {
+    background: var(--acc-gradient);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.acc-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.45);
+    color: white;
+}
+
+.acc-btn-primary:active { transform: translateY(0); box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2); }
+
+.acc-btn-secondary {
+    background: var(--acc-bg);
+    color: var(--acc-text-light);
+    border: 1px solid var(--acc-border);
+}
+
+.acc-btn-secondary:hover { background: var(--acc-bg-hover); color: var(--acc-text); border-color: #ccc; }
+
+/* ==========================================================
+   9. COLONNE SIDEBAR
+   ========================================================== */
+.acc-card-preview { border: 2px solid var(--acc-border); }
+
+.acc-preview-body { padding: 18px; }
+
+.acc-preview-card {
+    background: var(--acc-bg);
+    border-radius: var(--acc-radius);
+    padding: 20px;
+    border: 1px solid var(--acc-border);
+    text-align: center;
+    transition: var(--acc-transition);
+}
+
+.acc-preview-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--acc-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    margin: 0 auto 14px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+    transition: var(--acc-transition);
+}
+
+.acc-preview-titre {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--acc-text);
+    margin: 0 0 6px 0;
+}
+
+.acc-preview-theme {
+    display: block;
+    font-size: 12px;
+    color: var(--acc-primary);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.acc-preview-desc {
+    font-size: 12px;
+    color: var(--acc-text-light);
+    line-height: 1.5;
+    margin: 0 0 14px 0;
+}
+
+.acc-preview-meta {
+    font-size: 12px;
+    color: var(--acc-text-muted);
+}
+
+.acc-preview-meta i { margin-right: 4px; color: var(--acc-primary); }
+
+/* Guide */
+.acc-card-guide .acc-card-body { padding: 14px 18px; }
+
+.acc-guide-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.acc-guide-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--acc-text-light);
+    line-height: 1.5;
+}
+
+.acc-guide-list li i { color: var(--acc-success); font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+.acc-guide-list li strong { color: var(--acc-text); font-weight: 600; }
+
+/* Hiérarchie */
+.acc-card-hierarchy .acc-card-body { padding: 14px 18px; }
+
+.acc-hierarchy-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.acc-hierarchy-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: var(--acc-radius-sm);
+    background: var(--acc-bg);
+    border: 1px solid var(--acc-border);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--acc-text-light);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.acc-hierarchy-item i { font-size: 13px; color: var(--acc-text-muted); width: 18px; text-align: center; }
+
+.acc-hierarchy-arrow { font-size: 14px; color: var(--acc-text-placeholder); padding: 2px 0; }
+
+/* ==========================================================
+   10. RESPONSIVE
+   ========================================================== */
+@media (max-width: 1100px) {
+    .acc-layout { grid-template-columns: 1fr 340px; gap: 18px; }
+}
+
+@media (max-width: 900px) {
+    .acc-layout { grid-template-columns: 1fr; }
+    .acc-col-sidebar { position: static; }
+    .acc-card-preview, .acc-card-guide, .acc-card-hierarchy { display: none; }
+    .acc-form-row-2col { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+    .acc-form-row-2col { grid-template-columns: 1fr; }
+    .acc-card-header { padding: 14px 16px; }
+    .acc-card-body { padding: 16px; }
+    .acc-form-actions { flex-direction: column; }
+    .acc-btn { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+    .acc-card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .acc-card-header-text h2 { font-size: 15px; }
+}
+
+/* ==========================================================
+   11. ACCESSIBILITÉ ET IMPRESSION
+   ========================================================== */
+.acc-input:focus-visible,
+.acc-select:focus-visible,
+.acc-textarea:focus-visible,
+.acc-btn:focus-visible {
+    outline: 2px solid var(--acc-primary);
+    outline-offset: 2px;
+}
+
+@media print {
+    .acc-col-sidebar, .breadcrumb, .acc-form-actions { display: none; }
+    .acc-layout { grid-template-columns: 1fr; }
+    .acc-card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+    body { background: white; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
