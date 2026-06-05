@@ -926,3 +926,98 @@
         color: black;
     }
 }
+
+
+/* ============================================================
+   AJOUTS POUR cours-theme.css
+   RÔLE    : Styles pour la liste des titres de cours
+   ============================================================ */
+
+/* Liste des titres de cours dans un niveau */
+.niveau-cours-list {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #fafbfe;
+    border-radius: 12px;
+    border: 1px solid #eef0f5;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.niveau-cours-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.niveau-cours-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.niveau-cours-list::-webkit-scrollbar-thumb {
+    background: #d0d4e0;
+    border-radius: 10px;
+}
+
+.niveau-cours-list::-webkit-scrollbar-thumb:hover {
+    background: #b0b4c0;
+}
+
+.niveau-cours-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: #444;
+    padding: 6px 10px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #eef0f5;
+    transition: all 0.2s ease;
+    line-height: 1.4;
+}
+
+.niveau-cours-item:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: translateX(3px);
+    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.15);
+}
+
+.niveau-cours-item i {
+    font-size: 9px;
+    color: #667eea;
+    margin-top: 3px;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.niveau-cours-item:hover i {
+    color: white;
+}
+
+.niveau-cours-item .cours-emoji {
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+/* Ajustement de l'espace dans la carte niveau */
+.niveau-info {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .niveau-cours-list {
+        max-height: 120px;
+        padding: 10px 10px;
+    }
+    
+    .niveau-cours-item {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+}

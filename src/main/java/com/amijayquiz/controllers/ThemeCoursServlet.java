@@ -3,6 +3,7 @@
 // RÔLE    : Contrôleur de la page d'un thème de cours
 //           Affiche les 3 niveaux et les cours disponibles
 //           MODIFIÉ : Vérification premium pour niveaux moyen/avancé
+//           MODIFIÉ : Ajout des titres de cours par niveau
 // ============================================================
 
 package com.amijayquiz.controllers;
@@ -27,31 +28,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * ThemeCoursServlet - Page d'un thème spécifique
- * 
- * Affiche les 3 niveaux (Élémentaire, Moyen, Avancé) d'un thème
- * avec leurs cours respectifs et la progression de l'utilisateur.
- * Charge également les chapitres de chaque cours pour les liens.
- * 
- * 🔒 MODIFIÉ : Les niveaux moyen et avancé nécessitent un compte premium.
- * 
- * URL : /joueur/cours/theme?theme=Développement+Web
- * 
- * @author AmijayQuiz
- * @version 1.2
- */
 @WebServlet(name = "ThemeCoursServlet", urlPatterns = {"/joueur/cours/theme"})
 public class ThemeCoursServlet extends HttpServlet {
 
-    // Niveaux dans l'ordre
     private static final String[] NIVEAUX = {
         Cours.NIVEAU_ELEMENTAIRE, 
         Cours.NIVEAU_MOYEN, 
         Cours.NIVEAU_AVANCE
     };
 
-    // Configuration des thèmes (icône, couleur)
     private static final Map<String, String[]> THEMES_CONFIG = new LinkedHashMap<>();
 
     static {
@@ -88,7 +73,7 @@ public class ThemeCoursServlet extends HttpServlet {
 
         int utilisateurId = utilisateur.getId();
 
-        // ===== 🆕 VÉRIFICATION PREMIUM =====
+        // VÉRIFICATION PREMIUM
         AccessPremiumDAO premiumDAO = new AccessPremiumDAO();
         boolean estPremium = premiumDAO.estPremium(utilisateurId);
 
@@ -186,19 +171,26 @@ public class ThemeCoursServlet extends HttpServlet {
             niveauData.put("pourcentage", pourcentageNiveau);
             niveauData.put("cours", coursAvecProgression);
 
-            // ===== 🆕 DÉTERMINER SI LE NIVEAU EST DÉBLOQUÉ =====
-           // ===== DÉTERMINER SI LE NIVEAU EST DÉBLOQUÉ =====
+            // AJOUT : Liste des titres de cours pour ce niveau
+            List<String> titresCoursNiveau = new ArrayList<>();
+            if (coursDuNiveau != null) {
+                for (Cours c : coursDuNiveau) {
+                    if (c.getTitre() != null) {
+                        titresCoursNiveau.add(c.getTitre());
+                    }
+                }
+            }
+            niveauData.put("titresCours", titresCoursNiveau);
+
+            // DÉTERMINER SI LE NIVEAU EST DÉBLOQUÉ
             boolean debloque;
 
             if (NIVEAUX[0].equals(niveauStr)) {
-                // Niveau élémentaire : toujours débloqué (gratuit)
                 debloque = true;
             } else {
-                // Niveaux moyen et avancé : débloqué seulement si premium ET niveau précédent terminé
                 if (!estPremium) {
                     debloque = false;
                 } else {
-                    // Vérifier que le niveau précédent est terminé
                     String niveauPrecedent = NIVEAUX[1].equals(niveauStr) ? NIVEAUX[0] : NIVEAUX[1];
                     List<Cours> coursNiveauPrecedent = coursDAO.listerParThemeEtNiveau(theme, niveauPrecedent);
                     boolean niveauPrecedentTermine = true;
@@ -231,7 +223,7 @@ public class ThemeCoursServlet extends HttpServlet {
         int pourcentageGlobalTheme = (totalLeconsTheme > 0) ? 
             (totalLeconsTermineesTheme * 100 / totalLeconsTheme) : 0;
 
-        // 8. Déterminer le niveau actif (premier non terminé et débloqué)
+        // 8. Déterminer le niveau actif
         String niveauActif = "Élémentaire";
         for (Map<String, Object> niveau : niveauxList) {
             boolean termine = (Boolean) niveau.get("termine");
@@ -243,8 +235,6 @@ public class ThemeCoursServlet extends HttpServlet {
         }
         if (totalCoursTerminesTheme >= totalCoursTheme && totalCoursTheme > 0) {
             niveauActif = "Terminé";
-        } else if (!estPremium && totalCoursTerminesTheme >= totalCoursTheme) {
-            niveauActif = "Premium requis";
         }
 
         // 9. Passage des attributs à la JSP
@@ -259,8 +249,6 @@ public class ThemeCoursServlet extends HttpServlet {
         request.setAttribute("pourcentageProgression", pourcentageGlobalTheme);
         request.setAttribute("niveaux", niveauxList);
         request.setAttribute("niveauActif", niveauActif);
-
-        // ===== 🆕 ATTRIBUTS PREMIUM =====
         request.setAttribute("estPremium", estPremium);
 
         if (!estPremium) {
@@ -273,8 +261,6 @@ public class ThemeCoursServlet extends HttpServlet {
         // 10. Affichage de la page
         request.getRequestDispatcher("/views/joueur/cours-theme.jsp").forward(request, response);
     }
-
-    // ===== MÉTHODES UTILITAIRES (inchangées) =====
 
     private String getNomFormateNiveau(String niveau) {
         switch (niveau) {

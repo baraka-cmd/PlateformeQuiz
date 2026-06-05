@@ -17,7 +17,6 @@
     List<Map<String, Object>> niveaux = (List<Map<String, Object>>) request.getAttribute("niveaux");
     String niveauActif = (String) request.getAttribute("niveauActif");
     
-    // Données supplémentaires
     String descriptionTheme = (String) request.getAttribute("descriptionTheme");
     Integer tempsEstimeTotal = (Integer) request.getAttribute("tempsEstimeTotal");
     String niveauRecommandation = (String) request.getAttribute("niveauRecommandation");
@@ -25,7 +24,6 @@
     String dernierCoursUrl = (String) request.getAttribute("dernierCoursUrl");
     List<Map<String, Object>> coursPopulaires = (List<Map<String, Object>>) request.getAttribute("coursPopulaires");
 
-    // Initialisation des valeurs par défaut
     if (nomTheme == null) nomTheme = "Thème";
     if (iconeTheme == null) iconeTheme = "fas fa-book";
     if (couleurTheme == null) couleurTheme = "#667eea";
@@ -167,7 +165,6 @@
             for (Map<String, Object> niveau : niveaux) {
                 String nomNiveau = (String) niveau.get("nom");
                 
-                // Formatage inline du nom du niveau - SANS méthode
                 String nomFormate = "";
                 if (nomNiveau != null) {
                     if ("elementaire".equalsIgnoreCase(nomNiveau)) {
@@ -189,6 +186,9 @@
                 int pourcentageNiveau = niveau.get("pourcentage") != null ? (Integer) niveau.get("pourcentage") : 0;
                 boolean debloque = niveau.get("debloque") != null ? (Boolean) niveau.get("debloque") : false;
                 boolean termine = niveau.get("termine") != null ? (Boolean) niveau.get("termine") : false;
+                
+                // Récupérer la liste des titres de cours
+                java.util.List<String> titresCours = (java.util.List<String>) niveau.get("titresCours");
                 
                 String urlNiveau = request.getContextPath() + "/joueur/cours/niveau?theme=" 
                     + java.net.URLEncoder.encode(nomTheme, "UTF-8") 
@@ -220,6 +220,17 @@
                                 <span class="sep">•</span>
                                 <span><i class="fas fa-list-ol"></i> <%= nbLeconsNiveau %> leçons</span>
                             </div>
+                            
+                            <%-- ===== LISTE DES TITRES DE COURS ===== --%>
+                            <% if (titresCours != null && !titresCours.isEmpty()) { %>
+                                <div class="niveau-cours-list">
+                                    <% for (String titreCours : titresCours) { %>
+                                        <span class="niveau-cours-item">
+                                            <i class="fas fa-chevron-right"></i> <%= titreCours %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                            <% } %>
                         </div>
                         <div class="niveau-status-icon">
                             <% if (termine) { %>
