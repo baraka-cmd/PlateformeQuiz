@@ -76,7 +76,7 @@ public class AutoLoginFilter implements Filter {
                         uri.equals(contextPath + "/inscription")) {
                         
                         // Rediriger vers le dashboard approprié
-                        if ("admin".equals(utilisateur.getRole())) {
+                        if ("admin".equals(utilisateur.getRole()) || "gestionnaire".equals(utilisateur.getRole())) {
                             response.sendRedirect(contextPath + "/admin/dashboard");
                         } else {
                             response.sendRedirect(contextPath + "/joueur/dashboard");

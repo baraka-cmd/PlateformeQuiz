@@ -2,6 +2,7 @@
 // FICHIER : src/main/java/com/amijayquiz/controllers/AdminUtilisateurDetailServlet.java
 // RÔLE    : Contrôleur pour le détail complet d'un utilisateur
 //           GET  : Affiche la fiche détaillée avec toutes les stats
+//           SÉCURISÉ : Seul le Super Admin peut accéder
 // ============================================================
 
 package com.amijayquiz.controllers;
@@ -26,23 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * AdminUtilisateurDetailServlet - Détail complet d'un utilisateur
- * 
- * Affiche :
- * - Informations personnelles (pseudo, email, rôle, date inscription, statut)
- * - Statut Premium (actif/inactif, date activation, référence paiement)
- * - Statistiques Quiz (nb parties, taux réussite, meilleur score, niveaux)
- * - Statistiques Cours (leçons vues, cours commencés, certificats)
- * - Dernières parties jouées (10 max)
- * - Derniers certificats obtenus (5 max)
- * - Actions : Activer/Désactiver, Changer rôle, Réinitialiser MDP
- * 
- * URL : /admin/utilisateurs/detail?id=X
- * 
- * @author AmijayQuiz
- * @version 1.0
- */
 @WebServlet(name = "AdminUtilisateurDetailServlet", urlPatterns = {"/admin/utilisateurs/detail"})
 public class AdminUtilisateurDetailServlet extends HttpServlet {
 
@@ -50,7 +34,7 @@ public class AdminUtilisateurDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Vérification authentification + rôle admin
+        // 1. Vérification authentification
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utilisateur") == null) {
             response.sendRedirect(request.getContextPath() + "/connexion");
@@ -58,14 +42,16 @@ public class AdminUtilisateurDetailServlet extends HttpServlet {
         }
 
         Utilisateur adminConnecte = (Utilisateur) session.getAttribute("utilisateur");
+
+        // 2. 🔒 VÉRIFICATION SUPER ADMIN UNIQUEMENT
         if (!"admin".equals(adminConnecte.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/connexion");
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
         }
 
         int adminId = adminConnecte.getId();
 
-        // 2. Récupération et validation de l'ID
+        // 3. Récupération et validation de l'ID
         String idStr = request.getParameter("id");
         if (idStr == null || idStr.trim().isEmpty()) {
             session.setAttribute("messageErreur", "ID de l'utilisateur manquant.");
@@ -83,7 +69,7 @@ public class AdminUtilisateurDetailServlet extends HttpServlet {
             return;
         }
 
-        // 3. Récupération de l'utilisateur
+        // 4. Récupération de l'utilisateur
         UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
         Utilisateur utilisateur = utilisateurDAO.trouverParId(utilisateurId);
 
@@ -93,18 +79,17 @@ public class AdminUtilisateurDetailServlet extends HttpServlet {
             return;
         }
 
-        // 4. Initialisation des DAO
+        // 5. Initialisation des DAO
         AccessPremiumDAO premiumDAO = new AccessPremiumDAO();
         PartieDAO partieDAO = new PartieDAO();
         CertificatDAO certificatDAO = new CertificatDAO();
         ProgressionJoueurDAO progressionJoueurDAO = new ProgressionJoueurDAO();
-        ProgressionCoursDAO progressionCoursDAO = new ProgressionCoursDAO();
 
-        // 5. Statut Premium
+        // 6. Statut Premium
         boolean estPremium = premiumDAO.estPremium(utilisateurId);
         Map<String, Object> infosPremium = premiumDAO.getInfosPremium(utilisateurId);
 
-        // 6. Statistiques Quiz
+        // 7. Statistiques Quiz
         Map<String, Object> statsQuiz = new LinkedHashMap<>();
         int totalParties = partieDAO.compterPartiesJoueur(utilisateurId);
         double meilleurScore = partieDAO.meilleurScoreJoueur(utilisateurId);
@@ -118,38 +103,43 @@ public class AdminUtilisateurDetailServlet extends HttpServlet {
         statsQuiz.put("tauxReussite", totalParties > 0 ? 
             Math.round((totalPartiesReussies * 100.0 / totalParties) * 10.0) / 10.0 : 0.0);
 
-        // 7. Statistiques Cours
+        // 8. Statistiques Cours
         Map<String, Object> statsCours = new LinkedHashMap<>();
         int totalCertificats = certificatDAO.compterParUtilisateur(utilisateurId);
-
         statsCours.put("totalCertificats", totalCertificats);
 
-        // 8. Dernières parties (10 max)
+        // 9. Dernières parties (10 max)
         List<Partie> dernieresParties = partieDAO.historiqueJoueur(utilisateurId);
         if (dernieresParties != null && dernieresParties.size() > 10) {
             dernieresParties = dernieresParties.subList(0, 10);
         }
 
-        // 9. Derniers certificats (5 max)
-        java.util.List<com.amijayquiz.models.Certificat> certificats = certificatDAO.listerParUtilisateur(utilisateurId);
+        // 10. Derniers certificats (5 max)
+        List<com.amijayquiz.models.Certificat> certificats = certificatDAO.listerParUtilisateur(utilisateurId);
         if (certificats != null && certificats.size() > 5) {
             certificats = certificats.subList(0, 5);
         }
 
-        // 10. Déterminer les actions possibles
-        boolean peutActiver = !utilisateur.isActif();
-        boolean peutDesactiver = utilisateur.isActif() && utilisateurId != adminId;
-        boolean peutPromouvoir = "joueur".equals(utilisateur.getRole()) && utilisateurId != adminId;
-        boolean peutRetrograder = "admin".equals(utilisateur.getRole()) && utilisateurId != adminId;
+        // 11. Déterminer les actions possibles
+        boolean estSuperAdmin = "admin".equals(utilisateur.getRole());
+        boolean estGestionnaire = "gestionnaire".equals(utilisateur.getRole());
+        boolean estJoueur = "joueur".equals(utilisateur.getRole());
+        boolean estMoi = utilisateurId == adminId;
+
+        // 🔒 On ne peut PAS modifier un Super Admin (sauf reset MDP)
+        boolean peutActiver = !utilisateur.isActif() && !estSuperAdmin;
+        boolean peutDesactiver = utilisateur.isActif() && !estMoi && !estSuperAdmin;
+        boolean peutPromouvoir = estJoueur && !estMoi;
+        boolean peutRetrograder = estGestionnaire && !estMoi;
         boolean peutReinitialiserMDP = utilisateur.getEmail() != null && !utilisateur.getEmail().isEmpty();
 
-        // 11. Message de succès/erreur
+        // 12. Messages flash
         String messageSucces = (String) session.getAttribute("messageSucces");
         String messageErreur = (String) session.getAttribute("messageErreur");
         if (messageSucces != null) session.removeAttribute("messageSucces");
         if (messageErreur != null) session.removeAttribute("messageErreur");
 
-        // 12. Passage des attributs
+        // 13. Passage des attributs
         request.setAttribute("pageTitle", "Détail - " + utilisateur.getPseudo() + " - Administration");
         request.setAttribute("utilisateur", utilisateur);
         request.setAttribute("estPremium", estPremium);
@@ -163,11 +153,13 @@ public class AdminUtilisateurDetailServlet extends HttpServlet {
         request.setAttribute("peutPromouvoir", peutPromouvoir);
         request.setAttribute("peutRetrograder", peutRetrograder);
         request.setAttribute("peutReinitialiserMDP", peutReinitialiserMDP);
+        request.setAttribute("estSuperAdmin", estSuperAdmin);
+        request.setAttribute("estGestionnaire", estGestionnaire);
         request.setAttribute("adminId", adminId);
         request.setAttribute("messageSucces", messageSucces);
         request.setAttribute("messageErreur", messageErreur);
 
-        // 13. Affichage
+        // 14. Affichage
         request.getRequestDispatcher("/views/admin/admin-utilisateur-detail.jsp").forward(request, response);
     }
 

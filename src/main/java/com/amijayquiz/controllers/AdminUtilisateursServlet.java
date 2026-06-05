@@ -1,7 +1,8 @@
 // ============================================================
 // FICHIER : src/main/java/com/amijayquiz/controllers/AdminUtilisateursServlet.java
 // RÔLE    : Contrôleur pour la gestion des utilisateurs (admin)
-//           CORRIGÉ - Version simplifiée et robuste
+//           GET  : Liste paginée avec filtres, recherche, statistiques
+//           SÉCURISÉ : Seul le Super Admin peut accéder
 // ============================================================
 
 package com.amijayquiz.controllers;
@@ -31,7 +32,7 @@ public class AdminUtilisateursServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Vérification authentification + rôle admin
+        // 1. Vérification authentification
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utilisateur") == null) {
             response.sendRedirect(request.getContextPath() + "/connexion");
@@ -39,14 +40,16 @@ public class AdminUtilisateursServlet extends HttpServlet {
         }
 
         Utilisateur adminConnecte = (Utilisateur) session.getAttribute("utilisateur");
+
+        // 2. 🔒 VÉRIFICATION SUPER ADMIN UNIQUEMENT
         if (!"admin".equals(adminConnecte.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/connexion");
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
         }
 
         int adminId = adminConnecte.getId();
 
-        // 2. Récupération des paramètres
+        // 3. Récupération des paramètres
         String recherche = request.getParameter("recherche");
         String filtreRole = request.getParameter("role");
         String filtreStatut = request.getParameter("statut");
@@ -77,12 +80,12 @@ public class AdminUtilisateursServlet extends HttpServlet {
             "', Rôle: " + filtreRole + ", Statut: " + filtreStatut + 
             ", Premium: " + filtrePremium + ", Tri: " + tri + ", Page: " + page);
 
-        // 3. Initialisation du DAO
+        // 4. Initialisation du DAO
         UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
         AccessPremiumDAO premiumDAO = new AccessPremiumDAO();
 
         try {
-            // 4. Comptage total
+            // 5. Comptage total
             int totalUtilisateurs = utilisateurDAO.compterTous(recherche, filtreRole, filtreStatut, filtrePremium);
             int totalPages = (int) Math.ceil((double) totalUtilisateurs / UTILISATEURS_PAR_PAGE);
             if (totalPages < 1) totalPages = 1;
@@ -90,7 +93,7 @@ public class AdminUtilisateursServlet extends HttpServlet {
 
             int offset = (page - 1) * UTILISATEURS_PAR_PAGE;
 
-            // 5. Récupération des utilisateurs
+            // 6. Récupération des utilisateurs
             List<Utilisateur> utilisateurs = utilisateurDAO.listerTous(
                 offset, UTILISATEURS_PAR_PAGE, recherche, filtreRole, filtreStatut, filtrePremium, tri, ordre
             );
@@ -98,7 +101,7 @@ public class AdminUtilisateursServlet extends HttpServlet {
             System.out.println("📋 [AdminUtilisateurs] Résultats trouvés : " + 
                 (utilisateurs != null ? utilisateurs.size() : 0) + " / " + totalUtilisateurs);
 
-            // 6. Enrichir avec les stats premium
+            // 7. Enrichir avec les stats premium
             List<Map<String, Object>> utilisateursAvecStats = new ArrayList<>();
             if (utilisateurs != null) {
                 for (Utilisateur u : utilisateurs) {
@@ -110,16 +113,17 @@ public class AdminUtilisateursServlet extends HttpServlet {
                 }
             }
 
-            // 7. Statistiques globales (avec gestion d'erreur)
+            // 8. Statistiques globales
             Map<String, Object> statsGlobales = new LinkedHashMap<>();
             statsGlobales.put("total", totalUtilisateurs);
             statsGlobales.put("admins", utilisateurDAO.compterParRole("admin"));
+            statsGlobales.put("gestionnaires", utilisateurDAO.compterParRole("gestionnaire"));
             statsGlobales.put("joueurs", utilisateurDAO.compterParRole("joueur"));
             statsGlobales.put("actifs", utilisateurDAO.compterParStatut(true));
             statsGlobales.put("inactifs", utilisateurDAO.compterParStatut(false));
             statsGlobales.put("premium", premiumDAO.compterPremiumActifs());
 
-            // 8. URL pagination
+            // 9. URL pagination
             StringBuilder urlPagination = new StringBuilder("/admin/utilisateurs?");
             if (recherche != null && !recherche.isEmpty()) urlPagination.append("recherche=").append(recherche).append("&");
             if (!"tous".equals(filtreRole)) urlPagination.append("role=").append(filtreRole).append("&");
@@ -128,18 +132,12 @@ public class AdminUtilisateursServlet extends HttpServlet {
             if (!"id".equals(tri)) urlPagination.append("tri=").append(tri).append("&");
             if (!"DESC".equals(ordre)) urlPagination.append("ordre=").append(ordre).append("&");
 
-            // 9. Passage des attributs
+            // 10. Passage des attributs
             request.setAttribute("pageTitle", "Gestion des utilisateurs - Administration - AmijayQuiz");
             request.setAttribute("utilisateurs", utilisateursAvecStats);
             request.setAttribute("totalUtilisateurs", totalUtilisateurs);
             request.setAttribute("page", page);
             request.setAttribute("totalPages", totalPages);
-            request.setAttribute("recherche", recherche);
-            request.setAttribute("filtreRole", filtreRole);
-            request.setAttribute("filtreStatut", filtreStatut);
-            request.setAttribute("filtrePremium", filtrePremium);
-            request.setAttribute("tri", tri);
-            request.setAttribute("ordre", ordre);
             request.setAttribute("stats", statsGlobales);
             request.setAttribute("urlPagination", urlPagination.toString());
             request.setAttribute("adminId", adminId);
@@ -148,7 +146,6 @@ public class AdminUtilisateursServlet extends HttpServlet {
             System.err.println("❌ [AdminUtilisateurs] Erreur : " + e.getMessage());
             e.printStackTrace();
             
-            // En cas d'erreur, passer des listes vides
             request.setAttribute("utilisateurs", new ArrayList<>());
             request.setAttribute("totalUtilisateurs", 0);
             request.setAttribute("page", 1);
@@ -160,7 +157,7 @@ public class AdminUtilisateursServlet extends HttpServlet {
             session.setAttribute("messageErreur", "Une erreur est survenue lors du chargement des utilisateurs.");
         }
 
-        // 10. Message de succès/erreur
+        // 11. Messages flash
         String messageSucces = (String) session.getAttribute("messageSucces");
         String messageErreur = (String) session.getAttribute("messageErreur");
         if (messageSucces != null) session.removeAttribute("messageSucces");
@@ -175,7 +172,7 @@ public class AdminUtilisateursServlet extends HttpServlet {
         request.setAttribute("tri", tri);
         request.setAttribute("ordre", ordre);
 
-        // 11. Affichage
+        // 12. Affichage
         request.getRequestDispatcher("/views/admin/admin-utilisateurs.jsp").forward(request, response);
     }
 

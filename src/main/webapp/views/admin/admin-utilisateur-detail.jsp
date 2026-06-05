@@ -126,10 +126,31 @@
                 </span>
             </div>
             <div class="au-profil-badges">
-                <span class="au-badge-role <%= "admin".equals(role) ? "au-role-admin" : "au-role-joueur" %>">
-                    <i class="fas <%= "admin".equals(role) ? "fa-shield-alt" : "fa-user" %>"></i>
-                    <%= "admin".equals(role) ? "Administrateur" : "Joueur" %>
-                </span>
+                <%
+                String roleUtilisateur = utilisateur.getRole() != null ? utilisateur.getRole() : "joueur";
+                String badgeRoleClass = "";
+                String badgeRoleIcon = "";
+                String badgeRoleLibelle = "";
+
+                if ("admin".equals(roleUtilisateur)) {
+                    badgeRoleClass = "au-role-superadmin";
+                    badgeRoleIcon = "fa-shield-alt";
+                    badgeRoleLibelle = "Super Administrateur";
+                } else if ("gestionnaire".equals(roleUtilisateur)) {
+                    badgeRoleClass = "au-role-gestionnaire";
+                    badgeRoleIcon = "fa-user-cog";
+                    badgeRoleLibelle = "Gestionnaire";
+                } else {
+                    badgeRoleClass = "au-role-joueur";
+                    badgeRoleIcon = "fa-user";
+                    badgeRoleLibelle = "Joueur";
+                }
+            %>
+
+            <span class="au-badge-role <%= badgeRoleClass %>">
+                <i class="fas <%= badgeRoleIcon %>"></i>
+                <%= badgeRoleLibelle %>
+            </span>
                 <span class="au-badge-statut <%= actif ? "au-statut-actif" : "au-statut-inactif" %>">
                     <i class="fas <%= actif ? "fa-check-circle" : "fa-ban" %>"></i>
                     <%= actif ? "Actif" : "Inactif" %>
@@ -141,61 +162,97 @@
             </div>
         </div>
         <div class="au-profil-actions">
-            <a href="${pageContext.request.contextPath}/admin/utilisateurs" class="au-btn-outline">
-                <i class="fas fa-arrow-left"></i><span>Retour</span>
-            </a>
-            <% if (!estMoi) { %>
-                <% if (peutActiver) { %>
-                    <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline">
-                        <input type="hidden" name="action" value="activer">
-                        <input type="hidden" name="id" value="<%= utilisateurId %>">
-                        <button type="submit" class="au-btn au-btn-activer">
-                            <i class="fas fa-check-circle"></i><span>Activer le compte</span>
-                        </button>
-                    </form>
-                <% } %>
-                <% if (peutDesactiver) { %>
-                    <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
-                          onsubmit="return confirm('Désactiver le compte de <%= pseudo.replace("'", "\\'") %> ?')">
-                        <input type="hidden" name="action" value="desactiver">
-                        <input type="hidden" name="id" value="<%= utilisateurId %>">
-                        <button type="submit" class="au-btn au-btn-desactiver">
-                            <i class="fas fa-ban"></i><span>Désactiver le compte</span>
-                        </button>
-                    </form>
-                <% } %>
-                <% if (peutPromouvoir) { %>
-                    <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
-                          onsubmit="return confirm('Promouvoir <%= pseudo.replace("'", "\\'") %> en Administrateur ?')">
-                        <input type="hidden" name="action" value="promouvoir">
-                        <input type="hidden" name="id" value="<%= utilisateurId %>">
-                        <button type="submit" class="au-btn au-btn-promouvoir">
-                            <i class="fas fa-arrow-up"></i><span>Promouvoir Admin</span>
-                        </button>
-                    </form>
-                <% } %>
-                <% if (peutRetrograder) { %>
-                    <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
-                          onsubmit="return confirm('Rétrograder <%= pseudo.replace("'", "\\'") %> en Joueur ?')">
-                        <input type="hidden" name="action" value="retrograder">
-                        <input type="hidden" name="id" value="<%= utilisateurId %>">
-                        <button type="submit" class="au-btn au-btn-retrograder">
-                            <i class="fas fa-arrow-down"></i><span>Rétrograder Joueur</span>
-                        </button>
-                    </form>
-                <% } %>
-                <% if (peutReinitialiserMDP) { %>
-                    <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
-                          onsubmit="return confirm('Réinitialiser le mot de passe de <%= pseudo.replace("'", "\\'") %> ?\n\nUn nouveau mot de passe sera envoyé à <%= email %>.')">
-                        <input type="hidden" name="action" value="reset-mdp">
-                        <input type="hidden" name="id" value="<%= utilisateurId %>">
-                        <button type="submit" class="au-btn au-btn-reset-mdp">
-                            <i class="fas fa-key"></i><span>Réinitialiser MDP</span>
-                        </button>
-                    </form>
-                <% } %>
-            <% } %>
-        </div>
+    <a href="${pageContext.request.contextPath}/admin/utilisateurs" class="au-btn-outline">
+        <i class="fas fa-arrow-left"></i><span>Retour</span>
+    </a>
+    
+    <%-- 🔒 Si c'est un Super Admin ET que ce n'est pas moi : actions limitées --%>
+    <% if ("admin".equals(roleUtilisateur) && !estMoi) { %>
+        <% if (peutReinitialiserMDP) { %>
+            <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
+                  onsubmit="return confirm('Réinitialiser le mot de passe de <%= utilisateur.getPseudo() %> ?')">
+                <input type="hidden" name="action" value="reset-mdp">
+                <input type="hidden" name="id" value="<%= utilisateurId %>">
+                <button type="submit" class="au-btn au-btn-reset-mdp">
+                    <i class="fas fa-key"></i><span>Réinitialiser MDP</span>
+                </button>
+            </form>
+        <% } %>
+    <% } else if (!estMoi) { %>
+        
+        <%-- Activer --%>
+        <% if (peutActiver) { %>
+            <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline">
+                <input type="hidden" name="action" value="activer">
+                <input type="hidden" name="id" value="<%= utilisateurId %>">
+                <button type="submit" class="au-btn au-btn-activer">
+                    <i class="fas fa-check-circle"></i><span>Activer le compte</span>
+                </button>
+            </form>
+        <% } %>
+        
+        <%-- Désactiver --%>
+        <% if (peutDesactiver) { %>
+            <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
+                  onsubmit="return confirm('Désactiver le compte de <%= utilisateur.getPseudo() %> ?')">
+                <input type="hidden" name="action" value="desactiver">
+                <input type="hidden" name="id" value="<%= utilisateurId %>">
+                <button type="submit" class="au-btn au-btn-desactiver">
+                    <i class="fas fa-ban"></i><span>Désactiver le compte</span>
+                </button>
+            </form>
+        <% } %>
+        
+        <%-- 🔒 Promouvoir (joueur → gestionnaire) --%>
+        <% if (peutPromouvoir) { %>
+            <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
+                  onsubmit="return confirm('Promouvoir <%= utilisateur.getPseudo() %> en Gestionnaire ?')">
+                <input type="hidden" name="action" value="promouvoir">
+                <input type="hidden" name="id" value="<%= utilisateurId %>">
+                <button type="submit" class="au-btn au-btn-promouvoir">
+                    <i class="fas fa-arrow-up"></i><span>Promouvoir Gestionnaire</span>
+                </button>
+            </form>
+        <% } %>
+        
+        <%-- 🔒 Rétrograder (gestionnaire → joueur) --%>
+        <% if (peutRetrograder) { %>
+            <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
+                  onsubmit="return confirm('Rétrograder <%= utilisateur.getPseudo() %> en Joueur ?')">
+                <input type="hidden" name="action" value="retrograder">
+                <input type="hidden" name="id" value="<%= utilisateurId %>">
+                <button type="submit" class="au-btn au-btn-retrograder">
+                    <i class="fas fa-arrow-down"></i><span>Rétrograder Joueur</span>
+                </button>
+            </form>
+        <% } %>
+        
+        <%-- Réinitialiser MDP --%>
+        <% if (peutReinitialiserMDP) { %>
+            <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
+                  onsubmit="return confirm('Réinitialiser le mot de passe de <%= utilisateur.getPseudo() %> ?\n\nUn nouveau mot de passe sera envoyé à <%= utilisateur.getEmail() %>.')">
+                <input type="hidden" name="action" value="reset-mdp">
+                <input type="hidden" name="id" value="<%= utilisateurId %>">
+                <button type="submit" class="au-btn au-btn-reset-mdp">
+                    <i class="fas fa-key"></i><span>Réinitialiser MDP</span>
+                </button>
+            </form>
+        <% } %>
+        
+    <% } else { %>
+        <%-- C'est moi : Réinitialiser MDP uniquement --%>
+        <% if (peutReinitialiserMDP) { %>
+            <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
+                  onsubmit="return confirm('Réinitialiser votre mot de passe ?')">
+                <input type="hidden" name="action" value="reset-mdp">
+                <input type="hidden" name="id" value="<%= utilisateurId %>">
+                <button type="submit" class="au-btn au-btn-reset-mdp">
+                    <i class="fas fa-key"></i><span>Réinitialiser mon MDP</span>
+                </button>
+            </form>
+        <% } %>
+    <% } %>
+</div>
     </div>
 
     <%-- ===== LAYOUT 2 COLONNES ===== --%>

@@ -530,3 +530,7 @@
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+
+.au-role-superadmin { background: #fdecea; color: #7b1f1f; border: 1px solid #f5c6cb; }
+.au-role-gestionnaire { background: #fff8e1; color: #7d6608; border: 1px solid #ffe0a3; }

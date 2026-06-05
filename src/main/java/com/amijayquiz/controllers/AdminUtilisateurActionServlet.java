@@ -2,6 +2,8 @@
 // FICHIER : src/main/java/com/amijayquiz/controllers/AdminUtilisateurActionServlet.java
 // RÔLE    : Contrôleur pour les actions sur un utilisateur
 //           POST : Activer, Désactiver, Changer rôle, Réinitialiser MDP
+//           SÉCURISÉ : Seul le Super Admin peut agir
+//           Promotion → "gestionnaire" (pas "admin")
 // ============================================================
 
 package com.amijayquiz.controllers;
@@ -20,28 +22,9 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.SecureRandom;
 
-/**
- * AdminUtilisateurActionServlet - Actions admin sur un utilisateur
- * 
- * POST : action=activer → Active le compte
- *        action=desactiver → Désactive le compte
- *        action=promouvoir → Passe en admin
- *        action=retrograder → Passe en joueur
- *        action=reset-mdp → Réinitialise le mot de passe et envoie par email
- * 
- * RÈGLES DE SÉCURITÉ :
- * - Un admin ne peut pas agir sur son propre compte
- * - Toute action est journalisée
- * 
- * URL : /admin/utilisateurs/action
- * 
- * @author AmijayQuiz
- * @version 1.0
- */
 @WebServlet(name = "AdminUtilisateurActionServlet", urlPatterns = {"/admin/utilisateurs/action"})
 public class AdminUtilisateurActionServlet extends HttpServlet {
 
-    // Caractères pour le mot de passe temporaire
     private static final String MAJUSCULES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String MINUSCULES = "abcdefghijklmnopqrstuvwxyz";
     private static final String CHIFFRES = "0123456789";
@@ -61,7 +44,7 @@ public class AdminUtilisateurActionServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        // 1. Vérification authentification + rôle admin
+        // 1. Vérification authentification
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utilisateur") == null) {
             response.sendRedirect(request.getContextPath() + "/connexion");
@@ -69,18 +52,21 @@ public class AdminUtilisateurActionServlet extends HttpServlet {
         }
 
         Utilisateur adminConnecte = (Utilisateur) session.getAttribute("utilisateur");
+
+        // 2. 🔒 VÉRIFICATION SUPER ADMIN UNIQUEMENT
         if (!"admin".equals(adminConnecte.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/connexion");
+            session.setAttribute("messageErreur", 
+                "Accès refusé. Seul le Super Administrateur peut gérer les utilisateurs.");
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
         }
 
         int adminId = adminConnecte.getId();
 
-        // 2. Récupération des paramètres
+        // 3. Récupération des paramètres
         String action = request.getParameter("action");
         String idStr = request.getParameter("id");
 
-        // 3. Validation de l'ID
         if (idStr == null || idStr.trim().isEmpty()) {
             session.setAttribute("messageErreur", "ID de l'utilisateur manquant.");
             response.sendRedirect(request.getContextPath() + "/admin/utilisateurs");
@@ -107,7 +93,7 @@ public class AdminUtilisateurActionServlet extends HttpServlet {
             return;
         }
 
-        // 5. Sécurité : empêcher l'admin d'agir sur son propre compte
+        // 5. 🔒 Sécurité : empêcher d'agir sur son propre compte (sauf reset-mdp)
         if (utilisateurId == adminId && !"reset-mdp".equals(action)) {
             session.setAttribute("messageErreur", 
                 "Vous ne pouvez pas effectuer cette action sur votre propre compte.");
@@ -115,7 +101,15 @@ public class AdminUtilisateurActionServlet extends HttpServlet {
             return;
         }
 
-        // 6. Traitement selon l'action
+        // 6. 🔒 Sécurité : empêcher de modifier un autre Super Admin
+        if ("admin".equals(utilisateur.getRole()) && !"reset-mdp".equals(action)) {
+            session.setAttribute("messageErreur", 
+                "Vous ne pouvez pas modifier un autre Super Administrateur.");
+            response.sendRedirect(request.getContextPath() + "/admin/utilisateurs/detail?id=" + utilisateurId);
+            return;
+        }
+
+        // 7. Traitement selon l'action
         String redirectUrl = request.getContextPath() + "/admin/utilisateurs/detail?id=" + utilisateurId;
         boolean success = false;
         String message = "";
@@ -138,7 +132,7 @@ public class AdminUtilisateurActionServlet extends HttpServlet {
             case "promouvoir":
                 success = traiterPromotion(utilisateurDAO, utilisateur);
                 message = success ? 
-                    "\"" + utilisateur.getPseudo() + "\" est maintenant Administrateur." :
+                    "\"" + utilisateur.getPseudo() + "\" est maintenant Gestionnaire." :
                     "Erreur lors de la promotion.";
                 break;
 
@@ -162,85 +156,63 @@ public class AdminUtilisateurActionServlet extends HttpServlet {
                 return;
         }
 
-        // 7. Message de résultat
         if (success) {
             session.setAttribute("messageSucces", message);
         } else {
             session.setAttribute("messageErreur", message);
         }
 
-        // 8. Redirection vers le détail
         response.sendRedirect(redirectUrl);
     }
 
-    /**
-     * Active le compte d'un utilisateur
-     */
     private boolean traiterActivation(UtilisateurDAO dao, Utilisateur utilisateur) {
         boolean result = dao.activer(utilisateur.getId());
         if (result) {
-            System.out.println("✅ [AdminAction] Activation compte : ID=" + utilisateur.getId() + 
-                " - Pseudo=" + utilisateur.getPseudo());
+            System.out.println("✅ [AdminAction] Activation compte : ID=" + utilisateur.getId());
         }
         return result;
     }
 
-    /**
-     * Désactive le compte d'un utilisateur
-     */
     private boolean traiterDesactivation(UtilisateurDAO dao, Utilisateur utilisateur) {
         boolean result = dao.desactiver(utilisateur.getId());
         if (result) {
-            System.out.println("⚠️ [AdminAction] Désactivation compte : ID=" + utilisateur.getId() + 
-                " - Pseudo=" + utilisateur.getPseudo());
+            System.out.println("⚠️ [AdminAction] Désactivation compte : ID=" + utilisateur.getId());
         }
         return result;
     }
 
-    /**
-     * Promeut un joueur en administrateur
-     */
     private boolean traiterPromotion(UtilisateurDAO dao, Utilisateur utilisateur) {
         if (!"joueur".equals(utilisateur.getRole())) {
             return false;
         }
-        boolean result = dao.changerRole(utilisateur.getId(), "admin");
+        // 🔒 PROMOTION → GESTIONNAIRE (pas admin)
+        boolean result = dao.changerRole(utilisateur.getId(), "gestionnaire");
         if (result) {
-            System.out.println("👑 [AdminAction] Promotion admin : ID=" + utilisateur.getId() + 
-                " - Pseudo=" + utilisateur.getPseudo());
+            System.out.println("👑 [AdminAction] Promotion gestionnaire : ID=" + utilisateur.getId());
         }
         return result;
     }
 
-    /**
-     * Rétrograde un administrateur en joueur
-     */
     private boolean traiterRetrogradation(UtilisateurDAO dao, Utilisateur utilisateur) {
-        if (!"admin".equals(utilisateur.getRole())) {
+        if (!"gestionnaire".equals(utilisateur.getRole())) {
             return false;
         }
         boolean result = dao.changerRole(utilisateur.getId(), "joueur");
         if (result) {
-            System.out.println("⬇️ [AdminAction] Rétrogradation joueur : ID=" + utilisateur.getId() + 
-                " - Pseudo=" + utilisateur.getPseudo());
+            System.out.println("⬇️ [AdminAction] Rétrogradation joueur : ID=" + utilisateur.getId());
         }
         return result;
     }
 
-    /**
-     * Réinitialise le mot de passe et l'envoie par email
-     */
     private boolean traiterReinitialisationMDP(UtilisateurDAO dao, Utilisateur utilisateur, 
                                                 HttpSession session) {
-        // Vérifier que l'utilisateur a un email
         String email = utilisateur.getEmail();
         if (email == null || email.trim().isEmpty()) {
             session.setAttribute("messageErreur", 
-                "Cet utilisateur n'a pas d'email renseigné. Impossible d'envoyer le nouveau mot de passe.");
+                "Cet utilisateur n'a pas d'email renseigné.");
             return false;
         }
 
-        // Générer un nouveau mot de passe aléatoire
         String nouveauMDP = genererMotDePasseAleatoire();
         String mdpHashe = HashUtil.hasher(nouveauMDP);
 
@@ -249,53 +221,35 @@ public class AdminUtilisateurActionServlet extends HttpServlet {
             return false;
         }
 
-        // Mettre à jour le mot de passe en base
         boolean mdpModifie = dao.modifierMotDePasse(utilisateur.getId(), mdpHashe);
         if (!mdpModifie) {
             session.setAttribute("messageErreur", "Erreur lors de la mise à jour du mot de passe.");
             return false;
         }
 
-        // Envoyer l'email
-        boolean emailEnvoye = EmailUtil.envoyerMotDePasseOublie(
-            email, 
-            utilisateur.getPseudo(), 
-            nouveauMDP
-        );
+        boolean emailEnvoye = EmailUtil.envoyerMotDePasseOublie(email, utilisateur.getPseudo(), nouveauMDP);
 
         if (emailEnvoye) {
-            System.out.println("🔑 [AdminAction] Reset MDP : ID=" + utilisateur.getId() + 
-                " - Pseudo=" + utilisateur.getPseudo() + " - Email=" + email);
+            System.out.println("🔑 [AdminAction] Reset MDP : ID=" + utilisateur.getId());
             return true;
         } else {
-            // Le MDP a été changé mais l'email n'a pas pu être envoyé
             System.err.println("⚠️ [AdminAction] Reset MDP réussi mais échec envoi email : " + email);
             session.setAttribute("messageErreur", 
-                "Mot de passe réinitialisé mais l'email n'a pas pu être envoyé. " +
-                "Contactez le support technique.");
+                "Mot de passe réinitialisé mais l'email n'a pas pu être envoyé.");
             return false;
         }
     }
 
-    /**
-     * Génère un mot de passe aléatoire sécurisé
-     */
     private String genererMotDePasseAleatoire() {
         SecureRandom random = new SecureRandom();
         StringBuilder mdp = new StringBuilder(LONGUEUR_MDP);
-
-        // Garantir au moins un caractère de chaque type
         mdp.append(MAJUSCULES.charAt(random.nextInt(MAJUSCULES.length())));
         mdp.append(MINUSCULES.charAt(random.nextInt(MINUSCULES.length())));
         mdp.append(CHIFFRES.charAt(random.nextInt(CHIFFRES.length())));
         mdp.append(SPECIAUX.charAt(random.nextInt(SPECIAUX.length())));
-
-        // Compléter avec des caractères aléatoires
         for (int i = 4; i < LONGUEUR_MDP; i++) {
             mdp.append(TOUS.charAt(random.nextInt(TOUS.length())));
         }
-
-        // Mélanger les caractères
         char[] chars = mdp.toString().toCharArray();
         for (int i = chars.length - 1; i > 0; i--) {
             int j = random.nextInt(i + 1);
@@ -303,7 +257,6 @@ public class AdminUtilisateurActionServlet extends HttpServlet {
             chars[i] = chars[j];
             chars[j] = temp;
         }
-
         return new String(chars);
     }
 }

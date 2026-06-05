@@ -101,117 +101,135 @@
             </li>
             
         <%-- ============================================================
-             MENU ADMINISTRATEUR
-             Dashboard | Cours | Quiz | Questions | Thèmes | Certificats | Résultats | Paiements | Admin
-             ============================================================ --%>
-        <% } else if ("admin".equals(roleHeader)) { %>
-            
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/dashboard"
-                   class="<%= uri.contains("/admin/dashboard") ? "active" : "" %>">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/cours"
-                   class="<%= uri.contains("/admin/cours") || uri.contains("/admin/certificats") ? "active" : "" %>">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>Cours</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/quiz"
-                   class="<%= uri.contains("/admin/quiz") && !uri.contains("/admin/questions") ? "active" : "" %>">
-                    <i class="fas fa-list-check"></i>
-                    <span>Quiz</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/utilisateurs"
-                   class="<%= uri.contains("/admin/utilisateurs") ? "active" : "" %>">
+     MENU ADMINISTRATEUR / GESTIONNAIRE
+     Dashboard | Cours | Quiz | Thèmes | Résultats | [Utilisateurs] | [Paiements] | Profil
+     [ ] = Super Admin uniquement
+     ============================================================ --%>
+<% } else if ("admin".equals(roleHeader) || "gestionnaire".equals(roleHeader)) { %>
+    
+    <li>
+        <a href="${pageContext.request.contextPath}/admin/dashboard"
+           class="<%= uri.contains("/admin/dashboard") ? "active" : "" %>">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="${pageContext.request.contextPath}/admin/cours"
+           class="<%= uri.contains("/admin/cours") || uri.contains("/admin/certificats") ? "active" : "" %>">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Cours</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="${pageContext.request.contextPath}/admin/quiz"
+           class="<%= uri.contains("/admin/quiz") && !uri.contains("/admin/questions") ? "active" : "" %>">
+            <i class="fas fa-list-check"></i>
+            <span>Quiz</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="${pageContext.request.contextPath}/admin/themes"
+           class="<%= uri.contains("/admin/themes") ? "active" : "" %>">
+            <i class="fas fa-tags"></i>
+            <span>Thèmes</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="${pageContext.request.contextPath}/admin/resultats"
+           class="<%= uri.contains("/admin/resultats") ? "active" : "" %>">
+            <i class="fas fa-chart-bar"></i>
+            <span>Résultats</span>
+        </a>
+    </li>
+    
+    <%-- ===== LIENS RÉSERVÉS AU SUPER ADMIN ===== --%>
+    <% if ("admin".equals(roleHeader)) { %>
+        <li>
+            <a href="${pageContext.request.contextPath}/admin/utilisateurs"
+               class="<%= uri.contains("/admin/utilisateurs") ? "active" : "" %>">
+                <i class="fas fa-users"></i>
+                <span>Utilisateurs</span>
+            </a>
+        </li>
+        
+        <li>
+            <a href="${pageContext.request.contextPath}/admin/paiements"
+               class="<%= uri.contains("/admin/paiements") ? "active" : "" %>">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Paiements</span>
+            </a>
+        </li>
+    <% } %>
+    
+    <%-- Menu utilisateur --%>
+    <li class="user-menu-container">
+        <button class="user-menu-trigger" id="userMenuTrigger" aria-expanded="false" aria-haspopup="true" title="Menu utilisateur">
+            <span class="user-avatar-mini">
+                <i class="fas fa-user-circle"></i>
+            </span>
+            <span class="user-name"><%= utilisateurConnecte.getPseudo() %></span>
+            <% if ("admin".equals(roleHeader)) { %>
+                <i class="fas fa-shield-alt admin-badge" title="Super Administrateur"></i>
+            <% } else { %>
+                <i class="fas fa-user-cog admin-badge" title="Gestionnaire" style="color: #f39c12;"></i>
+            <% } %>
+            <i class="fas fa-chevron-down menu-arrow"></i>
+        </button>
+        <div class="user-menu-dropdown" id="userMenuDropdown" role="menu" aria-label="Menu utilisateur">
+            <div class="user-menu-header">
+                <div class="user-menu-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-menu-info">
+                    <strong><%= utilisateurConnecte.getPseudo() %></strong>
+                    <span class="menu-admin-badge">
+                        <% if ("admin".equals(roleHeader)) { %>
+                            <i class="fas fa-shield-alt"></i> Super Administrateur
+                        <% } else { %>
+                            <i class="fas fa-user-cog"></i> Gestionnaire
+                        <% } %>
+                    </span>
+                </div>
+            </div>
+            <div class="user-menu-divider"></div>
+            <a href="${pageContext.request.contextPath}/admin/dashboard" class="user-menu-item" role="menuitem">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="${pageContext.request.contextPath}/admin/cours" class="user-menu-item" role="menuitem">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Gérer les cours</span>
+            </a>
+            <% if ("admin".equals(roleHeader)) { %>
+                <a href="${pageContext.request.contextPath}/admin/utilisateurs" class="user-menu-item" role="menuitem">
                     <i class="fas fa-users"></i>
-                    <span>Utilisateurs</span>
+                    <span>Gérer les utilisateurs</span>
                 </a>
-            </li>
-            
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/themes"
-                   class="<%= uri.contains("/admin/themes") ? "active" : "" %>">
-                    <i class="fas fa-tags"></i>
-                    <span>Thèmes</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/resultats"
-                   class="<%= uri.contains("/admin/resultats") ? "active" : "" %>">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Résultats</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="${pageContext.request.contextPath}/admin/paiements"
-                   class="<%= uri.contains("/admin/paiements") ? "active" : "" %>">
+                <a href="${pageContext.request.contextPath}/admin/paiements" class="user-menu-item" role="menuitem">
                     <i class="fas fa-money-bill-wave"></i>
                     <span>Paiements</span>
                 </a>
-            </li>
-            
-            <%-- Menu utilisateur admin --%>
-            <li class="user-menu-container">
-                <button class="user-menu-trigger" id="userMenuTrigger" aria-expanded="false" aria-haspopup="true" title="Menu utilisateur">
-                    <span class="user-avatar-mini">
-                        <i class="fas fa-user-circle"></i>
-                    </span>
-                    <span class="user-name"><%= utilisateurConnecte.getPseudo() %></span>
-                    <i class="fas fa-shield-alt admin-badge" title="Administrateur"></i>
-                    <i class="fas fa-chevron-down menu-arrow"></i>
-                </button>
-                <div class="user-menu-dropdown" id="userMenuDropdown" role="menu" aria-label="Menu utilisateur">
-                    <div class="user-menu-header">
-                        <div class="user-menu-avatar">
-                            <i class="fas fa-user-circle"></i>
-                        </div>
-                        <div class="user-menu-info">
-                            <strong><%= utilisateurConnecte.getPseudo() %></strong>
-                            <span class="menu-admin-badge">
-                                <i class="fas fa-shield-alt"></i> Administrateur
-                            </span>
-                        </div>
-                    </div>
-                    <div class="user-menu-divider"></div>
-                    <a href="${pageContext.request.contextPath}/admin/dashboard" class="user-menu-item" role="menuitem">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="${pageContext.request.contextPath}/admin/cours" class="user-menu-item" role="menuitem">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>Gérer les cours</span>
-                    </a>
-                    <a href="${pageContext.request.contextPath}/admin/certificats" class="user-menu-item" role="menuitem">
-                        <i class="fas fa-certificate"></i>
-                        <span>Certificats</span>
-                    </a>
-                    <a href="${pageContext.request.contextPath}/admin/themes" class="user-menu-item" role="menuitem">
-                        <i class="fas fa-tags"></i>
-                        <span>Thèmes</span>
-                    </a>
-                    <a href="${pageContext.request.contextPath}/changer-mot-de-passe" class="user-menu-item" role="menuitem">
-                        <i class="fas fa-key"></i>
-                        <span>Changer mon mot de passe</span>
-                    </a>
-                    <div class="user-menu-divider"></div>
-                    <a href="${pageContext.request.contextPath}/deconnexion" class="user-menu-item user-menu-danger" role="menuitem">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Déconnexion</span>
-                    </a>
-                </div>
-            </li>
+            <% } %>
+            <a href="${pageContext.request.contextPath}/admin/certificats" class="user-menu-item" role="menuitem">
+                <i class="fas fa-certificate"></i>
+                <span>Certificats</span>
+            </a>
+            <a href="${pageContext.request.contextPath}/changer-mot-de-passe" class="user-menu-item" role="menuitem">
+                <i class="fas fa-key"></i>
+                <span>Changer mon mot de passe</span>
+            </a>
+            <div class="user-menu-divider"></div>
+            <a href="${pageContext.request.contextPath}/deconnexion" class="user-menu-item user-menu-danger" role="menuitem">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </a>
+        </div>
+    </li>
             
         <%-- ============================================================
              MENU JOUEUR

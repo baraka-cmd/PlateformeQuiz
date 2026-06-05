@@ -284,9 +284,9 @@
                                 
                                 <%-- Rôle --%>
                                 <td class="au-td-role">
-                                    <span class="au-badge-role <%= "admin".equals(roleUtilisateur) ? "au-role-admin" : "au-role-joueur" %>">
-                                        <i class="fas <%= "admin".equals(roleUtilisateur) ? "fa-shield-alt" : "fa-user" %>"></i>
-                                        <%= "admin".equals(roleUtilisateur) ? "Admin" : "Joueur" %>
+                                    <span class="au-badge-role <%= "admin".equals(roleUtilisateur) ? "au-role-admin" : ("gestionnaire".equals(roleUtilisateur) ? "au-role-gestionnaire" : "au-role-joueur") %>">
+                                        <i class="fas <%= "admin".equals(roleUtilisateur) ? "fa-shield-alt" : ("gestionnaire".equals(roleUtilisateur) ? "fa-user-cog" : "fa-user") %>"></i>
+                                        <%= "admin".equals(roleUtilisateur) ? "Super Admin" : ("gestionnaire".equals(roleUtilisateur) ? "Gestionnaire" : "Joueur") %>
                                     </span>
                                 </td>
                                 
@@ -312,15 +312,21 @@
                                 <%-- Actions --%>
                                 <td class="au-td-actions">
                                     <div class="au-actions-group">
-                                        
+
                                         <%-- Voir détail --%>
                                         <a href="${pageContext.request.contextPath}/admin/utilisateurs/detail?id=<%= u.getId() %>" 
                                            class="au-btn-icon au-btn-voir" title="Voir le détail">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        
-                                        <%-- Activer/Désactiver --%>
-                                        <% if (!estMoi) { %>
+
+                                        <%-- 🔒 Si c'est un Super Admin ET que ce n'est pas moi : pas d'actions --%>
+                                        <% if ("admin".equals(roleUtilisateur) && !estMoi) { %>
+                                            <span class="au-btn-icon disabled" title="Super Administrateur - Actions limitées">
+                                                <i class="fas fa-shield-alt"></i>
+                                            </span>
+                                        <% } else if (!estMoi) { %>
+
+                                            <%-- Activer/Désactiver --%>
                                             <% if (actif) { %>
                                                 <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
                                                       onsubmit="return confirm('Désactiver le compte de <%= pseudo.replace("'", "\\'") %> ?\n\nL\'utilisateur ne pourra plus se connecter.')">
@@ -340,18 +346,21 @@
                                                     </button>
                                                 </form>
                                             <% } %>
-                                            
-                                            <%-- Changer rôle --%>
+
+                                            <%-- 🔒 Promouvoir (joueur → gestionnaire) --%>
                                             <% if ("joueur".equals(roleUtilisateur)) { %>
                                                 <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
-                                                      onsubmit="return confirm('Promouvoir <%= pseudo.replace("'", "\\'") %> en Administrateur ?\n\nIl aura accès à toutes les fonctionnalités d\'administration.')">
+                                                      onsubmit="return confirm('Promouvoir <%= pseudo.replace("'", "\\'") %> en Gestionnaire ?\n\nIl aura accès aux cours, quiz, thèmes et résultats.')">
                                                     <input type="hidden" name="action" value="promouvoir">
                                                     <input type="hidden" name="id" value="<%= u.getId() %>">
-                                                    <button type="submit" class="au-btn-icon au-btn-promouvoir" title="Promouvoir Admin">
+                                                    <button type="submit" class="au-btn-icon au-btn-promouvoir" title="Promouvoir Gestionnaire">
                                                         <i class="fas fa-arrow-up"></i>
                                                     </button>
                                                 </form>
-                                            <% } else { %>
+                                            <% } %>
+
+                                            <%-- 🔒 Rétrograder (gestionnaire → joueur) --%>
+                                            <% if ("gestionnaire".equals(roleUtilisateur)) { %>
                                                 <form action="${pageContext.request.contextPath}/admin/utilisateurs/action" method="POST" class="au-form-inline"
                                                       onsubmit="return confirm('Rétrograder <%= pseudo.replace("'", "\\'") %> en Joueur ?\n\nIl perdra l\'accès à l\'administration.')">
                                                     <input type="hidden" name="action" value="retrograder">
@@ -361,13 +370,16 @@
                                                     </button>
                                                 </form>
                                             <% } %>
+
                                         <% } else { %>
+                                            <%-- C'est moi : pas d'actions --%>
                                             <span class="au-btn-icon disabled" title="Vous ne pouvez pas agir sur votre propre compte">
                                                 <i class="fas fa-lock"></i>
                                             </span>
                                         <% } %>
                                     </div>
                                 </td>
+                                
                             </tr>
                         <%
                             }

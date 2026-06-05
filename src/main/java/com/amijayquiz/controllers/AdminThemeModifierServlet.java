@@ -57,7 +57,7 @@ public class AdminThemeModifierServlet extends HttpServlet {
         }
 
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (!"admin".equals(utilisateur.getRole())) {
+        if (!"admin".equals(utilisateur.getRole()) && !"gestionnaire".equals(utilisateur.getRole())) {
             response.sendRedirect(request.getContextPath() + "/connexion");
             return;
         }
@@ -118,7 +118,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     }
 
     Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-    if (!"admin".equals(utilisateur.getRole())) {
+    if (!"admin".equals(utilisateur.getRole()) && !"gestionnaire".equals(utilisateur.getRole())) {
         response.sendRedirect(request.getContextPath() + "/connexion");
         return;
     }

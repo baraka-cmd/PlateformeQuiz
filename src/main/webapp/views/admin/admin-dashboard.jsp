@@ -8,15 +8,13 @@
      FICHIER : views/admin/admin-dashboard.jsp
      RÔLE    : Tableau de bord administrateur AmijayQuiz
               Design professionnel complet
-              - 10 cartes statistiques enrichies
-              - Graphique de tendance (7 derniers jours)
-              - Répartition cours par thème
-              - Répartition quiz par niveau
+              - 8 cartes statistiques enrichies
               - Dernières inscriptions (5)
-              - Paiements en attente
-              - Dernières parties jouées (5)
-              - Activité récente de la plateforme
-              - Raccourcis intelligents
+              - Paiements en attente (Super Admin uniquement)
+              - Activité quiz récente
+              - Répartition cours par thème
+              - Raccourcis intelligents (conditionnels)
+              - Sécurisé : Super Admin vs Gestionnaire
      ============================================================ --%>
 
 <%
@@ -46,6 +44,15 @@
 
     // Ratio Premium
     int ratioPremium = totalJoueurs > 0 ? (utilisateursPremium * 100 / totalJoueurs) : 0;
+
+    // Récupération du rôle de l'admin connecté
+    String roleAdminDashboard = "admin";
+    if (session != null && session.getAttribute("utilisateur") != null) {
+        com.amijayquiz.models.Utilisateur adminDashboard = 
+            (com.amijayquiz.models.Utilisateur) session.getAttribute("utilisateur");
+        roleAdminDashboard = adminDashboard.getRole();
+    }
+    boolean estSuperAdminDashboard = "admin".equals(roleAdminDashboard);
 
     // Messages flash
     String messageSucces = (String) session.getAttribute("messageSucces");
@@ -218,7 +225,7 @@
         </div>
     </div>
 
-    <%-- ===== SECTION 2 : LAYOUT 3 COLONNES ===== --%>
+    <%-- ===== SECTION 2 : LAYOUT 2 COLONNES ===== --%>
     <div class="admin-dashboard-grid">
 
         <%-- ===== COLONNE GAUCHE (large) : ACTIVITÉ RÉCENTE + DERNIÈRES PARTIES ===== --%>
@@ -241,7 +248,6 @@
                                 String email = (String) insc.get("email");
                                 Timestamp dateIns = (Timestamp) insc.get("date_inscription");
                                 String dateFormatee = dateIns != null ? sdf.format(dateIns) : "N/A";
-                                // Calculer "il y a X temps"
                                 String tempsEcoule = calculerTempsEcoule(dateIns);
                             %>
                                 <div class="admin-list-item">
@@ -267,7 +273,15 @@
                     <% } %>
                 </div>
                 <div class="admin-dash-card-footer">
-                    <a href="${pageContext.request.contextPath}/admin/utilisateurs" class="admin-link">Voir tous les utilisateurs <i class="fas fa-arrow-right"></i></a>
+                    <% if (estSuperAdminDashboard) { %>
+                        <a href="${pageContext.request.contextPath}/admin/utilisateurs" class="admin-link">
+                            Voir tous les utilisateurs <i class="fas fa-arrow-right"></i>
+                        </a>
+                    <% } else { %>
+                        <span class="admin-link" style="color: #8b8fa3; cursor: default;">
+                            <i class="fas fa-lock"></i> Réservé au Super Admin
+                        </span>
+                    <% } %>
                 </div>
             </div>
 
@@ -313,42 +327,49 @@
         <%-- ===== COLONNE DROITE (étroite) : PAIEMENTS + RÉPARTITION + RACCOURCIS ===== --%>
         <div class="admin-dash-col admin-dash-col-small">
 
-            <%-- ===== PAIEMENTS EN ATTENTE ===== --%>
-            <div class="admin-dash-card">
-                <div class="admin-dash-card-header">
-                    <div class="admin-dash-card-title">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <h3>Paiements en attente</h3>
-                    </div>
-                    <% if (paiementsEnAttente > 0) { %>
-                        <span class="admin-dash-card-badge warning"><%= paiementsEnAttente %></span>
-                    <% } %>
-                </div>
-                <div class="admin-dash-card-body">
-                    <% if (paiementsEnAttente > 0) { %>
-                        <div class="admin-alerte-paiement">
-                            <div class="admin-alerte-paiement-icon">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="admin-alerte-paiement-text">
-                                <strong><%= paiementsEnAttente %> demande<%= paiementsEnAttente > 1 ? "s" : "" %> en attente</strong>
-                                <p>Ces demandes nécessitent votre validation manuelle.</p>
-                            </div>
+            <%-- ===== PAIEMENTS EN ATTENTE (Super Admin uniquement) ===== --%>
+            <% if (estSuperAdminDashboard) { %>
+                <div class="admin-dash-card">
+                    <div class="admin-dash-card-header">
+                        <div class="admin-dash-card-title">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <h3>Paiements en attente</h3>
                         </div>
-                        <a href="${pageContext.request.contextPath}/admin/paiements" class="admin-btn-action admin-btn-warning">
-                            <i class="fas fa-check-circle"></i> Valider les paiements
-                        </a>
-                    <% } else { %>
-                        <div class="admin-success-state">
-                            <i class="fas fa-check-circle"></i>
-                            <p>Toutes les demandes sont traitées</p>
+                        <% if (paiementsEnAttente > 0) { %>
+                            <span class="admin-dash-card-badge warning"><%= paiementsEnAttente %></span>
+                        <% } %>
+                    </div>
+                    <div class="admin-dash-card-body">
+                        <% if (paiementsEnAttente > 0) { %>
+                            <div class="admin-alerte-paiement">
+                                <div class="admin-alerte-paiement-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="admin-alerte-paiement-text">
+                                    <strong><%= paiementsEnAttente %> demande<%= paiementsEnAttente > 1 ? "s" : "" %> en attente</strong>
+                                    <p>Ces demandes nécessitent votre validation manuelle.</p>
+                                </div>
+                            </div>
+                            <a href="${pageContext.request.contextPath}/admin/paiements" class="admin-btn-action admin-btn-warning">
+                                <i class="fas fa-check-circle"></i> Valider les paiements
+                            </a>
+                        <% } else { %>
+                            <div class="admin-success-state">
+                                <div class="admin-success-icon-wrapper">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="admin-success-text">
+                                    <strong>Tout est à jour</strong>
+                                    <p>Toutes les demandes de paiement ont été traitées avec succès.</p>
+                                </div>
+                            </div>
+                        <% } %>
+                        <div class="admin-paiement-stats">
+                            <span><i class="fas fa-calendar-check"></i> <%= paiementsValidesAujourdhui %> aujourd'hui</span>
                         </div>
-                    <% } %>
-                    <div class="admin-paiement-stats">
-                        <span><i class="fas fa-calendar-check"></i> <%= paiementsValidesAujourdhui %> aujourd'hui</span>
                     </div>
                 </div>
-            </div>
+            <% } %>
 
             <%-- ===== RÉPARTITION COURS PAR THÈME ===== --%>
             <div class="admin-dash-card">
@@ -385,7 +406,7 @@
                 </div>
             </div>
 
-            <%-- ===== RACCOURCIS RAPIDES ===== --%>
+            <%-- ===== RACCOURCIS RAPIDES (conditionnels) ===== --%>
             <div class="admin-dash-card">
                 <div class="admin-dash-card-header">
                     <div class="admin-dash-card-title">
@@ -419,12 +440,20 @@
                             </div>
                             <span>Voir les résultats</span>
                         </a>
-                        <a href="${pageContext.request.contextPath}/admin/paiements" class="admin-shortcut-item">
-                            <div class="shortcut-icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <span>Paiements</span>
-                        </a>
+                        <% if (estSuperAdminDashboard) { %>
+                            <a href="${pageContext.request.contextPath}/admin/utilisateurs" class="admin-shortcut-item">
+                                <div class="shortcut-icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <span>Utilisateurs</span>
+                            </a>
+                            <a href="${pageContext.request.contextPath}/admin/paiements" class="admin-shortcut-item">
+                                <div class="shortcut-icon" style="background: linear-gradient(135deg, #f5576c, #e0485c);">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <span>Paiements</span>
+                            </a>
+                        <% } %>
                         <a href="${pageContext.request.contextPath}/admin/certificats" class="admin-shortcut-item">
                             <div class="shortcut-icon" style="background: linear-gradient(135deg, #00bcd4, #0097a7);">
                                 <i class="fas fa-certificate"></i>

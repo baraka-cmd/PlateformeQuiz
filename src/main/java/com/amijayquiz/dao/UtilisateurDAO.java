@@ -598,29 +598,31 @@ public class UtilisateurDAO {
      * Change le rôle d'un utilisateur (admin ↔ joueur)
      */
     public boolean changerRole(int id, String nouveauRole) {
-        if (!"admin".equals(nouveauRole) && !"joueur".equals(nouveauRole)) {
-            return false;
-        }
-        Connection connexion = null;
-        PreparedStatement ps = null;
-        try {
-            connexion = ConnexionDB.getConnexion();
-            if (connexion == null) return false;
-            ps = connexion.prepareStatement("UPDATE utilisateurs SET role = ? WHERE id = ?");
-            ps.setString(1, nouveauRole);
-            ps.setInt(2, id);
-            int lignes = ps.executeUpdate();
-            if (lignes > 0) {
-                System.out.println("✅ [UtilisateurDAO] Rôle changé : ID=" + id + " → " + nouveauRole);
-                return true;
-            }
-        } catch (SQLException e) {
-            System.err.println("❌ [UtilisateurDAO] Erreur changement rôle : " + e.getMessage());
-        } finally {
-            fermerRessources(ps, null);
-        }
+    // Accepter "admin", "joueur" ET "gestionnaire"
+    if (!"admin".equals(nouveauRole) && !"joueur".equals(nouveauRole) && !"gestionnaire".equals(nouveauRole)) {
+        System.err.println("❌ [UtilisateurDAO] Rôle invalide : " + nouveauRole);
         return false;
     }
+    Connection connexion = null;
+    PreparedStatement ps = null;
+    try {
+        connexion = ConnexionDB.getConnexion();
+        if (connexion == null) return false;
+        ps = connexion.prepareStatement("UPDATE utilisateurs SET role = ? WHERE id = ?");
+        ps.setString(1, nouveauRole);
+        ps.setInt(2, id);
+        int lignes = ps.executeUpdate();
+        if (lignes > 0) {
+            System.out.println("✅ [UtilisateurDAO] Rôle changé : ID=" + id + " → " + nouveauRole);
+            return true;
+        }
+    } catch (SQLException e) {
+        System.err.println("❌ [UtilisateurDAO] Erreur changement rôle : " + e.getMessage());
+    } finally {
+        fermerRessources(ps, null);
+    }
+    return false;
+}
 
     /**
      * Compte les utilisateurs par rôle

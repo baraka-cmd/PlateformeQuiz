@@ -64,7 +64,7 @@ public class AdminCertificatsServlet extends HttpServlet {
         }
 
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (!"admin".equals(utilisateur.getRole())) {
+        if (!"admin".equals(utilisateur.getRole()) && !"gestionnaire".equals(utilisateur.getRole())) {
             response.sendRedirect(request.getContextPath() + "/connexion");
             return;
         }
@@ -191,7 +191,7 @@ public class AdminCertificatsServlet extends HttpServlet {
         }
 
         Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
-        if (!"admin".equals(utilisateur.getRole())) {
+        if (!"admin".equals(utilisateur.getRole()) && !"gestionnaire".equals(utilisateur.getRole())) {
             response.sendRedirect(request.getContextPath() + "/connexion");
             return;
         }
