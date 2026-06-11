@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/cours-lecon.js
-// RÔLE    : Scripts de la page de contenu d'une lecon AmijayQuiz
+// RÔLE    : Scripts de la page de contenu d'une lecon LearnPath
 //           - Copie du code source dans le presse-papier
 //           - Agrandissement/reduction du bloc de code
 //           - Suivi du temps passe sur la lecon
@@ -203,7 +203,7 @@
                 formData.append('leconId', leconId);
                 formData.append('tempsPasse', tempsPasseTotal);
                 navigator.sendBeacon(
-                    window.location.origin + '/amijayQuizz/joueur/cours/valider',
+                    window.location.origin + '/LearnPathz/joueur/cours/valider',
                     formData
                 );
             }

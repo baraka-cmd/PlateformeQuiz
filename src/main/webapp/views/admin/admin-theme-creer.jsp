@@ -49,7 +49,7 @@
     };
     
     // ===== TITRE DE LA PAGE =====
-    request.setAttribute("pageTitle", "Créer un thème - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Créer un thème - Administration - LearnPath");
     
     // ===== CHARGEMENT CSS/JS =====
     String adminCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/admin-theme-creer.css\">";

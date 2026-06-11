@@ -177,7 +177,7 @@ function copierResultat() {
 ${alerteText}
 
 ---
-AmijayQuiz - Votre plateforme d'apprentissage`;
+LearnPath - Votre plateforme d'apprentissage`;
     
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(texteCopie).then(() => {
@@ -256,7 +256,7 @@ function initPrint() {
 
 function imprimerResultat() {
     const originalTitle = document.title;
-    document.title = 'Résultat examen - AmijayQuiz';
+    document.title = 'Résultat examen - LearnPath';
     
     const printContent = document.querySelector('.resultat-module-container');
     if (!printContent) return;
@@ -267,7 +267,7 @@ function imprimerResultat() {
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>Résultat examen - AmijayQuiz</title>
+            <title>Résultat examen - LearnPath</title>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
             <style>
                 body {
@@ -340,10 +340,10 @@ function partagerResultat() {
     const isSuccess = document.querySelector('.score-card.reussi') !== null;
     
     const shareData = {
-        title: 'AmijayQuiz - Résultat examen',
+        title: 'LearnPath - Résultat examen',
         text: isSuccess 
-            ? `🎉 J'ai réussi ${module} avec ${scoreText} sur AmijayQuiz !` 
-            : `📚 J'ai obtenu ${scoreText} à ${module} sur AmijayQuiz. À réviser !`,
+            ? `🎉 J'ai réussi ${module} avec ${scoreText} sur LearnPath !` 
+            : `📚 J'ai obtenu ${scoreText} à ${module} sur LearnPath. À réviser !`,
         url: window.location.href
     };
     

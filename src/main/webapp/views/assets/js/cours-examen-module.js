@@ -21,8 +21,8 @@
      ========================================================== */
     var NOMBRE_QUESTIONS = window.NOMBRE_QUESTIONS || 20;
     var CONTEXT_PATH = window.location.pathname.split('/')[1] || '';
-    var STORAGE_KEY = 'amijayquiz_examen_module_reponses';
-    var STORAGE_TIMESTAMP_KEY = 'amijayquiz_examen_module_timestamp';
+    var STORAGE_KEY = 'LearnPath_examen_module_reponses';
+    var STORAGE_TIMESTAMP_KEY = 'LearnPath_examen_module_timestamp';
 
     var reponsesUtilisateur = new Array(NOMBRE_QUESTIONS).fill(null);
     var currentQuestion = 0;

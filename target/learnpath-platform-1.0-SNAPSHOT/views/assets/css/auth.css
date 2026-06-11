@@ -1,0 +1,1086 @@
+/* ============================================================
+   FICHIER : views/assets/css/auth.css
+   RÔLE    : Styles des pages d'authentification LearnPath
+             - Layout 2 colonnes (sidebar info + formulaire)
+             - Formulaire moderne avec validation visuelle
+             - Indicateur de force du mot de passe
+             - Vérification correspondance en temps réel
+             - Checkbox personnalisée
+             - Boutons avec loader
+             - Messages d'alerte
+             - Responsive design complet
+   ============================================================ */
+
+/* ===== CSS VARIABLES SPÉCIFIQUES AUTH ===== */
+:root {
+    --auth-primary: #667eea;
+    --auth-primary-dark: #5a6fd6;
+    --auth-secondary: #764ba2;
+    --auth-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --auth-success: #27ae60;
+    --auth-success-light: #e8f5e9;
+    --auth-danger: #e74c3c;
+    --auth-danger-light: #ffe0e0;
+    --auth-warning: #f39c12;
+    --auth-warning-light: #fff8e1;
+    --auth-bg: #f0f2f5;
+    --auth-white: #ffffff;
+    --auth-text: #2d2d2d;
+    --auth-text-light: #555555;
+    --auth-text-muted: #888888;
+    --auth-border: #e0e0e0;
+    --auth-border-focus: #667eea;
+    --auth-radius-sm: 8px;
+    --auth-radius: 12px;
+    --auth-radius-lg: 16px;
+    --auth-radius-xl: 20px;
+    --auth-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --auth-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    --auth-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+    --auth-transition: all 0.3s ease;
+}
+
+/* ==========================================================
+   CONTENEUR PRINCIPAL (2 COLONNES)
+   ========================================================== */
+.auth-container {
+    display: flex;
+    min-height: calc(100vh - 70px);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--auth-white);
+    border-radius: var(--auth-radius-xl);
+    overflow: hidden;
+    box-shadow: var(--auth-shadow-lg);
+    animation: authFadeIn 0.6s ease;
+}
+
+@keyframes authFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================
+   PANNEAU GAUCHE : SIDEBAR INFORMATIF
+   ========================================================== */
+.auth-sidebar {
+    flex: 0 0 440px;
+    background: var(--auth-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 45px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Motif décoratif */
+.auth-sidebar::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    animation: sidebarFloat 8s ease-in-out infinite;
+}
+
+.auth-sidebar::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    animation: sidebarFloat 10s ease-in-out infinite reverse;
+}
+
+@keyframes sidebarFloat {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    33% {
+        transform: translate(30px, -30px);
+    }
+    66% {
+        transform: translate(-20px, 20px);
+    }
+}
+
+.sidebar-content {
+    position: relative;
+    z-index: 1;
+    max-width: 360px;
+}
+
+/* Logo dans la sidebar */
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-logo:hover {
+    transform: translateX(5px);
+}
+
+.sidebar-logo i {
+    font-size: 36px;
+    animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.sidebar-content h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    line-height: 1.3;
+}
+
+.sidebar-desc {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.7;
+    margin: 0 0 35px 0;
+    font-weight: 300;
+}
+
+/* Liste des avantages */
+.benefits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.benefit-item {
+    display: flex;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.benefit-item:hover {
+    transform: translateX(5px);
+}
+
+.benefit-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: var(--auth-radius);
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.benefit-item:hover .benefit-icon {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.benefit-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.benefit-text strong {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.benefit-text span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.4;
+    font-weight: 300;
+}
+
+/* Témoignage dans la sidebar */
+.sidebar-testimonial {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--auth-radius-lg);
+    padding: 20px 22px;
+    backdrop-filter: blur(5px);
+}
+
+.testimonial-quote {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.testimonial-quote i {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+.testimonial-quote p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+    margin: 0;
+    font-style: italic;
+    font-weight: 300;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.author-avatar-sm {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.author-info-sm strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.author-info-sm span {
+    display: block;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 1px;
+}
+
+.author-stars {
+    margin-top: 3px;
+    font-size: 10px;
+    color: #ffd700;
+}
+
+/* ==========================================================
+   PANNEAU DROIT : FORMULAIRE
+   ========================================================== */
+.auth-form-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: var(--auth-white);
+    overflow-y: auto;
+}
+
+.auth-form-wrapper {
+    width: 100%;
+    max-width: 450px;
+}
+
+/* En-tête du formulaire */
+.auth-form-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-icon-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--auth-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.form-icon-circle:hover {
+    transform: scale(1.05);
+}
+
+.form-icon-circle i {
+    font-size: 30px;
+    color: white;
+}
+
+.auth-form-header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--auth-text);
+    margin: 0 0 6px 0;
+}
+
+.auth-form-header p {
+    font-size: 14px;
+    color: var(--auth-text-muted);
+    margin: 0;
+}
+
+/* ==========================================================
+   GROUPES DE CHAMPS
+   ========================================================== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--auth-text-light);
+    margin-bottom: 8px;
+}
+
+.form-group label i {
+    color: var(--auth-primary);
+    font-size: 15px;
+    width: 18px;
+    text-align: center;
+}
+
+.label-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.label-badge.optional {
+    background: #e8f0fe;
+    color: #667eea;
+}
+
+/* Input wrapper */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper .input-icon {
+    position: absolute;
+    left: 16px;
+    color: #aaa;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 14px 44px 14px 48px;
+    border: 2px solid var(--auth-border);
+    border-radius: var(--auth-radius);
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: #fafbfc;
+    color: var(--auth-text);
+    outline: none;
+    line-height: 1.5;
+}
+
+.form-group input:focus {
+    border-color: var(--auth-border-focus);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.08);
+}
+
+.form-group input:focus ~ .input-icon,
+.form-group input:focus + .input-icon {
+    color: var(--auth-primary);
+}
+
+.form-group input::placeholder {
+    color: #bbb;
+    font-size: 13px;
+    font-weight: 300;
+}
+
+/* États de validation */
+.form-group input.input-valid {
+    border-color: var(--auth-success);
+    background: #fafffe;
+}
+
+.form-group input.input-valid:focus {
+    box-shadow: 0 0 0 4px rgba(39, 174, 96, 0.08);
+}
+
+.form-group input.input-valid ~ .input-icon {
+    color: var(--auth-success);
+}
+
+.form-group input.input-error {
+    border-color: var(--auth-danger);
+    background: #fffafa;
+}
+
+.form-group input.input-error:focus {
+    box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.08);
+}
+
+.form-group input.input-error ~ .input-icon {
+    color: var(--auth-danger);
+}
+
+/* Statut de l'input (icône check/croix) */
+.input-status {
+    position: absolute;
+    right: 44px;
+    font-size: 14px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.input-status.valid {
+    opacity: 1;
+    transform: scale(1);
+    color: var(--auth-success);
+}
+
+.input-status.error {
+    opacity: 1;
+    transform: scale(1);
+    color: var(--auth-danger);
+}
+
+/* Bouton toggle mot de passe */
+.toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password-btn:hover {
+    color: var(--auth-primary);
+    background: rgba(102, 126, 234, 0.08);
+}
+
+.toggle-password-btn i {
+    font-size: 16px;
+}
+
+/* Messages d'aide */
+.form-hint {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--auth-text-muted);
+    margin-top: 6px;
+    font-weight: 300;
+}
+
+.form-hint i {
+    font-size: 11px;
+    color: var(--auth-primary);
+}
+
+.form-error {
+    display: block;
+    font-size: 12px;
+    color: var(--auth-danger);
+    margin-top: 5px;
+    min-height: 0;
+    transition: all 0.3s ease;
+}
+
+.form-match {
+    display: block;
+    font-size: 12px;
+    margin-top: 6px;
+    min-height: 18px;
+    transition: all 0.3s ease;
+}
+
+.form-match.match-success {
+    color: var(--auth-success);
+}
+
+.form-match.match-error {
+    color: var(--auth-danger);
+}
+
+/* ==========================================================
+   INDICATEUR DE FORCE DU MOT DE PASSE
+   ========================================================== */
+.password-strength {
+    height: 5px;
+    background: #e8e8e8;
+    border-radius: 3px;
+    margin-top: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    transition: all 0.4s ease;
+    background: #e8e8e8;
+}
+
+.password-strength-text {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 5px;
+    min-height: 18px;
+    transition: all 0.3s ease;
+}
+
+/* Exigences du mot de passe */
+.password-requirements {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.requirement {
+    font-size: 12px;
+    color: var(--auth-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.3s ease;
+}
+
+.requirement i {
+    font-size: 6px;
+    transition: all 0.3s ease;
+}
+
+.requirement.valid {
+    color: var(--auth-success);
+}
+
+.requirement.valid i {
+    color: var(--auth-success);
+    font-size: 10px;
+    transform: rotate(0deg);
+}
+
+.requirement.valid i::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+/* ==========================================================
+   CHECKBOX PERSONNALISÉE
+   ========================================================== */
+.checkbox-group {
+    margin-top: 5px;
+}
+
+.checkbox-label {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    cursor: pointer;
+    font-size: 13px !important;
+    color: var(--auth-text-light) !important;
+    font-weight: 400 !important;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--auth-border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.3s ease;
+    background: #fafbfc;
+    margin-top: 1px;
+}
+
+.checkbox-custom::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    transition: all 0.2s ease;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+    background: var(--auth-primary);
+    border-color: var(--auth-primary);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+    transform: rotate(45deg) scale(1);
+}
+
+.checkbox-text {
+    line-height: 1.5;
+}
+
+.form-link {
+    color: var(--auth-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.form-link:hover {
+    color: var(--auth-primary-dark);
+    text-decoration: underline;
+}
+
+/* ==========================================================
+   BOUTON D'AUTHENTIFICATION
+   ========================================================== */
+.btn-auth {
+    width: 100%;
+    padding: 15px 24px;
+    border-radius: var(--auth-radius);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.3px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-auth-primary {
+    background: var(--auth-gradient);
+    color: white;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+}
+
+.btn-auth-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.btn-auth-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+}
+
+.btn-auth-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-auth i {
+    font-size: 16px;
+}
+
+/* Loader du bouton */
+.btn-loader {
+    display: none;
+    font-size: 16px;
+}
+
+.btn-auth.loading .btn-loader {
+    display: inline-flex;
+}
+
+.btn-auth.loading span:not(.btn-loader) {
+    visibility: hidden;
+}
+
+.btn-auth.loading .btn-loader {
+    position: absolute;
+}
+
+/* ==========================================================
+   SÉPARATEUR
+   ========================================================== */
+.auth-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 22px 0;
+    color: #bbb;
+    font-size: 13px;
+}
+
+.auth-separator::before,
+.auth-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--auth-border);
+}
+
+.auth-separator span {
+    margin: 0 15px;
+    font-weight: 500;
+}
+
+/* ==========================================================
+   LIEN DE REDIRECTION
+   ========================================================== */
+.auth-redirect {
+    text-align: center;
+    font-size: 14px;
+    color: var(--auth-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.auth-redirect i {
+    color: var(--auth-primary);
+    font-size: 14px;
+}
+
+.auth-redirect a {
+    color: var(--auth-primary);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+
+.auth-redirect a:hover {
+    color: var(--auth-primary-dark);
+    gap: 8px;
+}
+
+.auth-redirect a i {
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+/* ==========================================================
+   BOUTON RETOUR
+   ========================================================== */
+.auth-back {
+    text-align: center;
+    margin-top: 18px;
+}
+
+.auth-back a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--auth-text-muted);
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.auth-back a:hover {
+    color: var(--auth-primary);
+}
+
+.auth-back a i {
+    font-size: 12px;
+}
+
+/* ==========================================================
+   MESSAGES D'ALERTE (DANS LE FORMULAIRE)
+   ========================================================== */
+.message-alerte {
+    padding: 13px 18px;
+    border-radius: var(--auth-radius);
+    font-weight: 500;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 80px;
+    }
+}
+
+.message-erreur {
+    background: var(--auth-danger-light);
+    color: #c0392b;
+    border: 1px solid #ffb8b8;
+}
+
+.message-erreur i {
+    color: var(--auth-danger);
+    font-size: 16px;
+}
+
+.message-succes {
+    background: var(--auth-success-light);
+    color: #1e7e34;
+    border: 1px solid #a3e4b8;
+}
+
+.message-succes i {
+    color: var(--auth-success);
+    font-size: 16px;
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+/* Tablette et petit desktop */
+@media (max-width: 1024px) {
+    .auth-sidebar {
+        flex: 0 0 380px;
+        padding: 40px 30px;
+    }
+    
+    .sidebar-content h2 {
+        font-size: 24px;
+    }
+}
+
+/* Tablette */
+@media (max-width: 860px) {
+    .auth-container {
+        flex-direction: column;
+        max-width: 500px;
+        margin: 20px auto;
+    }
+    
+    .auth-sidebar {
+        flex: 0 0 auto;
+        padding: 35px 30px;
+        text-align: center;
+    }
+    
+    .sidebar-logo {
+        justify-content: center;
+    }
+    
+    .benefits-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .benefit-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .benefit-text {
+        align-items: center;
+    }
+    
+    .sidebar-testimonial {
+        display: none;
+    }
+    
+    .auth-form-container {
+        padding: 30px 25px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+    .auth-container {
+        margin: 0;
+        border-radius: 0;
+        min-height: 100vh;
+    }
+    
+    .auth-sidebar {
+        padding: 25px 20px;
+    }
+    
+    .sidebar-content h2 {
+        font-size: 20px;
+    }
+    
+    .sidebar-desc {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+    
+    .benefits-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 0;
+    }
+    
+    .benefit-item {
+        flex-direction: row;
+        text-align: left;
+        align-items: flex-start;
+    }
+    
+    .benefit-text {
+        align-items: flex-start;
+    }
+    
+    .auth-form-container {
+        padding: 25px 18px;
+    }
+    
+    .auth-form-header h1 {
+        font-size: 22px;
+    }
+    
+    .form-icon-circle {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .form-icon-circle i {
+        font-size: 24px;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"] {
+        font-size: 13px;
+        padding: 12px 40px 12px 42px;
+    }
+    
+    .btn-auth {
+        font-size: 14px;
+        padding: 14px 20px;
+    }
+    
+    .auth-redirect {
+        font-size: 13px;
+    }
+}
+
+
+
+
+
+
+/* ==========================================================
+   BOUTON CONNEXION GOOGLE
+   ========================================================== */
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 13px 20px;
+    background: var(--auth-white);
+    color: #444;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--auth-radius);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-google:hover {
+    background: #f8f9ff;
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: #333;
+}
+
+.btn-google:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.google-icon {
+    flex-shrink: 0;
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+@media (max-width: 500px) {
+    .btn-google {
+        font-size: 13px;
+        padding: 11px 16px;
+        gap: 10px;
+    }
+}

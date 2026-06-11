@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.amijayquiz.models.Quiz" %>
-<%@ page import="com.amijayquiz.models.Question" %>
+<%@ page import="com.learnpath.models.Quiz" %>
+<%@ page import="com.learnpath.models.Question" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-quiz-creer.jsp
@@ -33,7 +33,7 @@
         themeActuel = titreActuel.substring(0, titreActuel.lastIndexOf(" - Partie"));
     }
 
-    request.setAttribute("pageTitle", "Créer un quiz - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Créer un quiz - Administration - LearnPath");
 %>
 
 <%

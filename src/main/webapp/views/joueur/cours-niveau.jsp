@@ -1,13 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Chapitre" %>
-<%@ page import="com.amijayquiz.models.Lecon" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Chapitre" %>
+<%@ page import="com.learnpath.models.Lecon" %>
 
 <%-- ============================================================
      FICHIER : views/joueur/cours-niveau.jsp
-     RÔLE    : Page niveau d'un theme de cours AmijayQuiz
+     RÔLE    : Page niveau d'un theme de cours LearnPath
               Affiche tous les cours disponibles pour un theme
               et un niveau donnes (elementaire, moyen, avance)
               - Banniere du niveau avec icone, statistiques
@@ -74,7 +74,7 @@
         afficherBannierePremium = true;
     }
 
-    request.setAttribute("pageTitle", nomNiveauFormate + " - " + nomTheme + " - AmijayQuiz");
+    request.setAttribute("pageTitle", nomNiveauFormate + " - " + nomTheme + " - LearnPath");
 %>
 
 <%
@@ -176,7 +176,7 @@
             <div class="guide-icon-wrapper">
                 <i class="fas fa-sitemap"></i>
             </div>
-            <h2>Comment fonctionne l'apprentissage sur AmijayQuiz ?</h2>
+            <h2>Comment fonctionne l'apprentissage sur LearnPath ?</h2>
         </div>
 
         <div class="architecture-levels">

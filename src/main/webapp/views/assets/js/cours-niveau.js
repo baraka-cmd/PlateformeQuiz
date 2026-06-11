@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/cours-niveau.js
-// RÔLE    : Script de la page niveau Cours AmijayQuiz
+// RÔLE    : Script de la page niveau Cours LearnPath
 //           - Animation des cartes de cours
 //           - Effet hover sur les cartes
 //           - Animation des barres de progression

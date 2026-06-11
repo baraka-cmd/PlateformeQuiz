@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Theme" %>
+<%@ page import="com.learnpath.models.Theme" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-themes.jsp
@@ -49,7 +49,7 @@
     }
     
     // Titre de la page
-    request.setAttribute("pageTitle", "Gestion des thèmes - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Gestion des thèmes - Administration - LearnPath");
 %>
 
 <%

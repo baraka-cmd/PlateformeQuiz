@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      Fichier : paiement-echoue.jsp
@@ -37,7 +37,7 @@
     session.removeAttribute("csrf_token_paiement");
     session.removeAttribute("messageErreurPaiement");
 
-    request.setAttribute("pageTitle", "Paiement échoué - AmijayQuiz");
+    request.setAttribute("pageTitle", "Paiement échoué - LearnPath");
 %>
 
 <%

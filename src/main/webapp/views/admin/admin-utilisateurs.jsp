@@ -2,7 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-utilisateurs.jsp
@@ -50,7 +50,7 @@
     SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", new java.util.Locale("fr", "FR"));
     SimpleDateFormat sdfComplet = new SimpleDateFormat("dd MMM yyyy HH:mm", new java.util.Locale("fr", "FR"));
 
-    request.setAttribute("pageTitle", "Gestion des utilisateurs - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Gestion des utilisateurs - Administration - LearnPath");
 %>
 
 <%

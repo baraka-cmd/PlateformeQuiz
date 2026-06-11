@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.amijayquiz.models.Theme" %>
+<%@ page import="com.learnpath.models.Theme" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-cours-creer.jsp
@@ -40,7 +40,7 @@
     if (oldImage == null) oldImage = "";
     if (oldDuree == null) oldDuree = "";
     
-    request.setAttribute("pageTitle", "Créer un cours - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Créer un cours - Administration - LearnPath");
 %>
 
 <%

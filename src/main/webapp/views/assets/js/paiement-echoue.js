@@ -151,8 +151,8 @@ function initBoutonReessayer() {
         }, 150);
 
         // Afficher un toast
-        if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-            AmijayQuiz.toast('Redirection vers la page de paiement...', 'info', 2000);
+        if (typeof LearnPath !== 'undefined' && LearnPath.toast) {
+            LearnPath.toast('Redirection vers la page de paiement...', 'info', 2000);
         }
     });
 
@@ -184,14 +184,14 @@ function initCopieReference() {
     copierIcon.addEventListener('click', function(e) {
         e.stopPropagation();
 
-        if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.copierPressePapier) {
-            AmijayQuiz.copierPressePapier(EchecConfig.reference).then(function(success) {
+        if (typeof LearnPath !== 'undefined' && LearnPath.copierPressePapier) {
+            LearnPath.copierPressePapier(EchecConfig.reference).then(function(success) {
                 if (success) {
                     copierIcon.className = 'fas fa-check';
                     copierIcon.style.color = '#27ae60';
 
-                    if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-                        AmijayQuiz.toast('📋 Référence copiée !', 'success', 2000);
+                    if (typeof LearnPath !== 'undefined' && LearnPath.toast) {
+                        LearnPath.toast('📋 Référence copiée !', 'success', 2000);
                     }
 
                     setTimeout(function() {
@@ -289,13 +289,13 @@ function initSupportContact() {
 // DÉTECTION DU MODE HORS LIGNE
 // ============================================================
 window.addEventListener('offline', function() {
-    if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-        AmijayQuiz.toast('⚠️ Vous êtes hors ligne. Vérifiez votre connexion internet.', 'warning', 5000);
+    if (typeof LearnPath !== 'undefined' && LearnPath.toast) {
+        LearnPath.toast('⚠️ Vous êtes hors ligne. Vérifiez votre connexion internet.', 'warning', 5000);
     }
 });
 
 window.addEventListener('online', function() {
-    if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-        AmijayQuiz.toast('✅ Connexion rétablie ! Vous pouvez réessayer le paiement.', 'success', 3000);
+    if (typeof LearnPath !== 'undefined' && LearnPath.toast) {
+        LearnPath.toast('✅ Connexion rétablie ! Vous pouvez réessayer le paiement.', 'success', 3000);
     }
 });

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Cours" %>
+<%@ page import="com.learnpath.models.Cours" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-cours-chapitre-creer.jsp

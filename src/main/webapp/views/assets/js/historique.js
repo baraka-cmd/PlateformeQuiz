@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * FICHIER : views/assets/js/historique.js
- * RÔLE    : Scripts de la page historique AmijayQuiz
+ * RÔLE    : Scripts de la page historique LearnPath
  *           - Animation des cartes statistiques au scroll
  *           - Compteurs animés pour les statistiques
  *           - Gestion des filtres (auto-soumission)

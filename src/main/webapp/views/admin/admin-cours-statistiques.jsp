@@ -2,8 +2,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Certificat" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Certificat" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-cours-statistiques.jsp

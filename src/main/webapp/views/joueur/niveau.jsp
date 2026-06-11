@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Quiz" %>
+<%@ page import="com.learnpath.models.Quiz" %>
 
 <%-- ============================================================
      Fichier : niveau.jsp
@@ -62,7 +62,7 @@
         statutIcone = "fas fa-forward";
     }
 
-    request.setAttribute("pageTitle", nomNiveauFormate + " - " + nomCategorie + " - AmijayQuiz");
+    request.setAttribute("pageTitle", nomNiveauFormate + " - " + nomCategorie + " - LearnPath");
 %>
 
 <%

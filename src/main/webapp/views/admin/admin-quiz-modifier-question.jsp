@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Quiz" %>
-<%@ page import="com.amijayquiz.models.Question" %>
+<%@ page import="com.LearnPath.models.Quiz" %>
+<%@ page import="com.LearnPath.models.Question" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-quiz-modifier-question.jsp

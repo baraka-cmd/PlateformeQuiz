@@ -1,13 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Chapitre" %>
-<%@ page import="com.amijayquiz.models.Lecon" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Chapitre" %>
+<%@ page import="com.learnpath.models.Lecon" %>
 
 <%-- ============================================================
      FICHIER : views/joueur/cours-chapitre.jsp
-     RÔLE    : Page d'un chapitre de cours AmijayQuiz
+     RÔLE    : Page d'un chapitre de cours LearnPath
               Affiche la liste des lecons du chapitre
               avec navigation vers le plan du cours
      ============================================================ --%>
@@ -34,7 +34,7 @@
     String themeEncode = java.net.URLEncoder.encode(cours.getTheme(), "UTF-8");
     String niveauEncode = java.net.URLEncoder.encode(cours.getNiveau(), "UTF-8");
 
-    request.setAttribute("pageTitle", chapitre.getTitre() + " - " + cours.getTitre() + " - AmijayQuiz");
+    request.setAttribute("pageTitle", chapitre.getTitre() + " - " + cours.getTitre() + " - LearnPath");
 %>
 
 <%

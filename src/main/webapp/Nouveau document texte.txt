@@ -189,7 +189,7 @@ Plan professionnel d'intégration PawaPay - Architecture complète
 📁 Structure des fichiers à créer
 
 ```
-src/main/java/com/amijayquiz/
+src/main/java/com/LearnPath/
 ├── config/
 │   └── PawaPayConfig.java                 ← Configuration (token, URLs)
 ├── models/
@@ -441,9 +441,9 @@ Voici l'ordre dans lequel on va créer chaque fichier, du premier au dernier :
 (Fondations - rien ne fonctionne sans ça)
 
 N° Fichier Rôle
-1 src/main/java/com/amijayquiz/config/PawaPayConfig.java Token, URLs, clés PawaPay
-2 src/main/java/com/amijayquiz/utils/PawaPayUtil.java Méthodes HTTP (POST vers PawaPay, vérification signature webhook)
-3 src/main/java/com/amijayquiz/utils/SecuriteUtil.java Génération référence unique, validation phone, logs
+1 src/main/java/com/LearnPath/config/PawaPayConfig.java Token, URLs, clés PawaPay
+2 src/main/java/com/LearnPath/utils/PawaPayUtil.java Méthodes HTTP (POST vers PawaPay, vérification signature webhook)
+3 src/main/java/com/LearnPath/utils/SecuriteUtil.java Génération référence unique, validation phone, logs
 
 ---
 
@@ -452,7 +452,7 @@ N° Fichier Rôle
 (Représentation des données)
 
 N° Fichier Rôle
-4 src/main/java/com/amijayquiz/models/Paiement.java Modèle Paiement (id, userId, reference, transactionId, montant, statut...)
+4 src/main/java/com/LearnPath/models/Paiement.java Modèle Paiement (id, userId, reference, transactionId, montant, statut...)
 
 ---
 
@@ -461,8 +461,8 @@ N° Fichier Rôle
 (Lecture/Écriture dans MySQL)
 
 N° Fichier Rôle
-5 src/main/java/com/amijayquiz/dao/PaiementDAO.java CRUD table paiements + recherche par référence
-6 src/main/java/com/amijayquiz/dao/AccessPremiumDAO.java Gestion table acces_premium + activation/désactivation premium
+5 src/main/java/com/LearnPath/dao/PaiementDAO.java CRUD table paiements + recherche par référence
+6 src/main/java/com/LearnPath/dao/AccessPremiumDAO.java Gestion table acces_premium + activation/désactivation premium
 
 ---
 
@@ -471,7 +471,7 @@ N° Fichier Rôle
 (Blocage des accès non payés)
 
 N° Fichier Rôle
-7 src/main/java/com/amijayquiz/filters/AccesPayantFilter.java Vérifie si l'utilisateur a le droit d'accéder à la ressource demandée
+7 src/main/java/com/LearnPath/filters/AccesPayantFilter.java Vérifie si l'utilisateur a le droit d'accéder à la ressource demandée
 
 ---
 
@@ -480,8 +480,8 @@ N° Fichier Rôle
 (Logique métier - endpoints)
 
 N° Fichier Rôle
-8 src/main/java/com/amijayquiz/controllers/PaiementServlet.java GET : page paiement / POST : créer transaction PawaPay
-9 src/main/java/com/amijayquiz/controllers/WebhookPaiementServlet.java Réception callback PawaPay, validation, activation premium
+8 src/main/java/com/LearnPath/controllers/PaiementServlet.java GET : page paiement / POST : créer transaction PawaPay
+9 src/main/java/com/LearnPath/controllers/WebhookPaiementServlet.java Réception callback PawaPay, validation, activation premium
 
 ---
 
@@ -555,7 +555,7 @@ Dis-moi "Go" et je te l'envoie.
 <%-- ===== 🆕 AJOUTER : ===== --%>
 <%
     // Vérification premium
-    com.amijayquiz.dao.AccessPremiumDAO premiumDAO = new com.amijayquiz.dao.AccessPremiumDAO();
+    com.LearnPath.dao.AccessPremiumDAO premiumDAO = new com.LearnPath.dao.AccessPremiumDAO();
     boolean estPremium = premiumDAO.estPremium(joueurId);
     request.setAttribute("estPremium", estPremium);
 %>
@@ -584,7 +584,7 @@ Dis-moi "Go" et je te l'envoie.
                     <i class="fas fa-crown"></i>
                 </div>
                 <div class="premium-banner-text">
-                    <h3>Débloquez tout le potentiel d'AmijayQuiz</h3>
+                    <h3>Débloquez tout le potentiel d'LearnPath</h3>
                     <p>
                         <strong>4$ seulement</strong> — Accès à vie à tous les niveaux Moyen & Avancé.
                         <span class="premium-banner-features">
@@ -651,7 +651,7 @@ Dis-moi "Go" et je te l'envoie.
              ============================================================ --%>
         <% } else { 
             // 🆕 Vérification premium pour le header
-            com.amijayquiz.dao.AccessPremiumDAO premiumDAONav = new com.amijayquiz.dao.AccessPremiumDAO();
+            com.LearnPath.dao.AccessPremiumDAO premiumDAONav = new com.LearnPath.dao.AccessPremiumDAO();
             boolean estPremiumNav = premiumDAONav.estPremium(utilisateurConnecte.getId());
         %>
             

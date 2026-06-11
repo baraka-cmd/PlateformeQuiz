@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Theme" %>
+<%@ page import="com.learnpath.models.Theme" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-theme-modifier.jsp
@@ -65,7 +65,7 @@
     };
     
     // ===== TITRE DE LA PAGE =====
-    request.setAttribute("pageTitle", "Modifier le thème - " + themeNom + " - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Modifier le thème - " + themeNom + " - Administration - LearnPath");
     
     // ===== CHARGEMENT CSS/JS =====
     String adminCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/admin-theme-creer.css\">";

@@ -2,7 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
+<%@ page import="com.learnpath.models.Cours" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-certificats.jsp
@@ -38,7 +38,7 @@
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", new java.util.Locale("fr", "FR"));
 
-    request.setAttribute("pageTitle", "Certificats - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Certificats - Administration - LearnPath");
 %>
 
 <%

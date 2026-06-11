@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      Fichier : paiement-succes.jsp
@@ -35,7 +35,7 @@
 
     if (montantPaiement == null) montantPaiement = 4.00;
 
-    request.setAttribute("pageTitle", "Paiement réussi - AmijayQuiz");
+    request.setAttribute("pageTitle", "Paiement réussi - LearnPath");
 %>
 
 <%
@@ -188,7 +188,7 @@
         <div class="message-content">
             <h3>Merci pour votre confiance !</h3>
             <p>
-                Grâce à vous, AmijayQuiz continue de s'améliorer.
+                Grâce à vous, LearnPath continue de s'améliorer.
                 N'hésitez pas à nous contacter si vous avez des suggestions.
             </p>
         </div>

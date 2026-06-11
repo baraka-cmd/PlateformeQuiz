@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * FICHIER : views/assets/js/connexion.js
- * RÔLE    : Scripts de la page de connexion AmijayQuiz
+ * RÔLE    : Scripts de la page de connexion LearnPath
  *           - Validation en temps réel des champs (email + mot de passe)
  *           - Toggle affichage mot de passe
  *           - Gestion "Se souvenir de moi" (email sauvegardé)
@@ -183,7 +183,7 @@
         if (!els.rememberMe) return;
 
         // Restaurer l'état précédent si l'email était sauvegardé
-        var savedEmail = localStorage.getItem('amijayquiz_remember_email');
+        var savedEmail = localStorage.getItem('LearnPath_remember_email');
         if (savedEmail && els.email) {
             els.email.value = savedEmail;
             els.rememberMe.checked = true;
@@ -215,10 +215,10 @@
         if (els.rememberMe && els.rememberMe.checked && els.email) {
             var email = els.email.value.trim();
             if (email.length > 0) {
-                localStorage.setItem('amijayquiz_remember_email', email);
+                localStorage.setItem('LearnPath_remember_email', email);
             }
         } else {
-            localStorage.removeItem('amijayquiz_remember_email');
+            localStorage.removeItem('LearnPath_remember_email');
         }
     }
 

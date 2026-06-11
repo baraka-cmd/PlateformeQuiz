@@ -27,7 +27,7 @@
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", new java.util.Locale("fr", "FR"));
 
-    request.setAttribute("pageTitle", "Paiements en attente - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Paiements en attente - Administration - LearnPath");
 %>
 
 <%

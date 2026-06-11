@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      FICHIER : views/joueur/paiement.jsp
-     RÔLE    : Page de paiement AmijayQuiz
+     RÔLE    : Page de paiement LearnPath
               - Système PawaPay (désactivé temporairement)
               - Système manuel (actif)
               - Instructions claires pour le client
@@ -18,7 +18,7 @@
     }
 
     // Vérifier si déjà premium
-    com.amijayquiz.dao.AccessPremiumDAO premiumDAOCheck = new com.amijayquiz.dao.AccessPremiumDAO();
+    com.learnpath.dao.AccessPremiumDAO premiumDAOCheck = new com.learnpath.dao.AccessPremiumDAO();
     if (premiumDAOCheck.estPremium(utilisateur.getId())) {
         session.setAttribute("messageSucces", "Vous etes deja Premium ! Tous les niveaux sont debloques.");
         response.sendRedirect(request.getContextPath() + "/joueur/dashboard");
@@ -39,7 +39,7 @@
     boolean pawapayActif = false;
     // =================================================================
 
-    request.setAttribute("pageTitle", "Débloquer tous les niveaux - AmijayQuiz");
+    request.setAttribute("pageTitle", "Débloquer tous les niveaux - LearnPath");
 %>
 
 <%

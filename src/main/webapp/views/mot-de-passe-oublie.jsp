@@ -20,7 +20,7 @@
     if (oldEmail != null) session.removeAttribute("oldEmail");
     
     // Titre de la page
-    request.setAttribute("pageTitle", "Mot de passe oublié - AmijayQuiz");
+    request.setAttribute("pageTitle", "Mot de passe oublié - LearnPath");
 %>
 
 <%
@@ -48,7 +48,7 @@
             <%-- Logo --%>
             <a href="${pageContext.request.contextPath}/" class="sidebar-logo">
                 <i class="fas fa-brain"></i>
-                <span>AmijayQuiz</span>
+                <span>LearnPath</span>
             </a>
             
             <h2>Mot de passe oublié ?</h2>

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      Fichier : paiement-attente.jsp
@@ -31,7 +31,7 @@
 
     if (montantPaiement == null) montantPaiement = 4.00;
 
-    request.setAttribute("pageTitle", "Paiement en cours - AmijayQuiz");
+    request.setAttribute("pageTitle", "Paiement en cours - LearnPath");
 %>
 
 <%

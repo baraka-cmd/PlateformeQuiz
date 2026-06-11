@@ -1,0 +1,746 @@
+
+
+Chapitre 13 : Vidéo
+13.1 video
+13.2 controls
+13.3 autoplay
+13.4 poster
+13.5 preload
+13.6 sous-titres
+13.7 track
+HTML5 a introduit la prise en charge native de l'audio et de la vidéo sans plugins externes. �
+Devdoc +1
+MODULE 6 : Listes
+Chapitre 14 : Listes ordonnées
+14.1 ol
+14.2 li
+14.3 type
+14.4 start
+Chapitre 15 : Listes non ordonnées
+15.1 ul
+15.2 li
+Chapitre 16 : Listes de définition
+16.1 dl
+16.2 dt
+16.3 dd
+Chapitre 17 : Listes imbriquées
+MODULE 7 : Tableaux
+Chapitre 18 : Bases des tableaux
+18.1 table
+18.2 tr
+18.3 td
+18.4 th
+Chapitre 19 : Structure avancée
+19.1 thead
+19.2 tbody
+19.3 tfoot
+19.4 caption
+Chapitre 20 : Fusion de cellules
+20.1 rowspan
+20.2 colspan
+MODULE 8 : HTML Sémantique
+Chapitre 21 : Introduction au HTML sémantique
+Chapitre 22 : Éléments de structure
+22.1 header
+22.2 nav
+22.3 main
+22.4 section
+22.5 article
+22.6 aside
+22.7 footer
+Chapitre 23 : Organisation complète d'une page moderne
+Les éléments sémantiques sont une des grandes évolutions de HTML5. Ils permettent de structurer clairement le contenu pour l'accessibilité et le référencement. �
+Html.com +1
+MODULE 9 : Formulaires HTML5
+Chapitre 24 : Introduction aux formulaires
+24.1 form
+24.2 action
+24.3 method
+Chapitre 25 : Champs de saisie
+25.1 input text
+25.2 password
+25.3 email
+25.4 tel
+25.5 url
+25.6 search
+Chapitre 26 : Champs numériques
+26.1 number
+26.2 range
+Chapitre 27 : Date et heure
+27.1 date
+27.2 time
+27.3 datetime-local
+27.4 month
+27.5 week
+Chapitre 28 : Choix utilisateur
+28.1 radio
+28.2 checkbox
+28.3 select
+28.4 option
+28.5 optgroup
+Chapitre 29 : Zones de texte
+29.1 textarea
+Chapitre 30 : Boutons
+30.1 button
+30.2 submit
+30.3 reset
+Chapitre 31 : Téléversement de fichiers
+31.1 file
+Chapitre 32 : Validation HTML5
+32.1 required
+32.2 minlength
+32.3 maxlength
+32.4 pattern
+32.5 min
+32.6 max
+32.7 step
+Chapitre 33 : Éléments avancés
+33.1 fieldset
+33.2 legend
+33.3 datalist
+33.4 output
+33.5 progress
+33.6 meter
+Les formulaires HTML5 ont ajouté de nombreux types d'entrée et mécanismes de validation intégrés. �
+SitePoint +1
+MODULE 10 : Intégration de contenu externe
+Chapitre 34 : iframe
+34.1 Intégration de pages
+34.2 Sécurité des iframes
+Chapitre 35 : Contenu embarqué
+35.1 embed
+35.2 object
+35.3 param
+MODULE 11 : Métadonnées et SEO
+Chapitre 36 : Métadonnées
+36.1 meta charset
+36.2 meta viewport
+36.3 description
+36.4 keywords
+36.5 author
+Chapitre 37 : Open Graph
+37.1 og:title
+37.2 og:description
+37.3 og:image
+Chapitre 38 : Favicons
+38.1 link icon
+MODULE 12 : Accessibilité Web
+Chapitre 39 : Introduction à l'accessibilité
+Chapitre 40 : Accessibilité des images
+Chapitre 41 : Accessibilité des formulaires
+Chapitre 42 : Attributs ARIA
+42.1 aria-label
+42.2 aria-labelledby
+42.3 aria-hidden
+42.4 role
+MODULE 13 : HTML5 Avancé
+Chapitre 43 : Canvas
+43.1 Introduction
+43.2 Dessins simples
+43.3 Formes
+43.4 Texte
+43.5 Images
+Chapitre 44 : SVG
+44.1 SVG de base
+44.2 Rectangles
+44.3 Cercles
+44.4 Lignes
+44.5 Polygones
+Chapitre 45 : Éléments interactifs
+45.1 details
+45.2 summary
+45.3 dialog
+Canvas et SVG font partie des fonctionnalités majeures associées à HTML5 pour les graphiques et interfaces modernes. �
+Devdoc +1
+MODULE 14 : Bonnes Pratiques Professionnelles
+Chapitre 46 : Structure professionnelle d'un projet HTML
+Chapitre 47 : Validation du code HTML
+Chapitre 48 : Performance
+Chapitre 49 : Référencement SEO avec HTML
+Chapitre 50 : Compatibilité navigateurs
+Chapitre 51 : Organisation d'un site réel
+MODULE 15 : Projet Final HTML5
+Chapitre 52 : Analyse du projet
+Chapitre 53 : Création de la structure complète
+Chapitre 54 : Mise en place des formulaires
+Chapitre 55 : Intégration multimédia
+Chapitre 56 : Accessibilité
+Chapitre 57 : Optimisation SEO
+Chapitre 58 : Validation finale
+Ce plan est suffisamment complet pour servir de base à une plateforme professionnelle d'apprentissage HTML5 allant du niveau débutant jusqu'au niveau avancé/prêt pour CSS et JavaScript. Il couvre la quasi-totalité des catégories d'éléments HTML modernes (structure, texte, médias, tableaux, formulaires, éléments sémantiques, accessibilité, SVG, Canvas et métadonnées). �
+Devdoc +1
+
+
+
+
+
+
+
+
+
+
+
+
+
+Plan professionnel d'intégration PawaPay - Architecture complète
+
+---
+
+📁 Structure des fichiers à créer
+
+```
+src/main/java/com/LearnPath/
+├── config/
+│   └── PawaPayConfig.java                 ← Configuration (token, URLs)
+├── models/
+│   ├── Payment.java                       ← Modèle paiement
+│   ├── PaymentStatus.java                 ← Enum (PENDING, SUCCESS, FAILED)
+│   └── WebhookPayload.java                ← Modèle pour les données webhook
+├── dao/
+│   ├── PaymentDAO.java                    ← CRUD paiements
+│   └── CourseAccessDAO.java               ← Gestion accès cours après paiement
+├── services/
+│   ├── PawaPayService.java                ← Appels API PawaPay
+│   ├── PaymentService.java                ← Logique métier paiement
+│   ├── WebhookService.java                ← Traitement webhook sécurisé
+│   └── CryptoService.java                 ← Signature/HMAC webhook
+├── controllers/
+│   ├── CreatePaymentServlet.java          ← Initier paiement
+│   ├── PaymentStatusServlet.java          ← Vérifier statut (AJAX)
+│   ├── WebhookServlet.java                ← Recevoir confirmation PawaPay
+│   └── PaymentCallbackServlet.java        ← Redirection après paiement
+├── filters/
+│   └── PaymentSecurityFilter.java         ← Vérification IP/signature webhook
+└── utils/
+    ├── ReferenceGenerator.java            ← Générer références uniques
+    └── HttpUtils.java                     ← Utilitaires HTTP
+```
+
+```
+src/main/webapp/views/joueur/
+├── paiement/
+│   ├── checkout.jsp                       ← Page d'achat (formulaire)
+│   ├── payment-processing.jsp             ← Page d'attente (polling)
+│   ├── payment-success.jsp                ← Confirmation succès
+│   ├── payment-failed.jsp                 ← Échec paiement
+│   └── payment-history.jsp                ← Historique paiements utilisateur
+```
+
+```
+src/main/webapp/assets/js/
+└── payment.js                              ← Polling statut paiement
+```
+
+```
+src/main/webapp/assets/css/
+└── payment.css                             ← Styles pages paiement
+```
+
+```
+src/main/webapp/WEB-INF/
+└── web.xml                                 ← Déclaration servlets + filtres
+```
+
+---
+
+📋 Étapes d'implémentation (par ordre logique)
+
+Phase 1 : Configuration et sécurité 🔐
+
+Étape Action Fichiers concernés
+1 Créer fichier de configuration avec token, URLs sandbox/live PawaPayConfig.java
+2 Définir les variables d'environnement (hors code source) .env ou context.xml
+3 Créer l'énumération des statuts paiement PaymentStatus.java
+4 Implémenter le générateur de référence unique (timestamp + UUID) ReferenceGenerator.java
+
+Phase 2 : Modèles et base de données 🗄️
+
+Étape Action Fichiers concernés
+5 Créer la table payments (SQL) Script migration
+6 Créer la table user_course_access (accès cours) Script migration
+7 Créer le modèle Payment Payment.java
+8 Créer le modèle WebhookPayload WebhookPayload.java
+9 Implémenter PaymentDAO (save, update, findByReference, findByUser) PaymentDAO.java
+10 Implémenter CourseAccessDAO (grant, revoke, check) CourseAccessDAO.java
+
+Phase 3 : Services métier ⚙️
+
+Étape Action Fichiers concernés
+11 Implémenter PawaPayService (createPayment, getStatus) PawaPayService.java
+12 Implémenter CryptoService (HMAC validation pour webhook) CryptoService.java
+13 Implémenter PaymentService (logique complète de paiement) PaymentService.java
+14 Implémenter WebhookService (traitement sécurisé) WebhookService.java
+
+Phase 4 : Contrôleurs et endpoints 🌐
+
+Étape Action Fichiers concernés
+15 Créer CreatePaymentServlet (POST) CreatePaymentServlet.java
+16 Créer PaymentStatusServlet (GET / AJAX) PaymentStatusServlet.java
+17 Créer WebhookServlet (POST) WebhookServlet.java
+18 Créer PaymentCallbackServlet (GET) PaymentCallbackServlet.java
+19 Créer PaymentSecurityFilter (IP whitelist + HMAC) PaymentSecurityFilter.java
+
+Phase 5 : Pages frontend 🎨
+
+Étape Action Fichiers concernés
+20 Page de checkout (formulaire numéro téléphone) checkout.jsp
+21 Page d'attente (polling AJAX vers PaymentStatusServlet) payment-processing.jsp
+22 Page succès (afficher récap + bouton accès cours) payment-success.jsp
+23 Page échec (message + bouton réessayer) payment-failed.jsp
+24 Page historique paiements payment-history.jsp
+25 Script JavaScript pour polling payment.js
+26 Styles CSS payment.css
+
+Phase 6 : Intégration avec cours existant 🔗
+
+Étape Action Fichiers concernés
+27 Ajouter bouton "Acheter" sur page plan du cours cours-plan.jsp
+28 Modifier ProgressionCoursDAO pour vérifier paiement ProgressionCoursDAO.java
+29 Ajouter filtre d'accès aux leçons (vérifier paiement) CourseAccessFilter.java
+30 Afficher badge "Premium" sur cours payants cours-plan.jsp, cours-niveau.jsp
+
+Phase 7 : Sécurité avancée 🛡️
+
+Étape Action Fichiers concernés
+31 Limiter les tentatives de paiement par utilisateur (rate limiting) RateLimitFilter.java
+32 Journaliser toutes les requêtes webhook WebhookLogger.java
+33 Implémenter mécanisme de retry pour webhook échoués WebhookRetryService.java
+34 Ajouter vérification IP PawaPay (whitelist) PaymentSecurityFilter.java
+35 Chiffrer les numéros de téléphone en base EncryptionService.java
+
+Phase 8 : Tests et monitoring 📊
+
+Étape Action Fichiers concernés
+36 Créer page admin des paiements admin/payments.jsp
+37 Ajouter logs dédiés pour paiements log4j2.xml
+38 Créer servlet de test webhook (simulation) TestWebhookServlet.java
+39 Dashboard admin : montant total, succès/échecs admin/payment-stats.jsp
+
+---
+
+🔄 Flux de données complet
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            UTILISATEUR                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  1. Page checkout.jsp                                                       │
+│     - Affiche prix + formulaire numéro téléphone                            │
+│     - Appelle CreatePaymentServlet en POST                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  2. CreatePaymentServlet                                                    │
+│     - Génère référence unique                                               │
+│     - Sauvegarde Payment (PENDING) en base                                  │
+│     - Appelle PawaPayService.createPayment()                                │
+│     - Redirige vers payment-processing.jsp                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  3. payment-processing.jsp                                                  │
+│     - Affiche "En attente du paiement..."                                   │
+│     - JavaScript poll toutes les 2s PaymentStatusServlet                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                    ┌─────────────────┴─────────────────┐
+                    │                                   │
+                    ▼                                   ▼
+        ┌──────────────────────┐          ┌──────────────────────┐
+        │  Utilisateur paie    │          │  Polling continue    │
+        │  via Mobile Money    │          │  vers backend        │
+        └──────────────────────┘          └──────────────────────┘
+                    │                                   │
+                    ▼                                   │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  4. PawaPay API                                                             │
+│     - Reçoit la demande de paiement                                         │
+│     - Traite le paiement Mobile Money                                       │
+│     - Envoie webhook POST vers WebhookServlet                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  5. WebhookServlet (sécurisé)                                              │
+│     - Vérifie signature HMAC                                                │
+│     - Vérifie IP (whitelist PawaPay)                                        │
+│     - Met à jour Payment.status = SUCCESS                                   │
+│     - Appelle CourseAccessDAO.grantAccess()                                 │
+│     - Répond HTTP 200 à PawaPay                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  6. PaymentStatusServlet (polling)                                          │
+│     - Détecte status = SUCCESS                                              │
+│     - Redirige vers payment-success.jsp                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  7. payment-success.jsp                                                     │
+│     - Affiche confirmation                                                  │
+│     - Bouton "Accéder au cours" → redirige vers cours-plan.jsp              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+🔑 Points de sécurité critiques
+
+Point Méthode
+Token API Ne jamais hardcoder → variables d'environnement
+Webhook Vérifier signature HMAC + whitelist IP
+Référence Unique, non devinable (UUID + timestamp)
+Accès cours Vérifier paiement SUCCESS avant de débloquer
+Rate limiting Max 5 tentatives/heure par utilisateur
+Logs Ne jamais logguer token ou infos bancaires
+HTTPS Obligatoire en production
+Session Vérifier que l'utilisateur connecté = acheteur
+
+---
+
+✅ Validation avant passage en production
+
+· Tous les endpoints sont en HTTPS
+· Le webhook est accessible publiquement
+· La signature HMAC est validée côté backend
+· Les IP de PawaPay sont en whitelist
+· Les montants sont validés (pas de paiement à 0 ou négatif)
+· Les références sont uniques
+· Rate limiting actif
+· Logs sécurisés sans données sensibles
+· Testé avec sandbox PawaPay
+· Scripts SQL versionnés
+· Rollback possible en cas d'échec
+
+---
+
+
+
+
+
+
+
+
+
+
+📋 ORDRE EXACT DE CRÉATION - UN PAR UN
+
+Voici l'ordre dans lequel on va créer chaque fichier, du premier au dernier :
+
+---
+
+🔧 PHASE 1 : CONFIGURATION & UTILITAIRES
+
+(Fondations - rien ne fonctionne sans ça)
+
+N° Fichier Rôle
+1 src/main/java/com/LearnPath/config/PawaPayConfig.java Token, URLs, clés PawaPay
+2 src/main/java/com/LearnPath/utils/PawaPayUtil.java Méthodes HTTP (POST vers PawaPay, vérification signature webhook)
+3 src/main/java/com/LearnPath/utils/SecuriteUtil.java Génération référence unique, validation phone, logs
+
+---
+
+📦 PHASE 2 : MODÈLE
+
+(Représentation des données)
+
+N° Fichier Rôle
+4 src/main/java/com/LearnPath/models/Paiement.java Modèle Paiement (id, userId, reference, transactionId, montant, statut...)
+
+---
+
+🗄️ PHASE 3 : DAO (Accès Base de Données)
+
+(Lecture/Écriture dans MySQL)
+
+N° Fichier Rôle
+5 src/main/java/com/LearnPath/dao/PaiementDAO.java CRUD table paiements + recherche par référence
+6 src/main/java/com/LearnPath/dao/AccessPremiumDAO.java Gestion table acces_premium + activation/désactivation premium
+
+---
+
+🛡️ PHASE 4 : FILTRE DE SÉCURITÉ
+
+(Blocage des accès non payés)
+
+N° Fichier Rôle
+7 src/main/java/com/LearnPath/filters/AccesPayantFilter.java Vérifie si l'utilisateur a le droit d'accéder à la ressource demandée
+
+---
+
+🎮 PHASE 5 : SERVLETS (Contrôleurs)
+
+(Logique métier - endpoints)
+
+N° Fichier Rôle
+8 src/main/java/com/LearnPath/controllers/PaiementServlet.java GET : page paiement / POST : créer transaction PawaPay
+9 src/main/java/com/LearnPath/controllers/WebhookPaiementServlet.java Réception callback PawaPay, validation, activation premium
+
+---
+
+🎨 PHASE 6 : VUES JSP (Interface utilisateur)
+
+(Pages visibles par le joueur)
+
+N° Fichier Rôle
+10 src/main/webapp/views/joueur/paiement.jsp Page "Débloquer tous les niveaux - 4$" avec formulaire
+11 src/main/webapp/views/joueur/paiement-attente.jsp Page "Paiement en cours - en attente de confirmation"
+12 src/main/webapp/views/joueur/paiement-succes.jsp Page "Paiement réussi - tous les niveaux débloqués"
+13 src/main/webapp/views/joueur/paiement-echoue.jsp Page "Paiement échoué - réessayer"
+
+---
+
+🔗 PHASE 7 : INTÉGRATION DANS L'EXISTANT
+
+(Modifications des fichiers existants pour activer le système)
+
+N° Fichier Modification
+14 ThemeCoursServlet.java Bloquer niveaux moyen/avancé si non premium
+15 NiveauCoursServlet.java Bloquer accès si non premium
+16 NiveauServlet.java Bloquer parties 6+ et niveaux moyen/avancé
+17 ExamenModuleServlet.java Bloquer examens modules 2+ si non premium
+18 cours-plan.jsp Ajouter badge "Premium requis" sur modules verrouillés
+19 niveau.jsp (Quiz) Masquer parties 6+ si non premium
+20 dashboard.jsp Ajouter statut premium + bouton d'achat
+21 header.jsp Ajouter badge "Premium" dans le menu
+
+---
+
+📊 RÉCAPITULATIF
+
+Phase Fichiers Total
+Configuration 1-3 3
+Modèle 4 1
+DAO 5-6 2
+Filtre 7 1
+Servlets 8-9 2
+Vues JSP 10-13 4
+Intégration 14-21 8
+TOTAL  21 fichiers
+
+---
+
+⚡ ON COMMENCE ?
+
+Je suis prêt à coder le fichier n°1 : PawaPayConfig.java.
+
+Dis-moi "Go" et je te l'envoie.
+
+
+
+
+
+
+<%-- ============================================================
+     MODIFICATIONS À APPORTER AU FICHIER EXISTANT :
+     src/main/webapp/views/joueur/dashboard.jsp
+     
+     AJOUTS :
+     1. Vérification premium au début du fichier
+     2. Bannière premium si non premium
+     3. Badge "Premium" dans le header
+     4. Bouton "Devenir Premium" dans la section reprise
+     ============================================================ --%>
+
+<%-- ===== AJOUTER APRÈS LA LIGNE : ===== --%>
+<%-- int joueurId = (joueur != null) ? joueur.getId() : 0; --%>
+
+<%-- ===== 🆕 AJOUTER : ===== --%>
+<%
+    // Vérification premium
+    com.LearnPath.dao.AccessPremiumDAO premiumDAO = new com.LearnPath.dao.AccessPremiumDAO();
+    boolean estPremium = premiumDAO.estPremium(joueurId);
+    request.setAttribute("estPremium", estPremium);
+%>
+
+<%-- ===== DANS LE HEADER DE BIENVENUE, APRÈS LE PARAGRAPHE DE DATE, AJOUTER : ===== --%>
+            <%-- 🆕 STATUT PREMIUM --%>
+            <div class="welcome-premium-status">
+                <% if (estPremium) { %>
+                    <span class="premium-badge-actif">
+                        <i class="fas fa-crown"></i> Premium actif
+                    </span>
+                <% } else { %>
+                    <a href="${pageContext.request.contextPath}/paiement" class="premium-badge-inactif">
+                        <i class="fas fa-crown"></i> Devenir Premium (4$)
+                    </a>
+                <% } %>
+            </div>
+
+<%-- ===== APRÈS LA SECTION "REPRENDRE MON PARCOURS", AJOUTER : ===== --%>
+    <%-- ===== 🆕 BANNIÈRE PREMIUM (SI NON PREMIUM) ===== --%>
+    <% if (!estPremium) { %>
+        <div class="dashboard-premium-banner">
+            <div class="premium-banner-glow"></div>
+            <div class="premium-banner-content">
+                <div class="premium-banner-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="premium-banner-text">
+                    <h3>Débloquez tout le potentiel d'LearnPath</h3>
+                    <p>
+                        <strong>4$ seulement</strong> — Accès à vie à tous les niveaux Moyen & Avancé.
+                        <span class="premium-banner-features">
+                            <span><i class="fas fa-check"></i> Tous les cours</span>
+                            <span><i class="fas fa-check"></i> Tous les quiz</span>
+                            <span><i class="fas fa-check"></i> Certificats</span>
+                        </span>
+                    </p>
+                </div>
+                <a href="${pageContext.request.contextPath}/paiement" class="premium-banner-btn">
+                    <i class="fas fa-rocket"></i>
+                    <span>Devenir Premium</span>
+                    <small>4$ / 10 000 FC</small>
+                </a>
+            </div>
+        </div>
+    <% } %>
+
+<%-- ===== DANS LA SECTION STATISTIQUES, REMPLACER OU AJOUTER UNE CARTE : ===== --%>
+            <%-- 🆕 Statut Premium --%>
+            <div class="stat-card <%= estPremium ? "stat-card-premium-actif" : "stat-card-premium-inactif" %>">
+                <div class="stat-icon-wrapper stat-icon-premium">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number"><%= estPremium ? "Actif" : "Free" %></span>
+                    <span class="stat-label">Statut Premium</span>
+                </div>
+                <% if (!estPremium) { %>
+                    <a href="${pageContext.request.contextPath}/paiement" class="stat-upgrade-link">
+                        <i class="fas fa-arrow-up"></i> Upgrade
+                    </a>
+                <% } %>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%-- ============================================================
+     MODIFICATIONS À APPORTER AU FICHIER EXISTANT :
+     src/main/webapp/views/header.jsp
+     
+     AJOUTS :
+     1. Badge "Premium" dans le menu utilisateur
+     2. Icône couronne dans la navbar
+     ============================================================ --%>
+
+<%-- ===== DANS LE MENU JOUEUR (section "MENU JOUEUR"), 
+     AJOUTER UN LIEN VERS LE PAIEMENT SI NON PREMIUM : ===== --%>
+
+<%-- ===== REMPLACER LE BLOC DU MENU JOUEUR (else final) PAR : ===== --%>
+        <%-- ============================================================
+             MENU JOUEUR
+             Quiz | Cours | Historique | Premium | Menu Joueur
+             ============================================================ --%>
+        <% } else { 
+            // 🆕 Vérification premium pour le header
+            com.LearnPath.dao.AccessPremiumDAO premiumDAONav = new com.LearnPath.dao.AccessPremiumDAO();
+            boolean estPremiumNav = premiumDAONav.estPremium(utilisateurConnecte.getId());
+        %>
+            
+            <li>
+                <a href="${pageContext.request.contextPath}/joueur/dashboard"
+                   class="<%= uri.contains("/joueur/dashboard") || uri.contains("/joueur/theme") || uri.contains("/joueur/niveau") ? "active" : "" %>">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i>
+                    <span>Quiz</span>
+                </a>
+            </li>
+            <li>
+                <a href="${pageContext.request.contextPath}/joueur/cours"
+                   class="<%= uri.contains("/joueur/cours") ? "active" : "" %>">
+                    <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                    <span>Cours</span>
+                </a>
+            </li>
+            <li>
+                <a href="${pageContext.request.contextPath}/joueur/historique"
+                   class="<%= uri.contains("/joueur/historique") ? "active" : "" %>">
+                    <i class="fas fa-history" aria-hidden="true"></i>
+                    <span>Historique</span>
+                </a>
+            </li>
+            
+            <%-- 🆕 BOUTON PREMIUM DANS LA NAVBAR --%>
+            <% if (!estPremiumNav) { %>
+                <li>
+                    <a href="${pageContext.request.contextPath}/paiement" 
+                       class="nav-premium-btn">
+                        <i class="fas fa-crown"></i>
+                        <span>Premium</span>
+                    </a>
+                </li>
+            <% } %>
+            
+            <%-- Menu utilisateur joueur --%>
+            <li class="user-menu-container">
+                <button class="user-menu-trigger" id="userMenuTrigger" aria-expanded="false" aria-haspopup="true" title="Menu utilisateur">
+                    <span class="user-avatar-mini">
+                        <i class="fas fa-user-circle"></i>
+                    </span>
+                    <span class="user-name"><%= utilisateurConnecte.getPseudo() %></span>
+                    <%-- 🆕 BADGE PREMIUM DANS LE MENU --%>
+                    <% if (estPremiumNav) { %>
+                        <i class="fas fa-crown premium-crown-icon" title="Premium"></i>
+                    <% } %>
+                    <i class="fas fa-chevron-down menu-arrow"></i>
+                </button>
+                <div class="user-menu-dropdown" id="userMenuDropdown" role="menu" aria-label="Menu utilisateur">
+                    <div class="user-menu-header">
+                        <div class="user-menu-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="user-menu-info">
+                            <strong><%= utilisateurConnecte.getPseudo() %></strong>
+                            <span>
+                                Joueur
+                                <% if (estPremiumNav) { %>
+                                    <span class="menu-premium-badge">
+                                        <i class="fas fa-crown"></i> Premium
+                                    </span>
+                                <% } else { %>
+                                    <span class="menu-gratuit-badge">Gratuit</span>
+                                <% } %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="user-menu-divider"></div>
+                    
+                    <%-- 🆕 LIEN PREMIUM DANS LE MENU DÉROULANT --%>
+                    <% if (!estPremiumNav) { %>
+                        <a href="${pageContext.request.contextPath}/paiement" class="user-menu-item user-menu-premium" role="menuitem">
+                            <i class="fas fa-crown"></i>
+                            <span>Devenir Premium (4$)</span>
+                        </a>
+                        <div class="user-menu-divider"></div>
+                    <% } %>
+                    
+                    <a href="${pageContext.request.contextPath}/changer-mot-de-passe" class="user-menu-item" role="menuitem">
+                        <i class="fas fa-key"></i>
+                        <span>Changer mon mot de passe</span>
+                    </a>
+                    <div class="user-menu-divider"></div>
+                    <a href="${pageContext.request.contextPath}/deconnexion" class="user-menu-item user-menu-danger" role="menuitem">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </a>
+                </div>
+            </li>
+            
+        <% } %>

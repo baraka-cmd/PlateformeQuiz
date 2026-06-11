@@ -24,7 +24,7 @@
     if (messageSucces != null) session.removeAttribute("messageSucces");
     
     // Titre de la page
-    request.setAttribute("pageTitle", "Changer mon mot de passe - AmijayQuiz");
+    request.setAttribute("pageTitle", "Changer mon mot de passe - LearnPath");
 
     // Chargement des styles spécifiques
     String mdpCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/changer-mot-de-passe.css\">";

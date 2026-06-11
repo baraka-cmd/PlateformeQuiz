@@ -1,17 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Chapitre" %>
-<%@ page import="com.amijayquiz.models.Lecon" %>
-<%@ page import="com.amijayquiz.models.ProgressionCours" %>
-<%@ page import="com.amijayquiz.models.Ressource" %>
-<%@ page import="com.amijayquiz.models.ExamenModule" %>
-<%@ page import="com.amijayquiz.models.ProgressionModule" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Chapitre" %>
+<%@ page import="com.learnpath.models.Lecon" %>
+<%@ page import="com.learnpath.models.ProgressionCours" %>
+<%@ page import="com.learnpath.models.Ressource" %>
+<%@ page import="com.learnpath.models.ExamenModule" %>
+<%@ page import="com.learnpath.models.ProgressionModule" %>
 
 <%-- ============================================================
      FICHIER : views/joueur/cours-lecon.jsp
-     RÔLE    : Page de contenu d'une lecon de cours AmijayQuiz
+     RÔLE    : Page de contenu d'une lecon de cours LearnPath
               - Explications texte enrichi (HTML)
               - Exemples de code prets a copier-coller
               - Ressources telechargeables
@@ -63,7 +63,7 @@
     String tempsLectureFormate = lecon.getTempsLectureFormate();
     int nombreMots = lecon.getNombreMots();
 
-    request.setAttribute("pageTitle", lecon.getTitre() + " - " + cours.getTitre() + " - AmijayQuiz");
+    request.setAttribute("pageTitle", lecon.getTitre() + " - " + cours.getTitre() + " - LearnPath");
 %>
 
 <%

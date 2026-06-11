@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/cours-chapitre.js
-// RÔLE    : Script de la page chapitre de cours AmijayQuiz
+// RÔLE    : Script de la page chapitre de cours LearnPath
 //           - Animation des cartes de lecons
 //           - Effet hover sur les lecons
 //           - Indicateur visuel de progression

@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/main.js
-// RÔLE    : Script principal de la plateforme AmijayQuiz
+// RÔLE    : Script principal de la plateforme LearnPath
 //           - Initialisation globale
 //           - Gestion du menu utilisateur déroulant
 //           - Gestion des messages flash (succès/erreur)
@@ -15,9 +15,9 @@
 // ============================================================
 // CONFIGURATION GLOBALE
 // ============================================================
-var AmijayQuiz = AmijayQuiz || {};
+var LearnPath = LearnPath || {};
 
-AmijayQuiz.config = {
+LearnPath.config = {
     contextPath: window.location.pathname.split('/')[1] || '',
     animationDuration: 300,
     messageTimeout: 5000,
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initSmoothScroll();
     initConfirmDialogs();
     initActiveNavLink();
-    console.log('✅ AmijayQuiz - Plateforme initialisée');
+    console.log('✅ LearnPath - Plateforme initialisée');
 });
 
 // ============================================================
@@ -109,7 +109,7 @@ function initFlashMessages() {
         message.appendChild(closeBtn);
 
         // Auto-dismiss après le délai configuré
-        var timeout = parseInt(message.getAttribute('data-timeout')) || AmijayQuiz.config.messageTimeout;
+        var timeout = parseInt(message.getAttribute('data-timeout')) || LearnPath.config.messageTimeout;
         
         if (timeout > 0) {
             setTimeout(function() {
@@ -161,7 +161,7 @@ function initScrollReveal() {
                 }
             });
         }, {
-            threshold: AmijayQuiz.config.scrollRevealThreshold,
+            threshold: LearnPath.config.scrollRevealThreshold,
             rootMargin: '0px 0px -50px 0px'
         });
 
@@ -345,7 +345,7 @@ function initActiveNavLink() {
  * @param {number} secondes - Temps en secondes
  * @returns {string} Temps formaté (ex: "2 min 30 s")
  */
-AmijayQuiz.formaterTemps = function(secondes) {
+LearnPath.formaterTemps = function(secondes) {
     if (secondes < 0) secondes = 0;
 
     var minutes = Math.floor(secondes / 60);
@@ -362,7 +362,7 @@ AmijayQuiz.formaterTemps = function(secondes) {
  * @param {Date|string} date - La date à formater
  * @returns {string} Date formatée (ex: "15 juin 2026")
  */
-AmijayQuiz.formaterDate = function(date) {
+LearnPath.formaterDate = function(date) {
     if (typeof date === 'string') {
         date = new Date(date);
     }
@@ -377,7 +377,7 @@ AmijayQuiz.formaterDate = function(date) {
  * @param {number} longueur - Longueur maximale
  * @returns {string} Texte tronqué
  */
-AmijayQuiz.tronquerTexte = function(texte, longueur) {
+LearnPath.tronquerTexte = function(texte, longueur) {
     if (!texte) return '';
     longueur = longueur || 100;
 
@@ -391,7 +391,7 @@ AmijayQuiz.tronquerTexte = function(texte, longueur) {
  * @param {string} type - Le type de notification (success, error, info, warning)
  * @param {number} duree - Durée d'affichage en ms
  */
-AmijayQuiz.toast = function(message, type, duree) {
+LearnPath.toast = function(message, type, duree) {
     type = type || 'info';
     duree = duree || 4000;
 
@@ -446,7 +446,7 @@ AmijayQuiz.toast = function(message, type, duree) {
  * @param {string} texte - Le texte à copier
  * @returns {Promise<boolean>} True si la copie a réussi
  */
-AmijayQuiz.copierPressePapier = function(texte) {
+LearnPath.copierPressePapier = function(texte) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
         return navigator.clipboard.writeText(texte).then(function() {
             return true;
@@ -479,7 +479,7 @@ AmijayQuiz.copierPressePapier = function(texte) {
  * @param {string} className - La classe à ajouter
  * @param {number} delay - Délai avant ajout en ms
  */
-AmijayQuiz.animerElement = function(element, className, delay) {
+LearnPath.animerElement = function(element, className, delay) {
     delay = delay || 0;
 
     setTimeout(function() {

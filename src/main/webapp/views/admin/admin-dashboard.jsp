@@ -6,7 +6,7 @@
 
 <%-- ============================================================
      FICHIER : views/admin/admin-dashboard.jsp
-     RÔLE    : Tableau de bord administrateur AmijayQuiz
+     RÔLE    : Tableau de bord administrateur LearnPath
               Design professionnel complet
               - 8 cartes statistiques enrichies
               - Dernières inscriptions (5)
@@ -48,8 +48,8 @@
     // Récupération du rôle de l'admin connecté
     String roleAdminDashboard = "admin";
     if (session != null && session.getAttribute("utilisateur") != null) {
-        com.amijayquiz.models.Utilisateur adminDashboard = 
-            (com.amijayquiz.models.Utilisateur) session.getAttribute("utilisateur");
+        com.learnpath.models.Utilisateur adminDashboard = 
+            (com.learnpath.models.Utilisateur) session.getAttribute("utilisateur");
         roleAdminDashboard = adminDashboard.getRole();
     }
     boolean estSuperAdminDashboard = "admin".equals(roleAdminDashboard);
@@ -60,7 +60,7 @@
     if (messageSucces != null) session.removeAttribute("messageSucces");
     if (messageErreur != null) session.removeAttribute("messageErreur");
 
-    request.setAttribute("pageTitle", "Dashboard - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Dashboard - Administration - LearnPath");
 %>
 
 <%
@@ -100,7 +100,7 @@
                 <i class="fas fa-shield-alt"></i>
             </div>
             <div class="admin-welcome-text">
-                <h1>Administration AmijayQuiz</h1>
+                <h1>Administration LearnPath</h1>
                 <p>Vue d'ensemble complète de votre plateforme</p>
             </div>
         </div>
@@ -286,41 +286,74 @@
             </div>
 
             <%-- ===== DERNIÈRES PARTIES JOUÉES ===== --%>
-            <div class="admin-dash-card">
-                <div class="admin-dash-card-header">
-                    <div class="admin-dash-card-title">
-                        <i class="fas fa-gamepad"></i>
-                        <h3>Activité quiz récente</h3>
-                    </div>
-                    <a href="${pageContext.request.contextPath}/admin/resultats" class="admin-link">Voir tout <i class="fas fa-arrow-right"></i></a>
+            <%-- ===== ACTIVITÉ QUIZ RÉCENTE ===== --%>
+<div class="admin-dash-card">
+    <div class="admin-dash-card-header">
+        <div class="admin-dash-card-title">
+            <i class="fas fa-gamepad"></i>
+            <h3>Activité Quiz</h3>
+        </div>
+        <a href="${pageContext.request.contextPath}/admin/resultats" class="admin-link">Voir les résultats <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="admin-dash-card-body">
+        <% if (totalPartiesJouees > 0) { %>
+            <div class="admin-activity-summary">
+                <div class="activity-stat">
+                    <span class="activity-stat-nombre"><%= totalPartiesJouees %></span>
+                    <span class="activity-stat-label">Parties jouées</span>
                 </div>
-                <div class="admin-dash-card-body">
-                    <% if (totalPartiesJouees > 0) { %>
-                        <div class="admin-activity-summary">
-                            <div class="activity-stat">
-                                <span class="activity-stat-nombre"><%= totalPartiesJouees %></span>
-                                <span class="activity-stat-label">Parties totales</span>
-                            </div>
-                            <div class="activity-stat">
-                                <span class="activity-stat-nombre"><%= totalQuiz %></span>
-                                <span class="activity-stat-label">Quiz disponibles</span>
-                            </div>
-                            <div class="activity-stat">
-                                <span class="activity-stat-nombre"><%= totalPartiesJouees > 0 && totalQuiz > 0 ? (totalPartiesJouees / totalQuiz) : 0 %></span>
-                                <span class="activity-stat-label">Moy. parties/quiz</span>
-                            </div>
-                        </div>
-                        <div class="admin-activity-bar">
-                            <div class="activity-bar-fill" style="width: <%= Math.min(100, totalPartiesJouees) %>%;"></div>
-                        </div>
-                    <% } else { %>
-                        <div class="admin-empty-mini">
-                            <i class="fas fa-inbox"></i>
-                            <p>Aucune partie jouée pour le moment</p>
-                        </div>
-                    <% } %>
+                <div class="activity-stat">
+                    <span class="activity-stat-nombre"><%= totalQuiz %></span>
+                    <span class="activity-stat-label">Quiz créés</span>
+                </div>
+                <div class="activity-stat">
+                    <span class="activity-stat-nombre"><%= totalPartiesJouees > 0 && totalQuiz > 0 ? (totalPartiesJouees / totalQuiz) : 0 %></span>
+                    <span class="activity-stat-label">Moy. par quiz</span>
                 </div>
             </div>
+        <% } else { %>
+            <div class="admin-empty-mini">
+                <i class="fas fa-inbox"></i>
+                <p>Aucune partie jouée pour le moment</p>
+            </div>
+        <% } %>
+    </div>
+</div>
+    
+    
+    <%-- ===== ACTIVITÉ COURS RÉCENTE ===== --%>
+<div class="admin-dash-card">
+    <div class="admin-dash-card-header">
+        <div class="admin-dash-card-title">
+            <i class="fas fa-graduation-cap"></i>
+            <h3>Activité Cours</h3>
+        </div>
+        <a href="${pageContext.request.contextPath}/admin/cours" class="admin-link">Voir les cours <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="admin-dash-card-body">
+        <% if (totalCours > 0) { %>
+            <div class="admin-activity-summary">
+                <div class="activity-stat">
+                    <span class="activity-stat-nombre"><%= totalCours %></span>
+                    <span class="activity-stat-label">Cours créés</span>
+                </div>
+                <div class="activity-stat">
+                    <span class="activity-stat-nombre"><%= totalJoueurs %></span>
+                    <span class="activity-stat-label">Apprenants</span>
+                </div>
+                <div class="activity-stat">
+                    <span class="activity-stat-nombre"><%= utilisateursPremium %></span>
+                    <span class="activity-stat-label">Premium</span>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="admin-empty-mini">
+                <i class="fas fa-inbox"></i>
+                <p>Aucun cours créé pour le moment</p>
+            </div>
+        <% } %>
+    </div>
+</div>
 
         </div>
 

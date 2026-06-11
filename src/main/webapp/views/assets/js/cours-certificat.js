@@ -53,8 +53,8 @@
     function initShareButton() {
         window.partagerCertificat = function() {
             var url = window.location.href;
-            var titre = document.querySelector('.diplome-cours')?.textContent || 'Certificat AmijayQuiz';
-            var texte = 'Je viens d\'obtenir mon certificat ' + titre + ' sur AmijayQuiz ! 🎓';
+            var titre = document.querySelector('.diplome-cours')?.textContent || 'Certificat LearnPath';
+            var texte = 'Je viens d\'obtenir mon certificat ' + titre + ' sur LearnPath ! 🎓';
 
             // Créer un modal de partage
             var modal = document.createElement('div');

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Certificat" %>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Certificat" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      Fichier : cours-certificat.jsp
@@ -109,7 +109,7 @@
             <div class="diplome-header">
                 <div class="diplome-logo">
                     <i class="fas fa-brain"></i>
-                    <span>AmijayQuiz</span>
+                    <span>LearnPath</span>
                 </div>
                 <h2 class="diplome-titre-certificat">CERTIFICAT DE RÉUSSITE</h2>
                 <p class="diplome-sous-titre">Ce certificat est décerné à</p>
@@ -151,7 +151,7 @@
                 </div>
                 <div class="diplome-signature">
                     <div class="signature-ligne"></div>
-                    <p>L'équipe AmijayQuiz</p>
+                    <p>L'équipe LearnPath</p>
                 </div>
             </div>
 
@@ -179,7 +179,7 @@
     <div class="certificat-verifie no-print">
         <div class="verifie-badge">
             <i class="fas fa-shield-check"></i>
-            <span>Certificat officiel vérifié • Délivré par AmijayQuiz</span>
+            <span>Certificat officiel vérifié • Délivré par LearnPath</span>
         </div>
     </div>
 

@@ -107,8 +107,8 @@ function verifierStatutPaiement(estManuel) {
                 clearInterval(AttenteConfig.intervalId);
                 clearInterval(AttenteConfig.timerIntervalId);
 
-                if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-                    AmijayQuiz.toast('✅ Paiement confirmé ! Redirection...', 'success', 2000);
+                if (typeof LearnPath !== 'undefined' && LearnPath.toast) {
+                    LearnPath.toast('✅ Paiement confirmé ! Redirection...', 'success', 2000);
                 }
 
                 setTimeout(function() {
@@ -123,8 +123,8 @@ function verifierStatutPaiement(estManuel) {
                 clearInterval(AttenteConfig.intervalId);
                 clearInterval(AttenteConfig.timerIntervalId);
 
-                if (estManuel && typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-                    AmijayQuiz.toast('❌ Paiement échoué. Redirection...', 'error', 2000);
+                if (estManuel && typeof LearnPath !== 'undefined' && LearnPath.toast) {
+                    LearnPath.toast('❌ Paiement échoué. Redirection...', 'error', 2000);
                 }
 
                 setTimeout(function() {
@@ -136,8 +136,8 @@ function verifierStatutPaiement(estManuel) {
             case 'PENDING':
                 // Toujours en attente
                 if (estManuel) {
-                    if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-                        AmijayQuiz.toast('⏳ Paiement toujours en attente. Vérifiez votre téléphone.', 
+                    if (typeof LearnPath !== 'undefined' && LearnPath.toast) {
+                        LearnPath.toast('⏳ Paiement toujours en attente. Vérifiez votre téléphone.', 
                             'info', 4000);
                     }
                 }
@@ -151,8 +151,8 @@ function verifierStatutPaiement(estManuel) {
     .catch(function(error) {
         console.error('❌ Erreur vérification : ' + error.message);
 
-        if (estManuel && typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-            AmijayQuiz.toast('Erreur de connexion. Nouvelle tentative automatique...', 
+        if (estManuel && typeof LearnPath !== 'undefined' && LearnPath.toast) {
+            LearnPath.toast('Erreur de connexion. Nouvelle tentative automatique...', 
                 'warning', 3000);
         }
     });

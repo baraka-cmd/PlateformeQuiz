@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Quiz" %>
-<%@ page import="com.amijayquiz.models.Question" %>
+<%@ page import="com.learnpath.models.Quiz" %>
+<%@ page import="com.learnpath.models.Question" %>
 
 <%-- ============================================================
      Fichier : passer-quiz.jsp
@@ -60,7 +60,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Quiz - <%= partieInfo %> - AmijayQuiz</title>
+    <title>Quiz - <%= partieInfo %> - LearnPath</title>
     
     <%-- Polices et icônes --%>
     

@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Certificat" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Certificat" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      Fichier : cours-mes-certificats.jsp
@@ -182,7 +182,7 @@
             </div>
             <div class="motivation-content">
                 <h4>Partagez vos réussites</h4>
-                <p>Les certificats AmijayQuiz sont vérifiables en ligne. Ajoutez-les à votre CV ou partagez-les sur LinkedIn pour valoriser vos compétences.</p>
+                <p>Les certificats LearnPath sont vérifiables en ligne. Ajoutez-les à votre CV ou partagez-les sur LinkedIn pour valoriser vos compétences.</p>
             </div>
         </div>
     </div>

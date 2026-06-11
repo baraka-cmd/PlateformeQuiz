@@ -3,7 +3,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.sql.Timestamp" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="com.amijayquiz.models.Quiz" %>
+<%@ page import="com.learnpath.models.Quiz" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-resultats-quiz.jsp

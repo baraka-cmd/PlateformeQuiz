@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/niveau.js
-// RÔLE    : Script de la page niveau Quiz AmijayQuiz
+// RÔLE    : Script de la page niveau Quiz LearnPath
 //           - Animation des cartes de parties
 //           - Effet hover sur les cartes
 //           - Indication visuelle "prochaine partie"

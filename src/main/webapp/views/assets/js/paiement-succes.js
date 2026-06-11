@@ -164,8 +164,8 @@ function initRedirectionAuto() {
                     '<strong>Vous pouvez naviguer librement.</strong>';
                 redirectionDiv.style.cursor = 'default';
                 
-                if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-                    AmijayQuiz.toast('Redirection automatique annulée', 'info', 2500);
+                if (typeof LearnPath !== 'undefined' && LearnPath.toast) {
+                    LearnPath.toast('Redirection automatique annulée', 'info', 2500);
                 }
             }
         });
@@ -315,8 +315,8 @@ function initParticlesBackground() {
 (function notificationBienvenue() {
     // Afficher une notification toast après un court délai
     setTimeout(function() {
-        if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-            AmijayQuiz.toast('🎉 Bienvenue dans le monde Premium ! Tous les niveaux sont débloqués.', 
+        if (typeof LearnPath !== 'undefined' && LearnPath.toast) {
+            LearnPath.toast('🎉 Bienvenue dans le monde Premium ! Tous les niveaux sont débloqués.', 
                 'success', 6000);
         }
     }, 1500);

@@ -2,9 +2,9 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
-<%@ page import="com.amijayquiz.models.Partie" %>
-<%@ page import="com.amijayquiz.models.Certificat" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Partie" %>
+<%@ page import="com.learnpath.models.Certificat" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-utilisateur-detail.jsp
@@ -343,6 +343,18 @@
                 <div class="au-detail-card-body">
                     <div class="au-stats-grid-detail">
                         <div class="au-stat-item-detail">
+                            <span class="au-stat-nombre-detail"><%= statsCours.getOrDefault("totalCoursCommences", 0) %></span>
+                            <span class="au-stat-label-detail">Cours commencés</span>
+                        </div>
+                        <div class="au-stat-item-detail">
+                            <span class="au-stat-nombre-detail"><%= statsCours.getOrDefault("totalCoursTermines", 0) %></span>
+                            <span class="au-stat-label-detail">Cours terminés</span>
+                        </div>
+                        <div class="au-stat-item-detail">
+                            <span class="au-stat-nombre-detail"><%= statsCours.getOrDefault("totalLeconsTerminees", 0) %></span>
+                            <span class="au-stat-label-detail">Leçons terminées</span>
+                        </div>
+                        <div class="au-stat-item-detail">
                             <span class="au-stat-nombre-detail"><%= statsCours.getOrDefault("totalCertificats", 0) %></span>
                             <span class="au-stat-label-detail">Certificats</span>
                         </div>
@@ -424,7 +436,59 @@
                 </div>
             </div>
 
+            <%-- ===== DERNIERS COURS ===== --%>
+            <div class="au-detail-card">
+                <div class="au-detail-card-header">
+                    <div class="au-detail-card-title">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>Progression dans les cours</h3>
+                    </div>
+                    <span class="au-detail-card-badge"><%= statsCours.getOrDefault("totalCoursCommences", 0) %></span>
+                </div>
+                <div class="au-detail-card-body">
+                    <% 
+                        java.util.List<java.util.Map<String, Object>> progressionCoursDetail = 
+                            (java.util.List<java.util.Map<String, Object>>) request.getAttribute("progressionCoursDetail");
+                        if (progressionCoursDetail != null && !progressionCoursDetail.isEmpty()) { 
+                    %>
+                        <div class="au-liste-mini">
+                            <% for (java.util.Map<String, Object> coursData : progressionCoursDetail) {
+                                String titreCours = (String) coursData.get("titre");
+                                String themeCours = (String) coursData.get("theme");
+                                int pourcentage = coursData.get("pourcentage") != null ? (Integer) coursData.get("pourcentage") : 0;
+                                boolean estTermine = coursData.get("termine") != null && (Boolean) coursData.get("termine");
+                                int coursId = coursData.get("coursId") != null ? (Integer) coursData.get("coursId") : 0;
+                                String couleur = pourcentage >= 80 ? "#27ae60" : (pourcentage >= 50 ? "#f39c12" : "#667eea");
+                            %>
+                                <div class="au-liste-item">
+                                    <div class="au-liste-icon" style="background: <%= couleur %>;">
+                                        <i class="fas <%= estTermine ? "fa-check-circle" : "fa-book" %>"></i>
+                                    </div>
+                                    <div class="au-liste-info">
+                                        <strong><%= titreCours %></strong>
+                                        <span><%= themeCours %> • <%= pourcentage %>% complété</span>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <% if (estTermine) { %>
+                                            <span class="au-badge-score au-score-excellent">Terminé</span>
+                                        <% } else { %>
+                                            <span class="au-badge-score" style="background: #eef0ff; color: #667eea;"><%= pourcentage %>%</span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <div class="au-empty-mini">
+                            <i class="fas fa-inbox"></i>
+                            <p>Aucun cours commencé</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
         </div>
+                
+        
 
     </div>
 

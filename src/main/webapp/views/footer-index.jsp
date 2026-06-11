@@ -33,7 +33,7 @@
         <div class="footer-column footer-brand">
             <a href="${pageContext.request.contextPath}/" class="footer-logo">
                 <i class="fas fa-brain"></i>
-                <span>AmijayQuiz</span>
+                <span>LearnPath</span>
             </a>
             <p class="footer-description">
                 Plateforme de quiz et cours en ligne. Testez vos connaissances, 
@@ -126,14 +126,14 @@
         <div class="footer-bottom-content">
             <p class="copyright">
                 <i class="far fa-copyright"></i>
-                <%= Year.now().getValue() %> <strong>AmijayQuiz</strong>. Tous droits reserves.
+                <%= Year.now().getValue() %> <strong>LearnPath</strong>. Tous droits reserves.
             </p>
             <p class="footer-tagline">
                 Developpe avec
                 <i class="fas fa-heart heart-beat"></i>
                 et
                 <i class="fas fa-coffee"></i>
-                par l'equipe AmijayQuiz
+                par l'equipe LearnPath
             </p>
             <div class="footer-legal">
                 <a href="#">Confidentialite</a>

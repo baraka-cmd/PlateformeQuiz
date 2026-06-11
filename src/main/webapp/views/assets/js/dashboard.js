@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/dashboard.js
-// RÔLE    : Script du tableau de bord unifié AmijayQuiz
+// RÔLE    : Script du tableau de bord unifié LearnPath
 //           - Animation des compteurs statistiques
 //           - Animation des barres de progression
 //           - Effet hover sur les cartes thèmes
@@ -420,14 +420,14 @@ function initHeaderWaveEffect() {
 // DÉTECTION DU PREMIER PASSAGE (MESSAGE D'ACCUEIL)
 // ============================================================
 (function messagePremierPassage() {
-    var dejaVisite = localStorage.getItem('amijayquiz_dashboard_visite');
+    var dejaVisite = localStorage.getItem('LearnPath_dashboard_visite');
 
     if (!dejaVisite) {
-        localStorage.setItem('amijayquiz_dashboard_visite', 'true');
+        localStorage.setItem('LearnPath_dashboard_visite', 'true');
 
         setTimeout(function() {
-            if (typeof AmijayQuiz !== 'undefined' && AmijayQuiz.toast) {
-                AmijayQuiz.toast(
+            if (typeof LearnPath !== 'undefined' && LearnPath.toast) {
+                LearnPath.toast(
                     '👋 Bienvenue sur votre tableau de bord ! Explorez les cours et quiz disponibles.',
                     'info',
                     6000

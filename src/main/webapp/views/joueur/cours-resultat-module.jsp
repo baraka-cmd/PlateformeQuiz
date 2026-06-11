@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.ExamenModule" %>
-<%@ page import="com.amijayquiz.models.QuestionExamen" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.ExamenModule" %>
+<%@ page import="com.learnpath.models.QuestionExamen" %>
 
 <%-- ============================================================
      Fichier : cours-resultat-module.jsp

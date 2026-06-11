@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Question" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Question" %>
 
 <%-- ============================================================
      Fichier : cours-examen.jsp
@@ -34,7 +34,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Examen Final - <%= cours.getTitre() %> - AmijayQuiz</title>
+    <title>Examen Final - <%= cours.getTitre() %> - LearnPath</title>
     
     
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/fonts.css">

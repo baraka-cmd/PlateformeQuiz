@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/accueil.js
-// RÔLE    : Script de la page d'accueil AmijayQuiz
+// RÔLE    : Script de la page d'accueil LearnPath
 //           - Animation des compteurs statistiques
 //           - Animation au scroll (reveal)
 //           - FAQ accordeon
@@ -37,7 +37,7 @@
         initHeroParticles();
         initCardsHover();
         initScrollIndicator();
-        console.log('Page d\'accueil AmijayQuiz initialisee');
+        console.log('Page d\'accueil LearnPath initialisee');
     });
 
     /* ==========================================================

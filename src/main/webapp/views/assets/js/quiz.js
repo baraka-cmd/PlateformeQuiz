@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * FICHIER : views/assets/js/quiz.js
- * RÔLE    : Scripts de l'interface de quiz AmijayQuiz
+ * RÔLE    : Scripts de l'interface de quiz LearnPath
  *           - Gestion du chronomètre (timer) avec localStorage
  *           - Navigation entre les questions
  *           - Modal de confirmation (terminer le quiz)

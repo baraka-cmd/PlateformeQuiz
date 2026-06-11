@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.ExamenModule" %>
-<%@ page import="com.amijayquiz.models.QuestionExamen" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.ExamenModule" %>
+<%@ page import="com.learnpath.models.QuestionExamen" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-cours-module-questions.jsp
@@ -46,11 +46,16 @@
 %>
 
 <%
+    String[] lettres = {"A", "B", "C", "D"};
+%>
+
+<%
     String adminCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/admin-cours-module-questions.css\">";
     request.setAttribute("extraHead", adminCSS);
     String adminJS = "<script src=\"" + request.getContextPath() + "/views/assets/js/admin-cours-module-questions.js\"></script>";
     request.setAttribute("extraScripts", adminJS);
 %>
+
 
 <%@ include file="../header.jsp" %>
 
@@ -134,7 +139,7 @@
                     <% if (questions != null && !questions.isEmpty()) { %>
                         <div class="acmq-questions-liste">
                             <% 
-                                String[] lettres = {"A", "B", "C", "D"};
+                                
                                 int index = 1;
                                 for (QuestionExamen q : questions) {
                                     String texteQuestion = q.getQuestion();

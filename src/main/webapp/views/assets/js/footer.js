@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/footer.js
-// RÔLE    : Scripts du pied de page AmijayQuiz
+// RÔLE    : Scripts du pied de page LearnPath
 //           - Animation de la vague au scroll
 //           - Animation des liens sociaux au survol
 //           - Effet de fondu sur le copyright
@@ -165,8 +165,8 @@
      SECTION 6 : COMPTEUR DE VISITES (LOCALSTORAGE)
      ========================================================== */
     function initVisitCounter() {
-        var storageKey = 'amijayquiz_visit_count';
-        var todayKey = 'amijayquiz_last_visit_date';
+        var storageKey = 'LearnPath_visit_count';
+        var todayKey = 'LearnPath_last_visit_date';
         var today = new Date().toDateString();
 
         try {

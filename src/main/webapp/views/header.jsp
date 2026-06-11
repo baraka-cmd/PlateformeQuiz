@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      FICHIER : views/header.jsp
@@ -27,7 +27,7 @@
     // Vérification premium pour le header
     boolean estPremiumHeader = false;
     if (utilisateurConnecte != null && "joueur".equals(roleHeader)) {
-        com.amijayquiz.dao.AccessPremiumDAO premiumDAOH = new com.amijayquiz.dao.AccessPremiumDAO();
+        com.learnpath.dao.AccessPremiumDAO premiumDAOH = new com.learnpath.dao.AccessPremiumDAO();
         estPremiumHeader = premiumDAOH.estPremium(utilisateurConnecte.getId());
     }
 %>
@@ -39,10 +39,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <title><%= request.getAttribute("pageTitle") != null ? request.getAttribute("pageTitle") : "AmijayQuiz - Plateforme de Quiz et Cours" %></title>
+    <title><%= request.getAttribute("pageTitle") != null ? request.getAttribute("pageTitle") : "LearnPath - Plateforme de Quiz et Cours" %></title>
     
-    <meta name="description" content="AmijayQuiz - Plateforme de quiz et cours en ligne. Testez vos connaissances, progressez niveau par niveau et obtenez des certificats vérifiables.">
-    <meta name="author" content="AmijayQuiz">
+    <meta name="description" content="LearnPath - Plateforme de quiz et cours en ligne. Testez vos connaissances, progressez niveau par niveau et obtenez des certificats vérifiables.">
+    <meta name="author" content="LearnPath">
     <meta name="theme-color" content="#667eea">
 
     <%-- Font Awesome 6 --%>
@@ -66,9 +66,9 @@
 <nav class="navbar" role="navigation" aria-label="Navigation principale">
     
     <%-- Logo --%>
-    <a href="${pageContext.request.contextPath}/" class="logo" aria-label="Retour à l'accueil AmijayQuiz">
+    <a href="${pageContext.request.contextPath}/" class="logo" aria-label="Retour à l'accueil LearnPath">
         <i class="fas fa-brain" aria-hidden="true"></i>
-        <span>AmijayQuiz</span>
+        <span>LearnPath</span>
     </a>
     
     <%-- Liens de navigation --%>
@@ -136,6 +136,14 @@
            class="<%= uri.contains("/admin/themes") ? "active" : "" %>">
             <i class="fas fa-tags"></i>
             <span>Thèmes</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="${pageContext.request.contextPath}/admin/certificats"
+           class="<%= uri.contains("/admin/certificats") ? "active" : "" %>">
+            <i class="fas fa-certificate"></i>
+            <span>Certificats</span>
         </a>
     </li>
     
@@ -239,7 +247,14 @@
             
             <li>
                 <a href="${pageContext.request.contextPath}/joueur/dashboard"
-                   class="<%= uri.contains("/joueur/dashboard") || uri.contains("/joueur/theme") || uri.contains("/joueur/niveau") ? "active" : "" %>">
+                   class="<%= uri.endsWith("/joueur/dashboard") ? "active" : "" %>">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="${pageContext.request.contextPath}/joueur/dashboard#quiz-section"
+                   class="<%= uri.contains("/joueur/theme") || uri.contains("/joueur/niveau") ? "active" : "" %>">
                     <i class="fas fa-layer-group"></i>
                     <span>Quiz</span>
                 </a>

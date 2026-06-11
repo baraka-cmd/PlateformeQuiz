@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * FICHIER : views/assets/js/theme.js
- * RÔLE    : Scripts de la page thème AmijayQuiz
+ * RÔLE    : Scripts de la page thème LearnPath
  *           - Animation de la barre de progression au scroll
  *           - Animation des cartes niveaux (révélation cascade)
  *           - Effets de survol avancés sur les cartes

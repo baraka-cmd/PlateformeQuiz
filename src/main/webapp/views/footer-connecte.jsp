@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.time.Year" %>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      FICHIER : footer-connecte.jsp
@@ -49,7 +49,7 @@
         <div class="footer-column footer-brand">
             <a href="${pageContext.request.contextPath}/" class="footer-logo">
                 <i class="fas fa-brain"></i>
-                <span>AmijayQuiz</span>
+                <span>LearnPath</span>
             </a>
             <p class="footer-description">
                 Plateforme de quiz et cours en ligne. Testez vos connaissances,
@@ -62,7 +62,7 @@
                 <%
                     boolean estPremiumFooter = false;
                     if (utilisateurFooter != null && "joueur".equals(roleFooter)) {
-                        com.amijayquiz.dao.AccessPremiumDAO premiumDAOFooter = new com.amijayquiz.dao.AccessPremiumDAO();
+                        com.learnpath.dao.AccessPremiumDAO premiumDAOFooter = new com.learnpath.dao.AccessPremiumDAO();
                         estPremiumFooter = premiumDAOFooter.estPremium(utilisateurFooter.getId());
                     }
 
@@ -194,14 +194,14 @@
         <div class="footer-bottom-content">
             <p class="copyright">
                 <i class="far fa-copyright"></i>
-                <%= Year.now().getValue() %> <strong>AmijayQuiz</strong>. Tous droits reserves.
+                <%= Year.now().getValue() %> <strong>LearnPath</strong>. Tous droits reserves.
             </p>
             <p class="footer-tagline">
                 Developpe avec
                 <i class="fas fa-heart heart-beat"></i>
                 et
                 <i class="fas fa-coffee"></i>
-                par l'equipe AmijayQuiz
+                par l'equipe LearnPath
             </p>
             <div class="footer-legal">
                 <a href="#">Confidentialite</a>

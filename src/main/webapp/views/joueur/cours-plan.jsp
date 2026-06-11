@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Chapitre" %>
-<%@ page import="com.amijayquiz.models.Lecon" %>
-<%@ page import="com.amijayquiz.models.Certificat" %>
-<%@ page import="com.amijayquiz.models.ExamenModule" %>
-<%@ page import="com.amijayquiz.models.ProgressionModule" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Chapitre" %>
+<%@ page import="com.learnpath.models.Lecon" %>
+<%@ page import="com.learnpath.models.Certificat" %>
+<%@ page import="com.learnpath.models.ExamenModule" %>
+<%@ page import="com.learnpath.models.ProgressionModule" %>
 
 <%-- ============================================================
      Fichier : cours-plan.jsp
@@ -34,8 +34,8 @@
     // Vérification premium
     Boolean estPremium = (Boolean) request.getAttribute("estPremium");
     if (estPremium == null) {
-        com.amijayquiz.dao.AccessPremiumDAO premiumDAO = new com.amijayquiz.dao.AccessPremiumDAO();
-        com.amijayquiz.models.Utilisateur utilisateur = (com.amijayquiz.models.Utilisateur) session.getAttribute("utilisateur");
+        com.learnpath.dao.AccessPremiumDAO premiumDAO = new com.learnpath.dao.AccessPremiumDAO();
+        com.learnpath.models.Utilisateur utilisateur = (com.learnpath.models.Utilisateur) session.getAttribute("utilisateur");
         estPremium = (utilisateur != null) && premiumDAO.estPremium(utilisateur.getId());
     }
 

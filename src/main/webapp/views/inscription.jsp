@@ -1,50 +1,37 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%-- ============================================================
-     Fichier : inscription.jsp
-     Rôle    : Page d'inscription AmijayQuiz
-              - Formulaire complet avec validation
-              - Panneau latéral informatif (avantages)
-              - Vérification force mot de passe
-              - Vérification correspondance mots de passe
-              - Affichage des messages d'erreur/succès
-              - Redirection après inscription réussie
+     FICHIER : views/inscription.jsp
+     RÔLE    : Page d'inscription LearnPath
+              - Email OBLIGATOIRE (connexion + récupération MDP)
+              - Mot de passe 8 caractères min, majuscule, minuscule, chiffre
+              - Avantages : Quiz + Cours + Certificats
+              - Design professionnel 2 colonnes
      ============================================================ --%>
 
 <%
-    // Récupération des messages de la session
     String messageErreur = (String) session.getAttribute("messageErreur");
     String messageSucces = (String) session.getAttribute("messageSucces");
-    
-    // Valeurs de retour en cas d'erreur (pré-remplissage)
     String oldPseudo = (String) session.getAttribute("oldPseudo");
     String oldEmail = (String) session.getAttribute("oldEmail");
     
-    // Suppression des messages après affichage
     if (messageErreur != null) session.removeAttribute("messageErreur");
     if (messageSucces != null) session.removeAttribute("messageSucces");
     if (oldPseudo != null) session.removeAttribute("oldPseudo");
     if (oldEmail != null) session.removeAttribute("oldEmail");
     
-    // Titre de la page
-    request.setAttribute("pageTitle", "Inscription - AmijayQuiz");
+    request.setAttribute("pageTitle", "Inscription - LearnPath");
 %>
 
 <%
-    // Chargement du CSS auth (partagé avec connexion)
     String authCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/auth.css\">";
     request.setAttribute("extraHead", authCSS);
-
-    // Chargement du JS auth
     String authJS = "<script src=\"" + request.getContextPath() + "/views/assets/js/auth.js\"></script>";
     request.setAttribute("extraScripts", authJS);
 %>
 
 <%@ include file="header.jsp" %>
 
-<%-- ============================================================
-     CONTENEUR PRINCIPAL (2 colonnes)
-     ============================================================ --%>
 <div class="auth-container">
     
     <%-- ============================================================
@@ -52,13 +39,13 @@
          ============================================================ --%>
     <div class="auth-sidebar">
         <div class="sidebar-content">
-            <%-- Logo --%>
+            
             <a href="${pageContext.request.contextPath}/" class="sidebar-logo">
-                <i class="fas fa-brain"></i>
-                <span>AmijayQuiz</span>
+                <img src="${pageContext.request.contextPath}/views/assets/images/logo.png" alt="LearnPath" style="height: 30px; width: auto;">
+                <span>LearnPath</span>
             </a>
             
-            <h2>Rejoignez la communauté !</h2>
+            <h2>Rejoignez l'aventure !</h2>
             <p class="sidebar-desc">
                 Créez votre compte gratuit et commencez votre parcours d'apprentissage dès maintenant.
             </p>
@@ -70,18 +57,28 @@
                         <i class="fas fa-graduation-cap"></i>
                     </div>
                     <div class="benefit-text">
-                        <strong>Apprentissage progressif</strong>
-                        <span>3 niveaux par thème pour maîtriser chaque sujet</span>
+                        <strong>Cours complets</strong>
+                        <span>12 thèmes, 3 niveaux, 15 modules par cours</span>
                     </div>
                 </div>
                 
                 <div class="benefit-item">
                     <div class="benefit-icon">
-                        <i class="fas fa-trophy"></i>
+                        <i class="fas fa-layer-group"></i>
                     </div>
                     <div class="benefit-text">
-                        <strong>Système de récompenses</strong>
-                        <span>Débloquez des niveaux et suivez votre progression</span>
+                        <strong>Quiz interactifs</strong>
+                        <span>6 thèmes, 3 niveaux, 20 parties par niveau</span>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div class="benefit-text">
+                        <strong>Certificats vérifiables</strong>
+                        <span>Validez vos compétences avec des certificats</span>
                     </div>
                 </div>
                 
@@ -90,18 +87,8 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="benefit-text">
-                        <strong>Statistiques détaillées</strong>
-                        <span>Visualisez vos scores et votre évolution</span>
-                    </div>
-                </div>
-                
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="benefit-text">
-                        <strong>Quiz chronométrés</strong>
-                        <span>Testez vos connaissances en conditions réelles</span>
+                        <strong>Suivi de progression</strong>
+                        <span>Visualisez votre évolution en temps réel</span>
                     </div>
                 </div>
             </div>
@@ -110,7 +97,7 @@
             <div class="sidebar-testimonial">
                 <div class="testimonial-quote">
                     <i class="fas fa-quote-left"></i>
-                    <p>Grâce à AmijayQuiz, j'ai pu valider mes compétences et progresser rapidement. La plateforme est intuitive et motivante !</p>
+                    <p>Grâce à LearnPath, j'ai pu valider mes compétences et décrocher mon premier emploi. La plateforme est complète et motivante !</p>
                 </div>
                 <div class="testimonial-author">
                     <div class="author-avatar-sm">
@@ -120,11 +107,7 @@
                         <strong>Marie K.</strong>
                         <span>Étudiante en informatique</span>
                         <div class="author-stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                         </div>
                     </div>
                 </div>
@@ -138,16 +121,14 @@
     <div class="auth-form-container">
         <div class="auth-form-wrapper">
             
-            <%-- En-tête du formulaire --%>
             <div class="auth-form-header">
                 <div class="form-icon-circle">
                     <i class="fas fa-user-plus"></i>
                 </div>
                 <h1>Créer un compte</h1>
-                <p>Remplissez le formulaire ci-dessous pour commencer</p>
+                <p>Rejoignez les apprenants qui progressent chaque jour</p>
             </div>
             
-            <%-- Messages d'alerte --%>
             <% if (messageErreur != null) { %>
                 <div class="message-alerte message-erreur">
                     <i class="fas fa-exclamation-circle"></i>
@@ -162,7 +143,6 @@
                 </div>
             <% } %>
             
-            <%-- Formulaire --%>
             <form action="${pageContext.request.contextPath}/inscription" method="POST" id="formInscription" novalidate>
                 
                 <%-- ===== CHAMP PSEUDO ===== --%>
@@ -173,48 +153,32 @@
                     </label>
                     <div class="input-wrapper">
                         <i class="fas fa-user input-icon"></i>
-                        <input 
-                            type="text" 
-                            id="pseudo" 
-                            name="pseudo" 
-                            placeholder="Choisissez un pseudo unique"
-                            value="<%= oldPseudo != null ? oldPseudo : "" %>"
-                            minlength="3"
-                            maxlength="50"
-                            required
-                            autocomplete="username"
-                        >
+                        <input type="text" id="pseudo" name="pseudo" 
+                               placeholder="Choisissez un pseudo unique"
+                               value="<%= oldPseudo != null ? oldPseudo : "" %>"
+                               minlength="3" maxlength="50" required autocomplete="username">
                         <span class="input-status" id="pseudoStatus"></span>
                     </div>
-                    <span class="form-hint">
-                        <i class="fas fa-info-circle"></i> 3 à 50 caractères. Choisissez un pseudo qui vous identifie.
-                    </span>
+                    <span class="form-hint"><i class="fas fa-info-circle"></i> 3 à 50 caractères. Visible par les autres apprenants.</span>
                     <span class="form-error" id="pseudoError"></span>
                 </div>
                 
-                <%-- ===== CHAMP EMAIL (OPTIONNEL) ===== --%>
+                <%-- ===== CHAMP EMAIL (OBLIGATOIRE) ===== --%>
                 <div class="form-group">
                     <label for="email">
                         <i class="fas fa-envelope"></i>
                         <span>Adresse email</span>
-                        <span class="label-badge optional">Optionnel</span>
+                        <span class="label-badge required">Obligatoire</span>
                     </label>
                     <div class="input-wrapper">
                         <i class="fas fa-envelope input-icon"></i>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            placeholder="Votre adresse email (optionnelle)"
-                            value="<%= oldEmail != null ? oldEmail : "" %>"
-                            maxlength="100"
-                            autocomplete="email"
-                        >
+                        <input type="email" id="email" name="email" 
+                               placeholder="Votre adresse email"
+                               value="<%= oldEmail != null ? oldEmail : "" %>"
+                               maxlength="100" required autocomplete="email">
                         <span class="input-status" id="emailStatus"></span>
                     </div>
-                    <span class="form-hint">
-                        <i class="fas fa-info-circle"></i> Pour vous connecter et récupérer votre compte en cas d'oubli.
-                    </span>
+                    <span class="form-hint"><i class="fas fa-info-circle"></i> Utilisée pour la connexion et la récupération de votre compte.</span>
                     <span class="form-error" id="emailError"></span>
                 </div>
                 
@@ -226,16 +190,9 @@
                     </label>
                     <div class="input-wrapper">
                         <i class="fas fa-lock input-icon"></i>
-                        <input 
-                            type="password" 
-                            id="motDePasse" 
-                            name="motDePasse" 
-                            placeholder="Minimum 6 caractères"
-                            minlength="6"
-                            maxlength="100"
-                            required
-                            autocomplete="new-password"
-                        >
+                        <input type="password" id="motDePasse" name="motDePasse" 
+                               placeholder="Minimum 8 caractères"
+                               minlength="8" maxlength="100" required autocomplete="new-password">
                         <button type="button" class="toggle-password-btn" id="togglePassword1" tabindex="-1" 
                                 onclick="togglePassword('motDePasse', 'togglePassword1')"
                                 aria-label="Afficher/masquer le mot de passe">
@@ -252,13 +209,16 @@
                     <%-- Exigences du mot de passe --%>
                     <div class="password-requirements" id="passwordRequirements">
                         <span class="requirement" id="reqLength">
-                            <i class="fas fa-circle"></i> Au moins 6 caractères
+                            <i class="fas fa-circle"></i> Au moins 8 caractères
                         </span>
                         <span class="requirement" id="reqUppercase">
                             <i class="fas fa-circle"></i> Au moins une majuscule
                         </span>
+                        <span class="requirement" id="reqLowercase">
+                            <i class="fas fa-circle"></i> Au moins une minuscule
+                        </span>
                         <span class="requirement" id="reqNumber">
-                            <i class="fas fa-circle"></i> Au moins un chiffre ou caractère spécial
+                            <i class="fas fa-circle"></i> Au moins un chiffre
                         </span>
                     </div>
                 </div>
@@ -271,16 +231,9 @@
                     </label>
                     <div class="input-wrapper">
                         <i class="fas fa-check-double input-icon"></i>
-                        <input 
-                            type="password" 
-                            id="confirmation" 
-                            name="confirmation" 
-                            placeholder="Répétez votre mot de passe"
-                            minlength="6"
-                            maxlength="100"
-                            required
-                            autocomplete="new-password"
-                        >
+                        <input type="password" id="confirmation" name="confirmation" 
+                               placeholder="Répétez votre mot de passe"
+                               minlength="8" maxlength="100" required autocomplete="new-password">
                         <button type="button" class="toggle-password-btn" id="togglePassword2" tabindex="-1"
                                 onclick="togglePassword('confirmation', 'togglePassword2')"
                                 aria-label="Afficher/masquer la confirmation">
@@ -296,28 +249,22 @@
                         <input type="checkbox" id="acceptConditions" required>
                         <span class="checkbox-custom"></span>
                         <span class="checkbox-text">
-                            J'accepte les 
-                            <a href="#" class="form-link">conditions d'utilisation</a> 
-                            et la 
-                            <a href="#" class="form-link">politique de confidentialité</a>
+                            J'accepte les <a href="#" class="form-link">conditions d'utilisation</a> 
+                            et la <a href="#" class="form-link">politique de confidentialité</a>
                         </span>
                     </label>
                 </div>
                 
-                                <%-- ===== BOUTON D'INSCRIPTION ===== --%>
+                <%-- ===== BOUTON D'INSCRIPTION ===== --%>
                 <button type="submit" class="btn-auth btn-auth-primary" id="btnInscription">
                     <i class="fas fa-user-plus"></i>
                     <span>Créer mon compte</span>
-                    <span class="btn-loader" id="btnLoader">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </span>
+                    <span class="btn-loader" id="btnLoader"><i class="fas fa-spinner fa-spin"></i></span>
                 </button>
             </form>
             
             <%-- Séparateur --%>
-            <div class="auth-separator">
-                <span>OU</span>
-            </div>
+            <div class="auth-separator"><span>OU</span></div>
             
             <%-- ===== BOUTON INSCRIPTION AVEC GOOGLE ===== --%>
             <a href="${pageContext.request.contextPath}/google-login" class="btn-google">
@@ -334,17 +281,12 @@
             <div class="auth-redirect">
                 <i class="fas fa-sign-in-alt"></i>
                 <span>Déjà un compte ?</span>
-                <a href="${pageContext.request.contextPath}/connexion">
-                    Se connecter
-                    <i class="fas fa-arrow-right"></i>
-                </a>
+                <a href="${pageContext.request.contextPath}/connexion">Se connecter <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <%-- Retour accueil --%>
             <div class="auth-back">
-                <a href="${pageContext.request.contextPath}/">
-                    <i class="fas fa-arrow-left"></i> Retour à l'accueil
-                </a>
+                <a href="${pageContext.request.contextPath}/"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
             </div>
             
         </div>

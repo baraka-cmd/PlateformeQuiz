@@ -1,0 +1,663 @@
+/* ============================================================
+   FICHIER : views/assets/css/cours-chapitre.css
+   RÔLE    : Styles de la page chapitre de cours LearnPath
+             Affiche la liste des lecons d'un chapitre
+             - En-tete du chapitre avec badge Module
+             - Nombre de lecons, description, objectifs
+             - Liste des lecons avec etats visuels
+             - Metadonnees des lecons (temps, code, ressources)
+             - Badge Premium sur les lecons payantes
+             - Boutons d'acces et de retour
+             - Animations fluides
+             - Responsive design complet
+   ============================================================ */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+    --ch-primary: #667eea;
+    --ch-primary-dark: #5a6fd6;
+    --ch-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --ch-gold: #f39c12;
+    --ch-gold-dark: #e67e22;
+    --ch-gold-light: #fef3e2;
+    --ch-success: #27ae60;
+    --ch-success-light: #e8f5e9;
+    --ch-success-dark: #155724;
+    --ch-warning: #f39c12;
+    --ch-warning-light: #fff8e1;
+    --ch-danger: #e74c3c;
+    --ch-info: #4a00e0;
+    --ch-info-light: #eef0ff;
+    --ch-white: #ffffff;
+    --ch-bg: #f5f6fa;
+    --ch-bg-light: #fafbfe;
+    --ch-text: #1a1a2e;
+    --ch-text-light: #555555;
+    --ch-text-muted: #8b8fa3;
+    --ch-border: #e8eaef;
+    --ch-radius-sm: 8px;
+    --ch-radius: 14px;
+    --ch-radius-lg: 18px;
+    --ch-radius-xl: 22px;
+    --ch-radius-2xl: 28px;
+    --ch-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --ch-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --ch-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --ch-shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.12);
+    --ch-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================
+   CONTENEUR PRINCIPAL
+   ========================================================== */
+.chapitre-container {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ==========================================================
+   BREADCRUMB
+   ========================================================== */
+.chapitre-container .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 25px;
+    font-size: 13px;
+    color: var(--ch-text-muted);
+    flex-wrap: wrap;
+    animation: chBreadcrumbIn 0.5s ease;
+    padding: 10px 0;
+}
+
+@keyframes chBreadcrumbIn {
+    from { opacity: 0; transform: translateX(-15px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.chapitre-container .breadcrumb-link {
+    color: var(--ch-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--ch-transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: var(--ch-radius-sm);
+    background: transparent;
+}
+
+.chapitre-container .breadcrumb-link:hover {
+    color: var(--ch-primary-dark);
+    background: rgba(102, 126, 234, 0.06);
+    text-decoration: none;
+}
+
+.chapitre-container .breadcrumb-link i { font-size: 13px; }
+.chapitre-container .breadcrumb-separator { font-size: 8px; color: #ccc; }
+
+.chapitre-container .breadcrumb-current {
+    color: var(--ch-text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: var(--ch-radius-sm);
+}
+
+.chapitre-container .breadcrumb-current i {
+    color: var(--ch-primary);
+    font-size: 14px;
+}
+
+/* ==========================================================
+   EN-TETE DU CHAPITRE
+   ========================================================== */
+.chapitre-header {
+    background: var(--ch-white);
+    border-radius: var(--ch-radius-2xl);
+    padding: 32px 30px 28px;
+    margin-bottom: 25px;
+    box-shadow: var(--ch-shadow-xl);
+    animation: chFadeIn 0.6s ease;
+    border: 1px solid rgba(102, 126, 234, 0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes chFadeIn {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chapitre-header::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: var(--ch-gradient);
+    opacity: 0.03;
+    pointer-events: none;
+}
+
+.chapitre-header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.chapitre-module-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 15px;
+    background: var(--ch-primary);
+    color: white;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+}
+
+.chapitre-module-badge i { font-size: 13px; }
+
+.chapitre-lecon-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: var(--ch-bg);
+    color: var(--ch-text-light);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.chapitre-lecon-count i {
+    color: var(--ch-primary);
+    font-size: 12px;
+}
+
+.chapitre-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ch-text);
+    margin: 0 0 10px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.chapitre-description {
+    font-size: 14px;
+    color: var(--ch-text-muted);
+    line-height: 1.7;
+    margin: 0 0 16px 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Objectifs */
+.chapitre-objectifs {
+    background: var(--ch-info-light);
+    border-radius: var(--ch-radius);
+    padding: 16px 20px;
+    margin-top: 8px;
+    border: 1px solid var(--ch-border);
+    position: relative;
+    z-index: 1;
+}
+
+.chapitre-objectifs h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ch-primary);
+    margin: 0 0 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chapitre-objectifs h3 i { font-size: 14px; }
+
+.chapitre-objectifs p {
+    font-size: 13px;
+    color: var(--ch-text-light);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ==========================================================
+   LISTE DES LECONS
+   ========================================================== */
+.lecons-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+/* ==========================================================
+   CARTE LECON
+   ========================================================== */
+.lecon-item {
+    background: var(--ch-white);
+    border-radius: var(--ch-radius-lg);
+    padding: 18px 22px;
+    box-shadow: var(--ch-shadow-sm);
+    transition: var(--ch-transition);
+    border: 2px solid var(--ch-border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    animation: chCardIn 0.5s ease both;
+    position: relative;
+}
+
+.lecon-item:nth-child(1) { animation-delay: 0.2s; }
+.lecon-item:nth-child(2) { animation-delay: 0.25s; }
+.lecon-item:nth-child(3) { animation-delay: 0.3s; }
+.lecon-item:nth-child(4) { animation-delay: 0.35s; }
+.lecon-item:nth-child(5) { animation-delay: 0.4s; }
+.lecon-item:nth-child(6) { animation-delay: 0.45s; }
+.lecon-item:nth-child(7) { animation-delay: 0.5s; }
+.lecon-item:nth-child(8) { animation-delay: 0.55s; }
+.lecon-item:nth-child(9) { animation-delay: 0.6s; }
+.lecon-item:nth-child(10) { animation-delay: 0.65s; }
+
+@keyframes chCardIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.lecon-item:hover {
+    border-color: var(--ch-primary);
+    box-shadow: var(--ch-shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* Etat terminee */
+.lecon-item.terminee {
+    border-color: #c8f7c5;
+    background: linear-gradient(135deg, #f0fff4 0%, var(--ch-white) 50%);
+}
+
+.lecon-item.terminee:hover {
+    border-color: var(--ch-success);
+}
+
+/* Etat active (en cours) */
+.lecon-item.active {
+    border-color: var(--ch-primary);
+    box-shadow: var(--ch-shadow-lg), 0 0 0 4px rgba(102, 126, 234, 0.06);
+}
+
+/* ===== NUMERO DE LECON ===== */
+.lecon-numero {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+    background: var(--ch-bg);
+    color: var(--ch-text-muted);
+    transition: var(--ch-transition);
+}
+
+.lecon-item.terminee .lecon-numero {
+    background: var(--ch-success-light);
+    color: var(--ch-success);
+    font-size: 20px;
+}
+
+.lecon-item.active .lecon-numero {
+    background: var(--ch-primary);
+    color: white;
+    font-size: 20px;
+    animation: chPulse 2s ease-in-out infinite;
+}
+
+@keyframes chPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.3); }
+    50% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+}
+
+.lecon-item.terminee .lecon-numero i { color: var(--ch-success); }
+.lecon-item.active .lecon-numero i { color: white; }
+
+/* ===== INFOS DE LA LECON ===== */
+.lecon-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.lecon-info h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ch-text);
+    margin: 0 0 5px 0;
+    line-height: 1.3;
+}
+
+.lecon-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lecon-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--ch-text-muted);
+    font-weight: 500;
+}
+
+.lecon-meta-item i {
+    font-size: 11px;
+    color: var(--ch-primary);
+}
+
+.lecon-premium-badge {
+    color: var(--ch-gold-dark) !important;
+    background: var(--ch-gold-light);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600 !important;
+}
+
+.lecon-premium-badge i {
+    color: var(--ch-gold) !important;
+    font-size: 10px !important;
+}
+
+/* ===== BOUTON D'ACCES ===== */
+.lecon-action {
+    flex-shrink: 0;
+}
+
+.lecon-acces-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    background: var(--ch-gradient);
+    color: white;
+    border-radius: var(--ch-radius-sm);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    transition: var(--ch-transition);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    white-space: nowrap;
+}
+
+.lecon-acces-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+    color: white;
+}
+
+.lecon-acces-btn:active {
+    transform: translateY(0);
+}
+
+.lecon-acces-btn span {
+    font-size: 13px;
+}
+
+.lecon-acces-btn.disabled {
+    background: var(--ch-bg);
+    color: #ccc;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+    padding: 10px 14px;
+    border-radius: 50%;
+}
+
+.lecon-acces-btn.disabled i {
+    font-size: 16px;
+}
+
+/* ==========================================================
+   ETAT VIDE
+   ========================================================== */
+.empty-state {
+    background: var(--ch-white);
+    border-radius: var(--ch-radius-2xl);
+    padding: 60px 25px;
+    text-align: center;
+    box-shadow: var(--ch-shadow);
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #f5f5fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    font-size: 36px;
+    color: #ccc;
+}
+
+.empty-state h3 {
+    font-size: 18px;
+    color: var(--ch-text);
+    margin: 0 0 8px 0;
+    font-weight: 600;
+}
+
+.empty-state p {
+    font-size: 14px;
+    color: var(--ch-text-muted);
+    margin: 0;
+}
+
+/* ==========================================================
+   PIED DE PAGE
+   ========================================================== */
+.chapitre-footer {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.btn-retour {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: var(--ch-white);
+    color: var(--ch-text-light);
+    border-radius: var(--ch-radius);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    transition: var(--ch-transition);
+    box-shadow: var(--ch-shadow-sm);
+    border: 1px solid var(--ch-border);
+}
+
+.btn-retour:hover {
+    background: #fafbff;
+    color: var(--ch-primary);
+    transform: translateX(-4px);
+    box-shadow: var(--ch-shadow);
+    border-color: var(--ch-primary);
+}
+
+.btn-retour i {
+    font-size: 14px;
+    transition: var(--ch-transition);
+}
+
+.btn-retour:hover i {
+    transform: translateX(-3px);
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+/* Tablette */
+@media (max-width: 850px) {
+    .chapitre-header {
+        padding: 25px 20px;
+        border-radius: var(--ch-radius-xl);
+    }
+
+    .chapitre-header h1 {
+        font-size: 20px;
+    }
+
+    .lecon-item {
+        padding: 15px 16px;
+        gap: 12px;
+    }
+
+    .lecon-numero {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+    }
+
+    .lecon-info h3 {
+        font-size: 14px;
+    }
+
+    .lecon-acces-btn span {
+        display: none;
+    }
+
+    .lecon-acces-btn {
+        padding: 10px 14px;
+        border-radius: 50%;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .chapitre-header {
+        padding: 20px 15px;
+        border-radius: var(--ch-radius-lg);
+    }
+
+    .chapitre-header h1 {
+        font-size: 18px;
+    }
+
+    .chapitre-description {
+        font-size: 13px;
+    }
+
+    .lecon-item {
+        padding: 14px 12px;
+        gap: 10px;
+        border-radius: var(--ch-radius);
+    }
+
+    .lecon-numero {
+        width: 34px;
+        height: 34px;
+        font-size: 13px;
+    }
+
+    .lecon-item.terminee .lecon-numero,
+    .lecon-item.active .lecon-numero {
+        font-size: 17px;
+    }
+
+    .lecon-info h3 {
+        font-size: 13px;
+    }
+
+    .lecon-meta {
+        gap: 8px;
+    }
+
+    .lecon-meta-item {
+        font-size: 10px;
+    }
+
+    .lecon-acces-btn {
+        padding: 8px 12px;
+    }
+
+    .btn-retour {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Tres petit mobile */
+@media (max-width: 380px) {
+    .chapitre-header {
+        padding: 16px 12px;
+    }
+
+    .chapitre-header h1 {
+        font-size: 16px;
+    }
+
+    .lecon-item {
+        padding: 12px 10px;
+        gap: 8px;
+    }
+
+    .lecon-numero {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    .lecon-info h3 {
+        font-size: 12px;
+    }
+
+    .lecon-meta-item {
+        font-size: 9px;
+    }
+}
+
+/* ===== IMPRESSION ===== */
+@media print {
+    .breadcrumb,
+    .lecon-acces-btn,
+    .btn-retour,
+    .chapitre-footer {
+        display: none;
+    }
+
+    .lecon-item {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        break-inside: avoid;
+    }
+
+    .chapitre-header {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}

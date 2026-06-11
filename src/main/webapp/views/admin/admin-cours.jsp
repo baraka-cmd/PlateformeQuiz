@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Theme" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Theme" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-cours.jsp
@@ -49,7 +49,7 @@
     int totalApprenants = statsGlobales.get("totalApprenants") != null ? (Integer) statsGlobales.get("totalApprenants") : 0;
     int totalCertificats = statsGlobales.get("totalCertificats") != null ? (Integer) statsGlobales.get("totalCertificats") : 0;
 
-    request.setAttribute("pageTitle", "Gestion des cours - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Gestion des cours - Administration - LearnPath");
 %>
 
 <%

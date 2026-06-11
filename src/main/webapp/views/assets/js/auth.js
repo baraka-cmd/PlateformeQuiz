@@ -1,16 +1,16 @@
 /**
  * ============================================================
  * FICHIER : views/assets/js/auth.js
- * RÔLE    : Scripts des pages d'authentification AmijayQuiz
+ * RÔLE    : Scripts des pages d'authentification LearnPath
  *           - Validation en temps réel des champs
- *           - Indicateur de force du mot de passe
+ *           - Indicateur de force du mot de passe avec animation
  *           - Vérification correspondance des mots de passe
  *           - Toggle affichage mot de passe
  *           - Validation à la soumission
  *           - Gestion du loader du bouton
  *           - Empêche la double soumission
  *           - Validation email (format)
- *           - Feedback visuel immédiat
+ *           - Feedback visuel immédiat avec animations
  * ============================================================
  */
 
@@ -27,6 +27,8 @@
         initTogglePassword();
         initFormSubmission();
         initInputAnimations();
+        initEmailValidation();
+        initPseudoValidation();
     });
 
     /* ==========================================================
@@ -49,9 +51,9 @@
             pseudoError: document.getElementById('pseudoError'),
             emailError: document.getElementById('emailError'),
             acceptConditions: document.getElementById('acceptConditions'),
-            // Exigences mot de passe
             reqLength: document.getElementById('reqLength'),
             reqUppercase: document.getElementById('reqUppercase'),
+            reqLowercase: document.getElementById('reqLowercase'),
             reqNumber: document.getElementById('reqNumber'),
             passwordRequirements: document.getElementById('passwordRequirements'),
             passwordStrengthContainer: document.getElementById('passwordStrengthContainer')
@@ -59,68 +61,30 @@
     }
 
     /* ==========================================================
-     SECTION 3 : VALIDATION EN TEMPS RÉEL DES CHAMPS
+     SECTION 3 : VALIDATION EN TEMPS RÉEL DU PSEUDO
      ========================================================== */
-    function initFormValidation() {
+    function initPseudoValidation() {
         const els = getElements();
-        if (!els.form) return;
+        if (!els.pseudo) return;
 
-        // Validation du pseudo en temps réel
-        if (els.pseudo) {
-            els.pseudo.addEventListener('input', function() {
-                validatePseudo(els);
-            });
+        els.pseudo.addEventListener('input', function() {
+            validatePseudoField(els);
+        });
 
-            els.pseudo.addEventListener('blur', function() {
-                validatePseudo(els);
-            });
-        }
-
-        // Validation de l'email en temps réel
-        if (els.email) {
-            els.email.addEventListener('input', function() {
-                validateEmail(els);
-            });
-
-            els.email.addEventListener('blur', function() {
-                validateEmail(els);
-            });
-        }
-
-        // Validation du mot de passe en temps réel
-        if (els.motDePasse) {
-            els.motDePasse.addEventListener('input', function() {
-                updatePasswordStrength(els);
-                if (els.confirmation && els.confirmation.value.length > 0) {
-                    checkPasswordMatch(els);
-                }
-            });
-        }
-
-        // Validation de la confirmation en temps réel
-        if (els.confirmation) {
-            els.confirmation.addEventListener('input', function() {
-                checkPasswordMatch(els);
-            });
-        }
+        els.pseudo.addEventListener('blur', function() {
+            validatePseudoField(els);
+        });
     }
 
-    /**
-     * Validation du pseudo
-     */
-    function validatePseudo(els) {
+    function validatePseudoField(els) {
         const value = els.pseudo.value.trim();
         const statusEl = els.pseudoStatus;
         const errorEl = els.pseudoError;
         const input = els.pseudo;
 
-        // Réinitialiser
         resetInputStatus(input, statusEl, errorEl);
 
-        if (value.length === 0) {
-            // Champ vide (ne rien afficher si pas encore touché)
-            return;
-        }
+        if (value.length === 0) return;
 
         if (value.length < 3) {
             setInputError(input, statusEl, errorEl, 'Le pseudo doit contenir au moins 3 caractères.');
@@ -137,28 +101,38 @@
             return;
         }
 
-        // Pseudo valide
         setInputValid(input, statusEl);
     }
 
-    /**
-     * Validation de l'email (si renseigné)
-     */
-    function validateEmail(els) {
+    /* ==========================================================
+     SECTION 4 : VALIDATION EN TEMPS RÉEL DE L'EMAIL
+     ========================================================== */
+    function initEmailValidation() {
+        const els = getElements();
+        if (!els.email) return;
+
+        els.email.addEventListener('input', function() {
+            validateEmailField(els);
+        });
+
+        els.email.addEventListener('blur', function() {
+            validateEmailField(els);
+        });
+    }
+
+    function validateEmailField(els) {
         const value = els.email.value.trim();
         const statusEl = els.emailStatus;
         const errorEl = els.emailError;
         const input = els.email;
 
-        // Réinitialiser
         resetInputStatus(input, statusEl, errorEl);
 
         if (value.length === 0) {
-            // Email optionnel, ne rien afficher
+            setInputError(input, statusEl, errorEl, 'L\'adresse email est obligatoire.');
             return;
         }
 
-        // Regex email standard
         const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 
         if (!emailRegex.test(value)) {
@@ -166,25 +140,59 @@
             return;
         }
 
-        // Email valide
         setInputValid(input, statusEl);
     }
 
     /* ==========================================================
-     SECTION 4 : FORCE DU MOT DE PASSE
+     SECTION 5 : INITIALISATION VALIDATION FORMULAIRE
+     ========================================================== */
+    function initFormValidation() {
+        const els = getElements();
+        if (!els.form) return;
+
+        if (els.motDePasse) {
+            els.motDePasse.addEventListener('input', function() {
+                updatePasswordStrength(els);
+                if (els.confirmation && els.confirmation.value.length > 0) {
+                    checkPasswordMatch(els);
+                }
+            });
+        }
+
+        if (els.confirmation) {
+            els.confirmation.addEventListener('input', function() {
+                checkPasswordMatch(els);
+            });
+        }
+    }
+
+    /* ==========================================================
+     SECTION 6 : FORCE DU MOT DE PASSE (ANIMÉE)
      ========================================================== */
     function initPasswordStrength() {
         const els = getElements();
         if (!els.motDePasse) return;
 
-        // Afficher les exigences quand l'utilisateur focus le champ
         els.motDePasse.addEventListener('focus', function() {
             if (els.passwordRequirements) {
                 els.passwordRequirements.style.display = 'flex';
-                els.passwordRequirements.style.animation = 'fadeIn 0.3s ease';
+                els.passwordRequirements.style.opacity = '0';
+                els.passwordRequirements.style.transform = 'translateY(-8px)';
+                els.passwordRequirements.style.transition = 'all 0.3s ease';
+                
+                requestAnimationFrame(function() {
+                    els.passwordRequirements.style.opacity = '1';
+                    els.passwordRequirements.style.transform = 'translateY(0)';
+                });
             }
             if (els.passwordStrengthContainer) {
                 els.passwordStrengthContainer.style.display = 'block';
+                els.passwordStrengthContainer.style.opacity = '0';
+                els.passwordStrengthContainer.style.transition = 'all 0.3s ease';
+                
+                requestAnimationFrame(function() {
+                    els.passwordStrengthContainer.style.opacity = '1';
+                });
             }
         });
     }
@@ -192,99 +200,154 @@
     function updatePasswordStrength(els) {
         const motDePasse = els.motDePasse.value;
         let score = 0;
+        let checksPassed = 0;
 
-        // Critère 1 : Longueur >= 6
-        if (motDePasse.length >= 6) {
-            score += 30;
+        // === CRITÈRE 1 : Longueur >= 8 ===
+        if (motDePasse.length >= 8) {
+            score += 25;
+            checksPassed++;
             markRequirement(els.reqLength, true);
         } else {
             markRequirement(els.reqLength, false);
         }
 
-        // Critère 2 : Longueur >= 8
-        if (motDePasse.length >= 8) {
-            score += 15;
-        }
-
-        // Critère 3 : Au moins une majuscule
+        // === CRITÈRE 2 : Au moins une majuscule ===
         if (/[A-Z]/.test(motDePasse)) {
             score += 25;
+            checksPassed++;
             markRequirement(els.reqUppercase, true);
         } else {
             markRequirement(els.reqUppercase, false);
         }
 
-        // Critère 4 : Au moins un chiffre ou caractère spécial
-        if (/[0-9!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;:'/`~]/.test(motDePasse)) {
-            score += 30;
+        // === CRITÈRE 3 : Au moins une minuscule ===
+        if (/[a-z]/.test(motDePasse)) {
+            score += 25;
+            checksPassed++;
+            markRequirement(els.reqLowercase, true);
+        } else {
+            markRequirement(els.reqLowercase, false);
+        }
+
+        // === CRITÈRE 4 : Au moins un chiffre ===
+        if (/[0-9]/.test(motDePasse)) {
+            score += 25;
+            checksPassed++;
             markRequirement(els.reqNumber, true);
         } else {
             markRequirement(els.reqNumber, false);
         }
 
-        // Mise à jour de la barre de force
-        if (els.strengthBar) {
-            els.strengthBar.style.width = score + '%';
-
-            // Couleurs selon le score
-            if (score <= 30) {
-                els.strengthBar.style.backgroundColor = '#e74c3c';
-            } else if (score <= 55) {
-                els.strengthBar.style.backgroundColor = '#f39c12';
-            } else if (score <= 75) {
-                els.strengthBar.style.backgroundColor = '#2ecc71';
-            } else {
-                els.strengthBar.style.backgroundColor = '#27ae60';
-            }
+        // Bonus si tous les critères sont remplis
+        if (checksPassed === 4) {
+            score = 100;
         }
 
-        // Texte de force
+        // === MISE À JOUR DE LA BARRE DE FORCE ===
+        if (els.strengthBar) {
+            els.strengthBar.style.width = score + '%';
+            els.strengthBar.style.transition = 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease, box-shadow 0.5s ease';
+
+            // Couleurs selon le score
+            let color;
+            let shadow;
+            if (score <= 25) {
+                color = '#e74c3c';
+                shadow = '0 0 8px rgba(231, 76, 60, 0.3)';
+            } else if (score <= 50) {
+                color = '#f39c12';
+                shadow = '0 0 8px rgba(243, 156, 18, 0.3)';
+            } else if (score <= 75) {
+                color = '#2ecc71';
+                shadow = '0 0 8px rgba(46, 204, 113, 0.3)';
+            } else {
+                color = '#27ae60';
+                shadow = '0 0 16px rgba(39, 174, 96, 0.5)';
+            }
+            
+            els.strengthBar.style.backgroundColor = color;
+            els.strengthBar.style.boxShadow = shadow;
+        }
+
+        // === TEXTE DE FORCE ===
         if (els.strengthText) {
             let text = '';
             let color = '';
+            let icon = '';
 
             if (motDePasse.length === 0) {
                 text = '';
-            } else if (score <= 30) {
-                text = '🔴 Mot de passe faible';
-                color = '#e74c3c';
-            } else if (score <= 55) {
-                text = '🟠 Mot de passe moyen';
-                color = '#f39c12';
-            } else if (score <= 75) {
-                text = '🟢 Mot de passe bon';
-                color = '#2ecc71';
+                els.strengthText.style.opacity = '0';
             } else {
-                text = '🟢 Mot de passe fort !';
-                color = '#27ae60';
+                els.strengthText.style.opacity = '1';
+                
+                if (score <= 25) {
+                    text = 'Faible';
+                    color = '#e74c3c';
+                    icon = '🔴';
+                } else if (score <= 50) {
+                    text = 'Moyen';
+                    color = '#f39c12';
+                    icon = '🟠';
+                } else if (score <= 75) {
+                    text = 'Bon';
+                    color = '#2ecc71';
+                    icon = '🟢';
+                } else {
+                    text = 'Excellent !';
+                    color = '#27ae60';
+                    icon = '✅';
+                }
             }
 
-            els.strengthText.textContent = text;
+            els.strengthText.textContent = icon + ' Mot de passe ' + text;
             els.strengthText.style.color = color;
-        }
-
-        // Animation de la barre
-        if (els.strengthBar && els.strengthBar.style.width === '100%') {
-            els.strengthBar.style.transition = 'all 0.3s ease';
-            setTimeout(function() {
-                els.strengthBar.style.boxShadow = '0 0 10px rgba(39, 174, 96, 0.4)';
-            }, 300);
-        } else if (els.strengthBar) {
-            els.strengthBar.style.boxShadow = 'none';
+            els.strengthText.style.transition = 'all 0.3s ease';
         }
     }
 
+    /**
+     * Marque une exigence comme remplie ou non
+     * Avec animation fluide
+     */
     function markRequirement(element, valid) {
         if (!element) return;
+
         if (valid) {
-            element.classList.add('valid');
+            if (!element.classList.contains('valid')) {
+                element.classList.add('valid');
+                // Animation de validation
+                element.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                element.style.transform = 'scale(1.05)';
+                setTimeout(function() {
+                    element.style.transform = 'scale(1)';
+                }, 300);
+                
+                // Changer l'icône
+                const icon = element.querySelector('i');
+                if (icon) {
+                    icon.className = 'fas fa-check-circle';
+                    icon.style.color = '#27ae60';
+                }
+            }
         } else {
-            element.classList.remove('valid');
+            if (element.classList.contains('valid')) {
+                element.classList.remove('valid');
+                // Animation de retour
+                element.style.transition = 'all 0.3s ease';
+                
+                // Remettre l'icône
+                const icon = element.querySelector('i');
+                if (icon) {
+                    icon.className = 'fas fa-circle';
+                    icon.style.color = '';
+                }
+            }
         }
     }
 
     /* ==========================================================
-     SECTION 5 : VÉRIFICATION CORRESPONDANCE MOTS DE PASSE
+     SECTION 7 : VÉRIFICATION CORRESPONDANCE MOTS DE PASSE
      ========================================================== */
     function initPasswordMatch() {
         const els = getElements();
@@ -309,29 +372,33 @@
         if (!messageEl) return;
 
         if (confirmation.length === 0) {
-            messageEl.textContent = '';
+            messageEl.innerHTML = '';
             messageEl.className = 'form-match';
+            messageEl.style.opacity = '0';
             resetInputStatus(els.confirmation, null, null);
             return;
         }
 
+        messageEl.style.opacity = '1';
+        messageEl.style.transition = 'all 0.3s ease';
+
         if (motDePasse === confirmation) {
             messageEl.innerHTML = '<i class="fas fa-check-circle"></i> Les mots de passe correspondent';
             messageEl.className = 'form-match match-success';
+            messageEl.style.color = '#27ae60';
             setInputValid(els.confirmation, null);
         } else {
             messageEl.innerHTML = '<i class="fas fa-times-circle"></i> Les mots de passe ne correspondent pas';
             messageEl.className = 'form-match match-error';
+            messageEl.style.color = '#e74c3c';
             setInputError(els.confirmation, null, null, '');
         }
     }
 
     /* ==========================================================
-     SECTION 6 : TOGGLE MOT DE PASSE
+     SECTION 8 : TOGGLE MOT DE PASSE
      ========================================================== */
     function initTogglePassword() {
-        // La fonction globale togglePassword est déjà définie dans main.js
-        // On s'assure que les boutons sont bien câblés
         const toggleBtns = document.querySelectorAll('.toggle-password-btn');
         
         toggleBtns.forEach(function(btn) {
@@ -345,18 +412,22 @@
 
                 const icon = this.querySelector('i');
                 if (icon) {
-                    icon.classList.toggle('fa-eye', !isPassword);
-                    icon.classList.toggle('fa-eye-slash', isPassword);
+                    icon.style.transition = 'transform 0.3s ease';
+                    icon.style.transform = 'rotate(180deg)';
+                    setTimeout(function() {
+                        icon.classList.toggle('fa-eye', !isPassword);
+                        icon.classList.toggle('fa-eye-slash', isPassword);
+                        icon.style.transform = 'rotate(0deg)';
+                    }, 150);
                 }
 
-                // Remettre le focus sur l'input
                 input.focus();
             });
         });
     }
 
     /* ==========================================================
-     SECTION 7 : SOUMISSION DU FORMULAIRE
+     SECTION 9 : SOUMISSION DU FORMULAIRE
      ========================================================== */
     function initFormSubmission() {
         const els = getElements();
@@ -365,22 +436,17 @@
         let isSubmitting = false;
 
         els.form.addEventListener('submit', function(e) {
-            // Empêcher la double soumission
             if (isSubmitting) {
                 e.preventDefault();
                 return false;
             }
 
-            // Validation finale
             const errors = validateAllFields(els);
             
             if (errors.length > 0) {
                 e.preventDefault();
-                
-                // Afficher les erreurs
                 displaySubmissionErrors(els, errors);
                 
-                // Scroller vers la première erreur
                 const firstError = document.querySelector('.form-group input.input-error');
                 if (firstError) {
                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -390,12 +456,10 @@
                 return false;
             }
 
-            // Vérifier les conditions
             if (els.acceptConditions && !els.acceptConditions.checked) {
                 e.preventDefault();
                 shakeElement(els.acceptConditions.closest('.checkbox-group'));
                 
-                // Afficher un message
                 const checkboxGroup = els.acceptConditions.closest('.checkbox-group');
                 let errorMsg = checkboxGroup.querySelector('.form-error');
                 if (!errorMsg) {
@@ -409,11 +473,9 @@
                 return false;
             }
 
-            // Tout est OK, activer le loader
             isSubmitting = true;
             activateLoader(els);
             
-            // Désactiver le loader après 10 secondes (timeout de sécurité)
             setTimeout(function() {
                 if (isSubmitting) {
                     deactivateLoader(els);
@@ -439,19 +501,22 @@
                 setInputError(els.pseudo, els.pseudoStatus, els.pseudoError, 'Le pseudo est obligatoire.');
             } else if (pseudoValue.length < 3) {
                 errors.push({ field: 'pseudo', message: 'Le pseudo doit contenir au moins 3 caractères.' });
-                setInputError(els.pseudo, els.pseudoStatus, els.pseudoError, 'Le pseudo doit contenir au moins 3 caractères.');
-            } else if (!/^[a-zA-Z0-9_\-À-ÿ\s]+$/.test(pseudoValue)) {
-                errors.push({ field: 'pseudo', message: 'Le pseudo contient des caractères non autorisés.' });
-                setInputError(els.pseudo, els.pseudoStatus, els.pseudoError, 'Caractères non autorisés.');
+                setInputError(els.pseudo, els.pseudoStatus, els.pseudoError, 'Minimum 3 caractères.');
             }
         }
 
-        // Validation email (si renseigné)
-        if (els.email && els.email.value.trim().length > 0) {
-            const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(els.email.value.trim())) {
-                errors.push({ field: 'email', message: 'Adresse email invalide.' });
-                setInputError(els.email, els.emailStatus, els.emailError, 'Adresse email invalide.');
+        // Validation email (OBLIGATOIRE)
+        if (els.email) {
+            const emailValue = els.email.value.trim();
+            if (emailValue.length === 0) {
+                errors.push({ field: 'email', message: 'L\'email est obligatoire.' });
+                setInputError(els.email, els.emailStatus, els.emailError, 'L\'email est obligatoire.');
+            } else {
+                const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(emailValue)) {
+                    errors.push({ field: 'email', message: 'Adresse email invalide.' });
+                    setInputError(els.email, els.emailStatus, els.emailError, 'Adresse email invalide.');
+                }
             }
         }
 
@@ -461,8 +526,17 @@
             if (mdpValue.length === 0) {
                 errors.push({ field: 'motDePasse', message: 'Le mot de passe est obligatoire.' });
                 setInputError(els.motDePasse, null, null, '');
-            } else if (mdpValue.length < 6) {
-                errors.push({ field: 'motDePasse', message: 'Le mot de passe doit contenir au moins 6 caractères.' });
+            } else if (mdpValue.length < 8) {
+                errors.push({ field: 'motDePasse', message: 'Minimum 8 caractères.' });
+                setInputError(els.motDePasse, null, null, '');
+            } else if (!/[A-Z]/.test(mdpValue)) {
+                errors.push({ field: 'motDePasse', message: 'Il faut une majuscule.' });
+                setInputError(els.motDePasse, null, null, '');
+            } else if (!/[a-z]/.test(mdpValue)) {
+                errors.push({ field: 'motDePasse', message: 'Il faut une minuscule.' });
+                setInputError(els.motDePasse, null, null, '');
+            } else if (!/[0-9]/.test(mdpValue)) {
+                errors.push({ field: 'motDePasse', message: 'Il faut un chiffre.' });
                 setInputError(els.motDePasse, null, null, '');
             }
         }
@@ -489,13 +563,11 @@
     }
 
     function displaySubmissionErrors(els, errors) {
-        // Les erreurs sont déjà affichées par setInputError dans validateAllFields
-        // On peut ajouter un message général en haut si besoin
         console.log('Erreurs de validation :', errors);
     }
 
     /* ==========================================================
-     SECTION 8 : GESTION DU LOADER
+     SECTION 10 : GESTION DU LOADER
      ========================================================== */
     function activateLoader(els) {
         if (els.btnSubmit) {
@@ -512,50 +584,44 @@
     }
 
     /* ==========================================================
-     SECTION 9 : UTILITAIRES VISUELS
+     SECTION 11 : UTILITAIRES VISUELS
      ========================================================== */
 
-    /**
-     * Marque un input comme valide
-     */
     function setInputValid(input, statusEl) {
         if (!input) return;
         input.classList.remove('input-error');
         input.classList.add('input-valid');
         
         if (statusEl) {
-            statusEl.innerHTML = '<i class="fas fa-check-circle"></i>';
+            statusEl.innerHTML = '<i class="fas fa-check-circle" style="color: #27ae60;"></i>';
             statusEl.className = 'input-status valid';
+            statusEl.style.opacity = '1';
+            statusEl.style.transition = 'opacity 0.3s ease';
         }
 
-        // Cacher le message d'erreur associé
         const errorEl = input.closest('.form-group')?.querySelector('.form-error');
         if (errorEl) {
             errorEl.textContent = '';
         }
     }
 
-    /**
-     * Marque un input comme invalide
-     */
     function setInputError(input, statusEl, errorEl, message) {
         if (!input) return;
         input.classList.remove('input-valid');
         input.classList.add('input-error');
         
         if (statusEl) {
-            statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            statusEl.innerHTML = '<i class="fas fa-exclamation-circle" style="color: #e74c3c;"></i>';
             statusEl.className = 'input-status error';
+            statusEl.style.opacity = '1';
         }
 
         if (errorEl && message) {
             errorEl.textContent = message;
+            errorEl.style.color = '#e74c3c';
         }
     }
 
-    /**
-     * Réinitialise le statut d'un input
-     */
     function resetInputStatus(input, statusEl, errorEl) {
         if (!input) return;
         input.classList.remove('input-valid', 'input-error');
@@ -563,6 +629,7 @@
         if (statusEl) {
             statusEl.innerHTML = '';
             statusEl.className = 'input-status';
+            statusEl.style.opacity = '0';
         }
 
         if (errorEl) {
@@ -570,14 +637,11 @@
         }
     }
 
-    /**
-     * Animation de secousse pour les champs invalides
-     */
     function shakeElement(element) {
         if (!element) return;
         
         element.style.animation = 'none';
-        element.offsetHeight; // Force reflow
+        element.offsetHeight;
         element.style.animation = 'shake 0.5s ease';
         
         element.addEventListener('animationend', function handler() {
@@ -587,34 +651,37 @@
     }
 
     /* ==========================================================
-     SECTION 10 : ANIMATIONS DES INPUTS
+     SECTION 12 : ANIMATIONS DES INPUTS
      ========================================================== */
     function initInputAnimations() {
         const inputs = document.querySelectorAll('.form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"]');
         
         inputs.forEach(function(input) {
-            // Animation du label quand l'input est focus
             input.addEventListener('focus', function() {
-                const label = this.closest('.form-group')?.querySelector('label');
-                if (label) {
-                    label.style.transition = 'all 0.3s ease';
+                const wrapper = this.closest('.input-wrapper');
+                if (wrapper) {
+                    wrapper.style.transition = 'all 0.3s ease';
+                    wrapper.style.borderColor = '#667eea';
+                    wrapper.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
                 }
             });
 
             input.addEventListener('blur', function() {
-                const label = this.closest('.form-group')?.querySelector('label');
-                if (label) {
-                    label.style.transition = 'all 0.3s ease';
+                const wrapper = this.closest('.input-wrapper');
+                if (wrapper) {
+                    wrapper.style.transition = 'all 0.3s ease';
+                    wrapper.style.borderColor = '#e8eaef';
+                    wrapper.style.boxShadow = 'none';
                 }
             });
         });
     }
 
     /* ==========================================================
-     SECTION 11 : ANIMATION SHAKE (ajoutée au DOM)
+     SECTION 13 : STYLES D'ANIMATION INJECTÉS
      ========================================================== */
-    const shakeStyle = document.createElement('style');
-    shakeStyle.textContent = `
+    const animationStyles = document.createElement('style');
+    animationStyles.textContent = `
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
@@ -622,28 +689,57 @@
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
+            from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        @keyframes checkBounce {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .requirement.valid i {
+            animation: checkBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        .requirement i {
+            transition: all 0.3s ease;
+        }
+        
+        .strength-bar {
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        background-color 0.5s ease, 
+                        box-shadow 0.5s ease !important;
+        }
+        
+        .password-strength-text {
+            transition: all 0.3s ease;
+        }
+        
+        .input-valid {
+            border-color: #27ae60 !important;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1) !important;
+        }
+        
+        .input-error {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1) !important;
+        }
     `;
-    document.head.appendChild(shakeStyle);
+    document.head.appendChild(animationStyles);
 
     /* ==========================================================
-     SECTION 12 : EMPÊCHER LA SOUMISSION AVEC ENTRÉE
+     SECTION 14 : NAVIGATION CLAVIER
      ========================================================== */
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
             const form = e.target.closest('form');
             if (form && form.id === 'formInscription') {
-                // Vérifier si on est sur le dernier champ
                 const inputs = form.querySelectorAll('input:not([type="checkbox"])');
                 const lastInput = inputs[inputs.length - 1];
                 
-                if (e.target === lastInput) {
-                    // Sur le dernier champ, soumettre
-                    // La validation se fera dans le submit event
-                } else {
-                    // Passer au champ suivant
+                if (e.target !== lastInput) {
                     e.preventDefault();
                     const currentIndex = Array.from(inputs).indexOf(e.target);
                     if (currentIndex < inputs.length - 1) {

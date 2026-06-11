@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
 
 <%-- ============================================================
      FICHIER : index.jsp (Page d'accueil)
-     RÔLE    : Vitrine de la plateforme AmijayQuiz
+     RÔLE    : Vitrine de la plateforme LearnPath
               - Hero section avec image de fond et overlay
               - Statistiques de la plateforme
-              - Pourquoi choisir AmijayQuiz ?
+              - Pourquoi choisir LearnPath ?
               - Comment ca marche ?
               - Deux modes d'apprentissage (Quiz + Cours)
               - Themes disponibles
@@ -24,13 +24,13 @@
     String roleAccueil = null;
 
     if (session != null && session.getAttribute("utilisateur") != null) {
-        com.amijayquiz.models.Utilisateur userAccueil = 
-            (com.amijayquiz.models.Utilisateur) session.getAttribute("utilisateur");
+        com.learnpath.models.Utilisateur userAccueil = 
+            (com.learnpath.models.Utilisateur) session.getAttribute("utilisateur");
         pseudoAccueil = userAccueil.getPseudo();
         roleAccueil = userAccueil.getRole();
     }
 
-    request.setAttribute("pageTitle", "AmijayQuiz - Plateforme de Quiz & Cours en Ligne | Progressez niveau par niveau");
+    request.setAttribute("pageTitle", "LearnPath - Plateforme de Quiz & Cours en Ligne | Progressez niveau par niveau");
 
     String accueilCSS = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/views/assets/css/accueil.css\">";
     request.setAttribute("extraHead", accueilCSS);
@@ -58,7 +58,7 @@
             <span class="hero-icon">
                 <i class="fas fa-brain"></i>
             </span>
-            Amijay<span class="hero-highlight">Quiz</span>
+            Learn<span class="hero-highlight">Path</span>
         </h1>
 
         <p class="hero-subtitle">
@@ -160,12 +160,12 @@
 </section>
 
 <%-- ============================================================
-     SECTION POURQUOI CHOISIR AMIJAYQUIZ ?
+     SECTION POURQUOI CHOISIR LearnPath ?
      ============================================================ --%>
 <section class="features-section">
     <div class="section-header">
         <span class="section-badge"><i class="fas fa-star"></i> Avantages</span>
-        <h2>Pourquoi choisir AmijayQuiz ?</h2>
+        <h2>Pourquoi choisir LearnPath ?</h2>
         <p class="section-subtitle">Une plateforme complete pour apprendre et se certifier</p>
     </div>
 
@@ -442,7 +442,7 @@
                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                 <i class="fas fa-star"></i><i class="fas fa-star"></i>
             </div>
-            <p class="testimonial-text">"Grace aux cours et quiz d'AmijayQuiz, j'ai pu decrocher mon premier emploi en developpement web. Les certificats sont reconnus et la progression est tres motivante !"</p>
+            <p class="testimonial-text">"Grace aux cours et quiz d'LearnPath, j'ai pu decrocher mon premier emploi en developpement web. Les certificats sont reconnus et la progression est tres motivante !"</p>
             <div class="testimonial-author">
                 <div class="author-avatar"><i class="fas fa-user-graduate"></i></div>
                 <div class="author-info">
@@ -531,7 +531,7 @@
     <div class="section-header">
         <span class="section-badge"><i class="fas fa-question-circle"></i> FAQ</span>
         <h2>Questions frequentes</h2>
-        <p class="section-subtitle">Tout ce que vous devez savoir sur AmijayQuiz</p>
+        <p class="section-subtitle">Tout ce que vous devez savoir sur LearnPath</p>
     </div>
 
     <div class="faq-grid">
@@ -592,7 +592,7 @@
 <section class="cta-section">
     <div class="cta-content">
         <h2>Pret a commencer votre apprentissage ?</h2>
-        <p>Rejoignez des centaines d'apprenants qui progressent chaque jour sur AmijayQuiz.</p>
+        <p>Rejoignez des centaines d'apprenants qui progressent chaque jour sur LearnPath.</p>
 
         <% if (utilisateurConnecte == null) { %>
             <div class="cta-buttons">

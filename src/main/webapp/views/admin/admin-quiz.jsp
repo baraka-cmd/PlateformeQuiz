@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="com.amijayquiz.models.Quiz" %>
+<%@ page import="com.learnpath.models.Quiz" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-quiz.jsp
@@ -42,7 +42,7 @@
     if (stats == null) stats = new java.util.LinkedHashMap<String, Integer>();
     if (urlPagination == null) urlPagination = "/admin/quiz?";
 
-    request.setAttribute("pageTitle", "Gestion des quiz - Administration - AmijayQuiz");
+    request.setAttribute("pageTitle", "Gestion des quiz - Administration - LearnPath");
 %>
 
 <%

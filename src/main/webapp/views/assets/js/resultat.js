@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * FICHIER : views/assets/js/resultat.js
- * RÔLE    : Scripts de la page de résultat AmijayQuiz
+ * RÔLE    : Scripts de la page de résultat LearnPath
  *           - Animation du cercle de score (pop-in)
  *           - Confettis si partie réussie
  *           - Révélation progressive des questions (correction)

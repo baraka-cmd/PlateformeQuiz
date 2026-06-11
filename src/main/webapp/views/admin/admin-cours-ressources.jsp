@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.amijayquiz.models.Lecon" %>
-<%@ page import="com.amijayquiz.models.Ressource" %>
+<%@ page import="com.learnpath.models.Lecon" %>
+<%@ page import="com.learnpath.models.Ressource" %>
 
 <%-- ============================================================
      FICHIER : views/admin/admin-cours-ressources.jsp

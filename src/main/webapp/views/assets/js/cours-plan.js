@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/cours-plan.js
-// RÔLE    : Script du plan de cours détaillé AmijayQuiz
+// RÔLE    : Script du plan de cours détaillé LearnPath
 //           - Toggle ouverture/fermeture des modules
 //           - Un seul module ouvert à la fois (accordéon)
 //           - Scroll automatique vers le module actif

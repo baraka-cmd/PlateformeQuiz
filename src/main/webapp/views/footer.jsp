@@ -34,7 +34,7 @@
         <div class="footer-column footer-brand">
             <a href="${pageContext.request.contextPath}/" class="footer-logo">
                 <i class="fas fa-brain"></i>
-                <span>AmijayQuiz</span>
+                <span>LearnPath</span>
             </a>
             <p class="footer-description">
                 Plateforme de quiz interactive pour tester, améliorer et valider vos connaissances. 
@@ -73,7 +73,7 @@
                 <li><a href="${pageContext.request.contextPath}/"><i class="fas fa-chevron-right"></i> Accueil</a></li>
                 <li><a href="${pageContext.request.contextPath}/inscription"><i class="fas fa-chevron-right"></i> Créer un compte</a></li>
                 <li><a href="${pageContext.request.contextPath}/connexion"><i class="fas fa-chevron-right"></i> Se connecter</a></li>
-                <% if (session.getAttribute("utilisateur") != null && "joueur".equals(((com.amijayquiz.models.Utilisateur)session.getAttribute("utilisateur")).getRole())) { %>
+                <% if (session.getAttribute("utilisateur") != null && "joueur".equals(((com.learnpath.models.Utilisateur)session.getAttribute("utilisateur")).getRole())) { %>
                     <li><a href="${pageContext.request.contextPath}/joueur/dashboard"><i class="fas fa-chevron-right"></i> Mon parcours</a></li>
                     <li><a href="${pageContext.request.contextPath}/joueur/historique"><i class="fas fa-chevron-right"></i> Historique</a></li>
                 <% } %>
@@ -129,14 +129,14 @@
         <div class="footer-bottom-content">
             <p class="copyright">
                 <i class="far fa-copyright"></i> 
-                <%= Year.now().getValue() %> <strong>AmijayQuiz</strong>. Tous droits réservés.
+                <%= Year.now().getValue() %> <strong>LearnPath</strong>. Tous droits réservés.
             </p>
             <p class="footer-tagline">
                 Développé avec 
                 <i class="fas fa-heart heart-beat"></i> 
                 et 
                 <i class="fas fa-coffee"></i> 
-                par l'équipe AmijayQuiz
+                par l'équipe LearnPath
             </p>
             <div class="footer-legal">
                 <a href="#">Confidentialité</a>

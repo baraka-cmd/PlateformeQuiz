@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.amijayquiz.models.Quiz" %>
-<%@ page import="com.amijayquiz.models.Partie" %>
-<%@ page import="com.amijayquiz.models.Utilisateur" %>
-<%@ page import="com.amijayquiz.models.Cours" %>
-<%@ page import="com.amijayquiz.models.Certificat" %>
+<%@ page import="com.learnpath.models.Quiz" %>
+<%@ page import="com.learnpath.models.Partie" %>
+<%@ page import="com.learnpath.models.Utilisateur" %>
+<%@ page import="com.learnpath.models.Cours" %>
+<%@ page import="com.learnpath.models.Certificat" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
@@ -11,7 +11,7 @@
 
 <%-- ============================================================
      Fichier : dashboard.jsp
-     Rôle    : Tableau de bord unifié du joueur AmijayQuiz
+     Rôle    : Tableau de bord unifié du joueur LearnPath
               - Message de bienvenue personnalisé
               - Bannière Premium (si non premium)
               - Guide Cours : comment apprendre
@@ -51,7 +51,7 @@
     int joueurId = (joueur != null) ? joueur.getId() : 0;
 
     // Premium
-    com.amijayquiz.dao.AccessPremiumDAO premiumDAO = new com.amijayquiz.dao.AccessPremiumDAO();
+    com.learnpath.dao.AccessPremiumDAO premiumDAO = new com.learnpath.dao.AccessPremiumDAO();
     boolean estPremium = premiumDAO.estPremium(joueurId);
     java.util.Map<String, Object> infosPremium = premiumDAO.getInfosPremium(joueurId);
 
@@ -83,7 +83,7 @@
     else if (heure < 18) { salutation = "Bon après-midi"; emojiHeure = "🌤️"; }
     else { salutation = "Bonsoir"; emojiHeure = "🌅"; }
 
-    request.setAttribute("pageTitle", "Dashboard - AmijayQuiz");
+    request.setAttribute("pageTitle", "Dashboard - LearnPath");
 %>
 
 <%

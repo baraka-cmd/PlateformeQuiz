@@ -224,7 +224,7 @@
         var link = document.createElement('a');
         var url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', 'resultats_amijayquiz_' + new Date().toISOString().slice(0, 10) + '.csv');
+        link.setAttribute('download', 'resultats_LearnPath_' + new Date().toISOString().slice(0, 10) + '.csv');
         link.style.display = 'none';
         document.body.appendChild(link);
         link.click();
@@ -277,5 +277,85 @@
             });
         });
     })();
+
+})();
+
+// ==========================================================
+// INITIALISATION ONGLET COURS
+// ==========================================================
+(function() {
+    'use strict';
+
+    // Gestion des filtres pour l'onglet cours
+    function initFiltresCours() {
+        var filtreIds = ['filtreThemeCours', 'filtreNiveauCours', 'filtreStatutCours'];
+        
+        filtreIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', function() {
+                    var form = document.getElementById('formFiltresCours');
+                    if (form) form.submit();
+                });
+            }
+        });
+
+        // Recherche avec debounce pour l'onglet cours
+        var rechercheInputCours = document.getElementById('rechercheInputCours');
+        if (rechercheInputCours) {
+            var timeoutCours;
+            rechercheInputCours.dataset.previousValue = rechercheInputCours.value;
+            
+            rechercheInputCours.addEventListener('input', function() {
+                clearTimeout(timeoutCours);
+                var val = this.value;
+                timeoutCours = setTimeout(function() {
+                    if (val !== rechercheInputCours.dataset.previousValue) {
+                        rechercheInputCours.dataset.previousValue = val;
+                        var form = document.getElementById('formFiltresCours');
+                        if (form) form.submit();
+                    }
+                }, 600);
+            });
+            
+            rechercheInputCours.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    clearTimeout(timeoutCours);
+                    var form = document.getElementById('formFiltresCours');
+                    if (form) form.submit();
+                }
+            });
+        }
+    }
+
+    // Animation des barres de progression
+    function initBarresProgression() {
+        var barres = document.querySelectorAll('.admin-table td .admin-stat-nombre');
+        if ('IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateX(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+            
+            barres.forEach(function(barre) {
+                barre.style.opacity = '0';
+                barre.style.transform = 'translateX(-10px)';
+                barre.style.transition = 'all 0.5s ease';
+                observer.observe(barre);
+            });
+        }
+    }
+
+    // Initialisation au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        initFiltresCours();
+        initBarresProgression();
+    });
 
 })();

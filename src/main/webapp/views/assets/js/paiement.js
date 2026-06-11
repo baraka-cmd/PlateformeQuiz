@@ -1,6 +1,6 @@
 // ============================================================
 // FICHIER : views/assets/js/paiement.js
-// RÔLE    : Script de la page de paiement AmijayQuiz
+// RÔLE    : Script de la page de paiement LearnPath
 //           - Validation du numero de telephone en temps reel
 //           - Formatage automatique (+243 ou 0)
 //           - Gestion du formulaire de paiement
